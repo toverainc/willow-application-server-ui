@@ -12,6 +12,7 @@ import ListItem from '@mui/material/ListItem';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import OtaDialog from './OtaDialog'
+import NameDeviceDialog from './NameDeviceDialog'
 import { Client, formatMacAddress } from '../misc/model'
 import { ResetDialog, ApplyConfigDialog, ApplyNvsDialog } from './ConfirmDialog'
 
@@ -22,6 +23,7 @@ function ClientMenu({ client }: { client: Client }) {
     const [openResetDialog, setOpenResetDialog] = React.useState<boolean>(false);
     const [openApplyConfigDialog, setOpenApplyConfigDialog] = React.useState<boolean>(false);
     const [openApplyNvsDialog, setOpenApplyNvsDialog] = React.useState<boolean>(false);
+    const [openNameDeviceDialog, setOpenNameDeviceDialog] = React.useState<boolean>(false);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -50,12 +52,13 @@ function ClientMenu({ client }: { client: Client }) {
                     'aria-labelledby': 'basic-button',
                 }}
             >
-                <MenuItem onClick={handleClose}>Edit Name</MenuItem>
+                <MenuItem onClick={() => handleClose() && setOpenNameDeviceDialog(true)}>Edit Name</MenuItem>
                 <MenuItem onClick={() => handleClose() && setOpenApplyConfigDialog(true)}>Apply Config</MenuItem>
                 <MenuItem onClick={() => handleClose() && setOpenApplyNvsDialog(true)}>Apply NVS</MenuItem>
                 <MenuItem onClick={() => handleClose() && setOpenResetDialog(true)}>Restart</MenuItem>
                 <MenuItem onClick={() => handleClose() && setOpenOtaDialog(true)}>OTA Update</MenuItem>
             </Menu>
+            <NameDeviceDialog client={client} open={openNameDeviceDialog} onClose={() => setOpenNameDeviceDialog(false)}></NameDeviceDialog>
             <OtaDialog client={client} open={openOtaDialog} onClose={() => setOpenOtaDialog(false)}></OtaDialog>
             <ResetDialog client={client} open={openResetDialog} onClose={() => setOpenResetDialog(false)}></ResetDialog>
             <ApplyConfigDialog client={client} open={openApplyConfigDialog} onClose={() => setOpenApplyConfigDialog(false)}></ApplyConfigDialog>
@@ -81,7 +84,7 @@ export default function ClientCard({ client }: { client: Client }) {
             />
             <CardContent sx={{ padding: 1 }}>
                 <List dense={true}>
-                    <ListItem sx={{ paddingTop: 0, paddingBottom: 0}}><ListItemText sx={{ margin: 0 }} primary={"Hostname: " + client.hostname} /></ListItem>
+                    <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}><ListItemText sx={{ margin: 0 }} primary={"Hostname: " + client.hostname} /></ListItem>
                     <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}><ListItemText sx={{ margin: 0 }} primary={"Remote: " + client.ip + ":" + client.port} /></ListItem>
                     <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}><ListItemText sx={{ margin: 0 }} primary={"Hardware Type: " + client.hw_type} /></ListItem>
                     <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}><ListItemText sx={{ margin: 0 }} primary={"Version: " + client.user_agent} /></ListItem>

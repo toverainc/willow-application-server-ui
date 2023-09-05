@@ -13,8 +13,6 @@ import useSWR from 'swr';
 
 import { Client, Release } from '../misc/model'
 
-//URL_WAS_API_RELEASE_CACHE = 'http://localhost:8502/api/release/cache'
-
 export default function OtaDialog({ client, open, onClose }: { client: Client, open: boolean, onClose: (event: any) => void }) {
     const { data: releaseData, error } = useSWR<Release[]>('/api/releases/?refresh=true')
     const [release, setRelease] = React.useState<string>('');
