@@ -74,7 +74,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-function MenuItem({text, children, page}:{text:string, page:string, children: React.ReactNode}) {
+function MenuItem({ text, children, page }: { text: string, page: string, children: React.ReactNode }) {
   return <Link href={page}><ListItem key={text} disablePadding>
     <ListItemButton>
       <ListItemIcon>
@@ -85,7 +85,7 @@ function MenuItem({text, children, page}:{text:string, page:string, children: Re
   </ListItem></Link>
 }
 
-export default function LeftMenu({children}:{children: React.ReactNode}) {
+export default function LeftMenu({ children }: { children: React.ReactNode }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -111,9 +111,11 @@ export default function LeftMenu({children}:{children: React.ReactNode}) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Willow Application Server
-          </Typography>
+          <Link href="/">
+            <Typography variant="h6" noWrap component="div">
+              Willow Application Server
+            </Typography>
+          </Link>
         </Toolbar>
       </AppBar>
       <Drawer
