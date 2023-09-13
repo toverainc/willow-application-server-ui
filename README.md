@@ -1,21 +1,23 @@
-# Willow Application Server Web
+# Willow Application Server Web UI
 
-This repo contains the source for willow-application-server-web. Backend code can be found at https://github.com/toverainc/willow-application-server/tree/main
+This repo contains the source code for the web user interface of the [Willow Application Server](https://github.com/toverainc/willow-application-server) (WAS). It is intended for developers who want to customize or contribute to the WAS web user interface.
 
-## Running Local
+I you're looking to get started with Willow, WAS, WIS, etc please visit our [Quick Start Guide](https://heywillow.io/quick-start-guide/).
 
-* Run the backend
-* `git clone git@github.com:zincio/willow-application-server-web.git`
-* `cd willow-application-server-web`
+## Getting Started
+
+* Install and configure WAS (see quick start guide linked above)
+* Clone this repo
+* `cd willow-application-server-ui`
 * `npm install`
 * `npm run dev`
 
 ## Deploying changes
 
-Still TODO but you can build a static version of the UI with:
+The WAS Web UI is still very early stage and these steps will be streamlined. In the meantime:
 ```bash
-#If the backend is running on a remote instance you can set basepath with.
-sed -i 's|const BASE_URL = ".*"|const BASE_URL = "https://YOUR_URL.io"|g' ./misc/fetchers.ts
+#If the backend is running on a remote instance you can set basepath with:
+sed -i 's|const BASE_URL = ".*"|const BASE_URL = "http://YOUR_WAS_URL"|g' ./misc/fetchers.ts
 npm run build
 #output is in ./out directory & test with
 cd ./out
