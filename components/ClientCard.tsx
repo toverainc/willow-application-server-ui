@@ -15,6 +15,7 @@ import OtaDialog from './OtaDialog'
 import NameDeviceDialog from './NameDeviceDialog'
 import { Client, formatMacAddress } from '../misc/model'
 import { ResetDialog, ApplyConfigDialog, ApplyNvsDialog } from './ConfirmDialog'
+import Image from 'next/image'
 
 function ClientMenu({ client }: { client: Client }) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -69,12 +70,14 @@ function ClientMenu({ client }: { client: Client }) {
 
 export default function ClientCard({ client }: { client: Client }) {
 
+    
     return (
         <Card sx={{ maxWidth: 500 }}>
             <CardHeader
                 avatar={
                     //<Avatar sx={{ bgcolor: 'gray' }} >
-                    <MinidenticonImg username={formatMacAddress(client.mac_addr)}></MinidenticonImg>
+                    //<MinidenticonImg username={formatMacAddress(client.mac_addr)}></MinidenticonImg>
+                    <Image src={'/static/' + client.hw_type + '.png'} width={50} height={50}></Image>
                     //</Avatar>
                 }
                 action={<ClientMenu client={client}></ClientMenu>}

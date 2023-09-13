@@ -138,7 +138,6 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
         </DrawerHeader>
         <Divider />
         <List>
-          <MenuItem text='Home' page="/"><HomeIcon></HomeIcon></MenuItem>
           <MenuItem text='Clients' page="/"><DevicesIcon></DevicesIcon></MenuItem>
           <MenuItem text='Configuration' page="/config"><SettingsIcon></SettingsIcon></MenuItem>
           <MenuItem text='Multinet' page='/multinet'><DeviceHubIcon></DeviceHubIcon></MenuItem>

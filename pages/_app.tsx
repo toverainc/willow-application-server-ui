@@ -34,7 +34,7 @@ export default function App({ Component, pageProps }: AppProps) { //XXX: write a
 
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
       <meta httpEquiv="x-ua-compatible" content="ie=edge" />
-      <link rel="icon" href="/logo.png" />
+      <link rel="shortcut icon" href="/static/favicon.svg" />
     </Head>
     <ThemeProvider theme={theme}>
       <CssBaseline />

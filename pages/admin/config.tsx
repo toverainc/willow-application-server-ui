@@ -300,7 +300,7 @@ function SettingsAccordions() {
       <Accordion expanded={expanded === 'General'} onChange={handleChange('General')}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="General-content" id="General-header">
           <Typography sx={{ width: '33%', flexShrink: 0 }}>General</Typography>
-          <Typography sx={{ color: 'text.secondary' }}></Typography>
+          <Typography sx={{ color: 'text.secondary' }}>Inference, TTS, and Command Endpoint Configurations</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <GeneralSettings></GeneralSettings>
