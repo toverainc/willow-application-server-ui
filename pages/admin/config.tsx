@@ -3,7 +3,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
-import LeftMenu from '../components/LeftMenu'
+import LeftMenu from '../../components/LeftMenu'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import VolumeDown from '@mui/icons-material/VolumeDown';
 import VolumeUp from '@mui/icons-material/VolumeUp';
@@ -19,8 +19,8 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Slider from '@mui/material/Slider';
 import useSWR from 'swr';
-import LoadingSpinner from '../components/LoadingSpinner'
-import { post } from '../misc/fetchers'
+import LoadingSpinner from '../../components/LoadingSpinner'
+import { post } from '../../misc/fetchers'
 import Brightness5Icon from '@mui/icons-material/Brightness5';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Tooltip from '@mui/material/Tooltip';

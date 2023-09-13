@@ -1,6 +1,6 @@
 import type { NextPage } from 'next'
 import * as React from 'react';
-import LeftMenu from '../components/LeftMenu'
+import LeftMenu from '../../components/LeftMenu'
 import DeviceHubIcon from '@mui/icons-material/DeviceHub';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
