@@ -296,7 +296,7 @@ function SettingsAccordions() {
     };
 
   return (
-    <div style={{ maxWidth: "800px" }}>
+    <div style={{ maxWidth: "800px", marginLeft: "auto", marginRight: "auto" }}>
       <Accordion expanded={expanded === 'General'} onChange={handleChange('General')}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="General-content" id="General-header">
           <Typography sx={{ width: '33%', flexShrink: 0 }}>General</Typography>

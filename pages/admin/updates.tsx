@@ -20,6 +20,8 @@ import DownloadIcon from '@mui/icons-material/Download';
 import Tooltip from '@mui/material/Tooltip';
 import { post } from '../../misc/fetchers'
 
+import Grid from '@mui/material/Grid';
+
 function formatTimestamp(timestamp: string) {
     const date = new Date(timestamp);
     const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
@@ -42,7 +44,7 @@ function ReleaseCard({ release }: { release: Release }) {
     }
 
     return (
-        <Card sx={{ margin: 1 }}>
+        <Card sx={{ margin: 1, width: "300px" }}>
             <CardHeader
                 title={<><Link href={release.html_url} target="_blank">{release.name}</Link> <Typography fontSize={10}>{formatTimestamp(release.published_at)}</Typography></>}
                 sx={{ paddingBottom: 0 }}
@@ -56,7 +58,7 @@ function ReleaseCard({ release }: { release: Release }) {
                             : <Tooltip style={{ boxShadow: "none" }} title='Download this release' enterTouchDelay={0}><IconButton edge="end" aria-label="delete" onClick={e => handleDownload(a)}><DownloadIcon /></IconButton></Tooltip>
                     }>
                         <ListItemText sx={{ margin: 0 }}
-                            primary={`${a.name}`}
+                            primary={`${a.name.replace(/willow-ota-|\.bin/g, '')}`}
                         />
                     </ListItem>)}
                 </List>
@@ -71,16 +73,13 @@ const Updates: NextPage = () => {
     function cleanReleases(releases: Release[]): Release[] {
         releases.forEach(r => {
             r.assets = r.assets.filter(r => r.name.indexOf("-dist-") === -1)
-            r.assets.forEach(r => {
-                r.name = r.name.replace(/willow-ota-|\.bin/g, '')
-            })
         })
         return releases
     }
     return <LeftMenu>
-        <Box sx={{ maxWidth: 400 }}>
+        <Grid container spacing={2} justifyContent="center" alignItems="center">
             {data && cleanReleases(data).map(r => <ReleaseCard key={r.id} release={r}></ReleaseCard>)}
-        </Box>
+        </Grid>
     </LeftMenu>
 }
 
