@@ -11,10 +11,10 @@ import { fetcher } from '../misc/fetchers';
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#5c5c5c',
+      main: '#583759',
     },
     secondary: {
-      main: '#f50057',
+      main: '#fbe870',
     },
   },
 })
