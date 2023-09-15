@@ -10,7 +10,9 @@ export class HttpError extends Error {
 }
 
 
-const BASE_URL = ""
+// For development, set the environment variable NEXT_PUBLIC_WAS_URL in .env to set the address of your WAS backend
+//NOTE: ensure that the variable is unset/deleted when building and deploying to static directory of WAS, or else it will compile with the value.
+const BASE_URL = typeof window !== "undefined" && !process.env.NEXT_PUBLIC_WAS_URL ? window.location.origin : process.env.NEXT_PUBLIC_WAS_URL;
 
 export type MethodTypes = "POST" | "PUT" | "PATCH" | "DELETE";
 

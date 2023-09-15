@@ -6,5 +6,7 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_WAS_URL
     extra_hosts:
       - "host.docker.internal:host-gateway"
