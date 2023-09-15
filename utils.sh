@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 TAG="willow-application-server-ui:latest"
 NEXT_DEV_PORT="3000"
@@ -9,6 +10,16 @@ if [ -r .env ]; then
 fi
 
 case $1 in
+
+build)
+    docker run --rm -it -v "$PWD":/was-ui "$TAG" npm run build
+    if [ "$WAS_DIR" ]; then
+        WAS_ADMIN_DIR="$WAS_DIR/static/admin"
+        echo "Copying admin Next build to $WAS_ADMIN_DIR"
+        mkdir -p "$WAS_ADMIN_DIR"
+        rsync -aP --delete out/* "$WAS_ADMIN_DIR"/
+    fi
+;;
 
 build-docker|docker-build)
     docker build -t "$TAG" -f Dockerfile.dev .
