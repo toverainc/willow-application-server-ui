@@ -1,32 +1,32 @@
-import * as React from 'react';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness5Icon from '@mui/icons-material/Brightness5';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import VolumeDown from '@mui/icons-material/VolumeDown';
+import VolumeUp from '@mui/icons-material/VolumeUp';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
-import Typography from '@mui/material/Typography';
-import LeftMenu from '../../components/LeftMenu'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import VolumeDown from '@mui/icons-material/VolumeDown';
-import VolumeUp from '@mui/icons-material/VolumeUp';
-import type { NextPage } from 'next'
-import TextField from '@mui/material/TextField';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Select, { SelectChangeEvent } from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
+import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Slider from '@mui/material/Slider';
-import useSWR from 'swr';
-import LoadingSpinner from '../../components/LoadingSpinner'
-import { post } from '../../misc/fetchers'
-import Brightness5Icon from '@mui/icons-material/Brightness5';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Tooltip from '@mui/material/Tooltip';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
-
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Slider from '@mui/material/Slider';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import type { NextPage } from 'next';
+import * as React from 'react';
+import useSWR from 'swr';
+import LeftMenu from '../../components/LeftMenu';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import WebFlashCard from '../../components/WebFlashCard';
+import { post } from '../../misc/fetchers';
 
 const WAKE_WORDS = { 'hiesp': 'Hi ESP', 'alexa': 'Alexa', 'hilexin': 'Hi Lexin' }
 const SPEECH_REC_MODE = { 'WIS': 'WIS', 'Multinet': 'Multinet' }
@@ -196,6 +196,7 @@ function GeneralSettings() {
     }
     body = Object.assign({}, data, form, body)
     await post(apply ? "/api/config/apply" : "/api/config/save", body)
+    window.location.reload(); //refresh the page to recalculate WebFlash eligibility
   }
 
   return loading
@@ -270,7 +271,9 @@ function ConnectionSettings() {
       "WAS": { "URL": data.url },
       "WIFI": { "PSK": data.psk, "SSID": data.ssid }
     }
+
     await post(apply ? "/api/nvs/apply" : "/api/nvs/save", body)
+    window.location.reload(); //refresh the page to recalculate WebFlash eligibility
   }
 
   return loading
@@ -329,8 +332,22 @@ function SettingsAccordions() {
 }
 
 const Config: NextPage = () => {
-  return <LeftMenu>
-    <SettingsAccordions></SettingsAccordions>
-  </LeftMenu>
+  const nvs = useSWR<NvsSettings>('/api/nvs').data;
+  const config = useSWR<GeneralSettings>('/api/config').data;
+  const [loading, setLoading] = React.useState(true);
+  const [isWebFlashVisible, setIsWebFlashVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    if(nvs && config){
+      setLoading(false);
+      setIsWebFlashVisible(Object.keys(nvs as object).length > 0 && Object.keys(config as object).length > 0);
+    }
+  },[nvs, config])
+
+  return loading ? <LoadingSpinner/>
+  : <LeftMenu>
+      {isWebFlashVisible && <WebFlashCard></WebFlashCard>}
+      <SettingsAccordions></SettingsAccordions>
+    </LeftMenu>
 }
 export default Config;
