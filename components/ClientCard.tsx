@@ -77,7 +77,7 @@ export default function ClientCard({ client }: { client: Client }) {
                 avatar={
                     //<Avatar sx={{ bgcolor: 'gray' }} >
                     //<MinidenticonImg username={formatMacAddress(client.mac_addr)}></MinidenticonImg>
-                    <Image src={'/static/' + client.hw_type + '.png'} width={50} height={50}></Image>
+                    <Image src={'/admin/static/' + client.hw_type + '.png'} width={50} height={50}></Image>
                     //</Avatar>
                 }
                 action={<ClientMenu client={client}></ClientMenu>}

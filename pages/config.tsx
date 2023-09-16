@@ -23,10 +23,10 @@ import Typography from '@mui/material/Typography';
 import type { NextPage } from 'next';
 import * as React from 'react';
 import useSWR from 'swr';
-import LeftMenu from '../../components/LeftMenu';
-import LoadingSpinner from '../../components/LoadingSpinner';
-import WebFlashCard from '../../components/WebFlashCard';
-import { post } from '../../misc/fetchers';
+import LeftMenu from '../components/LeftMenu';
+import LoadingSpinner from '../components/LoadingSpinner';
+import WebFlashCard from '../components/WebFlashCard';
+import { post } from '../misc/fetchers';
 
 const WAKE_WORDS = { 'hiesp': 'Hi ESP', 'alexa': 'Alexa', 'hilexin': 'Hi Lexin' }
 const SPEECH_REC_MODE = { 'WIS': 'WIS', 'Multinet': 'Multinet' }

@@ -1,6 +1,6 @@
 import type { NextPage } from 'next'
 import * as React from 'react';
-import LeftMenu from '../../components/LeftMenu'
+import LeftMenu from '../components/LeftMenu'
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
@@ -11,14 +11,14 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Release, ReleaseAsset } from '../../misc/model'
+import { Release, ReleaseAsset } from '../misc/model'
 import useSWR from 'swr';
 import InputLabel from '@mui/material/InputLabel';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import DownloadIcon from '@mui/icons-material/Download';
 import Tooltip from '@mui/material/Tooltip';
-import { post } from '../../misc/fetchers'
+import { post } from '../misc/fetchers'
 
 import Grid from '@mui/material/Grid';
 
