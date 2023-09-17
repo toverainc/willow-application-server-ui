@@ -639,7 +639,7 @@ function SettingsAccordions() {
         >
           <Typography sx={{ width: '33%', flexShrink: 0 }}>General</Typography>
           <Typography sx={{ color: 'text.secondary' }}>
-            Inference, TTS, and Command Endpoint Configurations
+            General Willow Settings
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -659,7 +659,7 @@ function SettingsAccordions() {
             Connectivity
           </Typography>
           <Typography sx={{ color: 'text.secondary' }}>
-            WiFi and Inference Server Settings
+            WiFi and WAS Settings
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
