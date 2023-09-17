@@ -100,19 +100,17 @@ export function ApplyConfigDialog({
       await post('/api/config/apply', { hostname: client?.hostname });
     } catch (e) {
       console.error(
-        `Applying general configuration to ${
+        `Applying configuration to ${
           client.label || client.hostname
         } failed with ${e}`
       );
       toast.error(
-        `Applying general configuration to ${
-          client.label || client.hostname
-        } failed!`
+        `Applying configuration to ${client.label || client.hostname} failed!`
       );
       return e;
     }
     toast.success(
-      `Applied general configuration to ${client.label || client.hostname}!`
+      `Applied configuration to ${client.label || client.hostname}!`
     );
     onClose(evt);
   }
