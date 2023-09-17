@@ -4,11 +4,26 @@ import { WAS_FLASH_URL } from '../misc/fetchers';
 
 export default function WebFlashCard() {
   return (
-    <Card sx={{ marginTop: 1, marginBottom: 1, marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>
-            <CardHeader
-                title={<>Ready to flash. Go to <a target="_blank" rel="noreferrer" href={WAS_FLASH_URL}>https://flash.heywillow.io</a></>}
-                sx={{ textAlign:"center" }}
-            />
-        </Card>
+    <Card
+      sx={{
+        marginTop: 1,
+        marginBottom: 1,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        maxWidth: '800px',
+      }}
+    >
+      <CardHeader
+        title={
+          <>
+            Ready to flash. Go to{' '}
+            <a target="_blank" rel="noreferrer" href={WAS_FLASH_URL}>
+              https://flash.heywillow.io
+            </a>
+          </>
+        }
+        sx={{ textAlign: 'center' }}
+      />
+    </Card>
   );
 }

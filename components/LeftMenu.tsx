@@ -18,7 +18,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import HomeIcon from '@mui/icons-material/Home';
 import DevicesIcon from '@mui/icons-material/Devices';
-import Link from 'next/link'
+import Link from 'next/link';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DeviceHubIcon from '@mui/icons-material/DeviceHub';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
@@ -74,15 +74,25 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-function MenuItem({ text, children, page }: { text: string, page: string, children: React.ReactNode }) {
-  return <Link href={page} style={{textDecoration: 'inherit', color: 'inherit'}}><ListItem key={text} disablePadding>
-    <ListItemButton>
-      <ListItemIcon>
-        {children}
-      </ListItemIcon>
-      <ListItemText primary={text} />
-    </ListItemButton>
-  </ListItem></Link>
+function MenuItem({
+  text,
+  children,
+  page,
+}: {
+  text: string;
+  page: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link href={page} style={{ textDecoration: 'inherit', color: 'inherit' }}>
+      <ListItem key={text} disablePadding>
+        <ListItemButton>
+          <ListItemIcon>{children}</ListItemIcon>
+          <ListItemText primary={text} />
+        </ListItemButton>
+      </ListItem>
+    </Link>
+  );
 }
 
 export default function LeftMenu({ children }: { children: React.ReactNode }) {
@@ -111,7 +121,10 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
           >
             <MenuIcon />
           </IconButton>
-          <Link href="/" style={{textDecoration: 'inherit', color: 'inherit'}}>
+          <Link
+            href="/"
+            style={{ textDecoration: 'inherit', color: 'inherit' }}
+          >
             <Typography variant="h6" noWrap component="div">
               Willow Application Server
             </Typography>
@@ -133,15 +146,27 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
       >
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            {theme.direction === 'ltr' ? (
+              <ChevronLeftIcon />
+            ) : (
+              <ChevronRightIcon />
+            )}
           </IconButton>
         </DrawerHeader>
         <Divider />
         <List>
-          <MenuItem text='Clients' page="/"><DevicesIcon></DevicesIcon></MenuItem>
-          <MenuItem text='Configuration' page="/config"><SettingsIcon></SettingsIcon></MenuItem>
-          <MenuItem text='Multinet' page='/multinet'><DeviceHubIcon></DeviceHubIcon></MenuItem>
-          <MenuItem text='Updates' page='/updates'><SystemUpdateAltIcon></SystemUpdateAltIcon></MenuItem>
+          <MenuItem text="Clients" page="/">
+            <DevicesIcon></DevicesIcon>
+          </MenuItem>
+          <MenuItem text="Configuration" page="/config">
+            <SettingsIcon></SettingsIcon>
+          </MenuItem>
+          <MenuItem text="Multinet" page="/multinet">
+            <DeviceHubIcon></DeviceHubIcon>
+          </MenuItem>
+          <MenuItem text="Updates" page="/updates">
+            <SystemUpdateAltIcon></SystemUpdateAltIcon>
+          </MenuItem>
         </List>
       </Drawer>
       <Main open={open}>

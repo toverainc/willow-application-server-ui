@@ -5,6 +5,6 @@ const nextConfig = {
     unoptimized: true,
   },
   basePath: '/admin',
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
