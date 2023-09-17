@@ -65,12 +65,12 @@ export function ResetDialog({
       await post('/api/device/restart', { hostname: client.hostname });
     } catch (e) {
       console.error(
-        `Restarting ${client.label || client.hostname} failed with ${e}`
+        `Restarting "${client.label || client.hostname}" failed with ${e}`
       );
-      toast.error(`Restarting ${client.label || client.hostname} failed!`);
+      toast.error(`Restarting "${client.label || client.hostname}" failed!`);
       return e;
     }
-    toast.success(`Restarted ${client.label || client.hostname}!`);
+    toast.success(`Restarted "${client.label || client.hostname}"!`);
     onClose(evt);
   }
   return (
@@ -100,17 +100,17 @@ export function ApplyConfigDialog({
       await post('/api/config/apply', { hostname: client?.hostname });
     } catch (e) {
       console.error(
-        `Applying configuration to ${
+        `Applying configuration to "${
           client.label || client.hostname
-        } failed with ${e}`
+        }" failed with ${e}`
       );
       toast.error(
-        `Applying configuration to ${client.label || client.hostname} failed!`
+        `Applying configuration to "${client.label || client.hostname}" failed!`
       );
       return e;
     }
     toast.success(
-      `Applied configuration to ${client.label || client.hostname}!`
+      `Applied configuration to "${client.label || client.hostname}"!`
     );
     onClose(evt);
   }
@@ -145,21 +145,21 @@ export function ApplyNvsDialog({
       await post('/api/nvs/apply', { hostname: client?.hostname });
     } catch (e) {
       console.error(
-        `Applying connectivity configuration to ${
+        `Applying connectivity configuration to "${
           client.label || client.hostname
-        } failed with ${e}`
+        }" failed with ${e}`
       );
       toast.error(
-        `Applying connectivity configuration to ${
+        `Applying connectivity configuration to "${
           client.label || client.hostname
-        } failed!`
+        }" failed!`
       );
       return e;
     }
     toast.success(
-      `Applied connectivity configuration to ${
+      `Applied connectivity configuration to "${
         client.label || client.hostname
-      }!`
+      }"!`
     );
     onClose(evt);
   }

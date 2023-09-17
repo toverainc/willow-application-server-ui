@@ -27,12 +27,12 @@ export default function NameDeviceDialog({
       await Promise.all([mutate('/api/device'), mutate('/api/clients')]);
     } catch (e) {
       console.error(
-        `Saving label ${name} to ${client.hostname} failed with ${e}`
+        `Saving label "${name}" to ${client.hostname} failed with ${e}`
       );
-      toast.error(`Saving name ${name} to ${client.hostname} failed!`);
+      toast.error(`Saving name "${name}" to ${client.hostname} failed!`);
       return e;
     }
-    toast.success(`Saved name ${name} to ${client.hostname}!`);
+    toast.success(`Saved name "${name}" to ${client.hostname}!`);
     onClose(true);
   }
 
