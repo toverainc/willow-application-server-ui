@@ -68,8 +68,15 @@ export function ResetDialog({ open, onClose, client }: { open: boolean, client: 
 
 export function ApplyConfigDialog({ open, onClose, client }: { open: boolean, client?: Client, onClose: (event: any) => void }) {
     async function onConfirm(evt: any) {
-        //note if client is not supplied this applies config to all
-        await post('/api/config/apply', { hostname: client?.hostname })
+        try {
+            //note if client is not supplied this applies config to all
+            await post('/api/config/apply', { hostname: client?.hostname })
+        } catch(e) {
+            console.error(`Applying general configuration to ${client.label || client.hostname} failed with ${e}`)
+            toast(`Applying general configuration to ${client.label || client.hostname} failed!`);
+            return(e)
+        }
+        toast(`Applied general configuration to ${client.label || client.hostname}!`);
         onClose(evt)
     }
     return <ConfirmDialog
