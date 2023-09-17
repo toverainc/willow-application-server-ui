@@ -22,6 +22,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import type { NextPage } from 'next';
 import * as React from 'react';
+import { toast } from 'react-toastify';
 import useSWR, { mutate } from 'swr';
 import LeftMenu from '../components/LeftMenu';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -127,7 +128,6 @@ function AdvancedSettings() {
       vad_timeout: parseIntOrUndef(form.vad_timeout),
     }
     body = Object.assign({}, data, form, body)
-    await post(apply ? "/api/config/apply" : "/api/config/save", body)
   }
 
   return loading
@@ -195,8 +195,20 @@ function GeneralSettings() {
       lcd_brightness: parseIntOrUndef(form.lcd_brightness),
     }
     body = Object.assign({}, data, form, body)
-    await post(apply ? "/api/config/apply" : "/api/config/save", body);
-    await mutate('/api/config')
+    try {
+      await post(apply ? "/api/config/apply" : "/api/config/save", body);
+      await mutate('/api/config')
+    } catch(e) {
+      console.error(`Save settings failed with ${e}`)
+      toast(`Saving general configuration settings to WAS failed!`);
+      return(e)
+    }
+    if (apply) {
+      toast("General configuration settings saved and applied!");
+    } else {
+      toast("General configuration settings saved!");
+    }
+    
   }
 
   return loading
@@ -272,8 +284,19 @@ function ConnectionSettings() {
       "WIFI": { "PSK": data.psk, "SSID": data.ssid }
     }
 
-    await post(apply ? "/api/nvs/apply" : "/api/nvs/save", body);
-    await mutate('/api/nvs');
+    try {
+      await post(apply ? "/api/nvs/apply" : "/api/nvs/save", body);
+    } catch(e) {
+      console.error(`Save connectivity settings failed with ${e}`)
+      toast(`Saving connectivity settings to WAS failed!`);
+      return(e)
+    }
+    await mutate('/api/nvs')
+    if (apply) {
+      toast("Connectivity configuration settings saved and applied!");
+    } else {
+      toast("Connectivity configuration settings saved!");
+    }
   }
 
   return loading

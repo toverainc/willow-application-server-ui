@@ -4,9 +4,12 @@ import { SWRConfig } from 'swr'
 import Head from 'next/head';
 import CssBaseline from '@mui/material/CssBaseline';
 import React from "react";
+import { ToastContainer } from 'react-toastify';
 import { ThemeProvider } from '@mui/material/styles';
 import { createTheme } from '@mui/material/styles';
 import { fetcher } from '../misc/fetchers';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 export const theme = createTheme({
   palette: {
@@ -36,6 +39,7 @@ export default function App({ Component, pageProps }: AppProps) { //XXX: write a
       <meta httpEquiv="x-ua-compatible" content="ie=edge" />
       <link rel="shortcut icon" href="/admin/static/favicon.svg" />
     </Head>
+    <ToastContainer />
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <SWRConfig value={{ fetcher }}>
