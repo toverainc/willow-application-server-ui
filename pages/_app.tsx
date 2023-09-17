@@ -33,7 +33,7 @@ export default function App({ Component, pageProps }: AppProps) { //XXX: write a
   return <>
     <Head>
       <meta charSet="utf-8" />
-      <title>Willow Application Server Web</title>
+      <title>Willow Application Server</title>
 
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
       <meta httpEquiv="x-ua-compatible" content="ie=edge" />
