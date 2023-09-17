@@ -22,11 +22,11 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import type { NextPage } from 'next';
 import * as React from 'react';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import LeftMenu from '../components/LeftMenu';
 import LoadingSpinner from '../components/LoadingSpinner';
 import WebFlashCard from '../components/WebFlashCard';
-import { post } from '../misc/fetchers';
+import { fetcher, post } from '../misc/fetchers';
 
 const WAKE_WORDS = { 'hiesp': 'Hi ESP', 'alexa': 'Alexa', 'hilexin': 'Hi Lexin' }
 const SPEECH_REC_MODE = { 'WIS': 'WIS', 'Multinet': 'Multinet' }
@@ -195,8 +195,8 @@ function GeneralSettings() {
       lcd_brightness: parseIntOrUndef(form.lcd_brightness),
     }
     body = Object.assign({}, data, form, body)
-    await post(apply ? "/api/config/apply" : "/api/config/save", body)
-    window.location.reload(); //refresh the page to recalculate WebFlash eligibility
+    await post(apply ? "/api/config/apply" : "/api/config/save", body);
+    await mutate('/api/config')
   }
 
   return loading
@@ -272,8 +272,8 @@ function ConnectionSettings() {
       "WIFI": { "PSK": data.psk, "SSID": data.ssid }
     }
 
-    await post(apply ? "/api/nvs/apply" : "/api/nvs/save", body)
-    window.location.reload(); //refresh the page to recalculate WebFlash eligibility
+    await post(apply ? "/api/nvs/apply" : "/api/nvs/save", body);
+    await mutate('/api/nvs');
   }
 
   return loading
@@ -332,21 +332,14 @@ function SettingsAccordions() {
 }
 
 const Config: NextPage = () => {
-  const nvs = useSWR<NvsSettings>('/api/nvs').data;
-  const config = useSWR<GeneralSettings>('/api/config').data;
-  const [loading, setLoading] = React.useState(true);
-  const [isWebFlashVisible, setIsWebFlashVisible] = React.useState(false);
+  const { data: nvsData, isLoading: nvsIsLoading } = useSWR<NvsSettings>('/api/nvs');
+  const { data: configData, isLoading: configIsLoading } = useSWR<GeneralSettings>('/api/config');
 
-  React.useEffect(() => {
-    if(nvs && config){
-      setLoading(false);
-      setIsWebFlashVisible(Object.keys(nvs as object).length > 0 && Object.keys(config as object).length > 0);
-    }
-  },[nvs, config])
-
-  return loading ? <LoadingSpinner/>
+  return (nvsIsLoading || configIsLoading) ? <LoadingSpinner/>
   : <LeftMenu>
-      {isWebFlashVisible && <WebFlashCard></WebFlashCard>}
+      {(nvsData ? Object.keys(nvsData).length > 0 : false) &&
+      (configData ? Object.keys(configData).length > 0 : false) &&
+      <WebFlashCard></WebFlashCard>}
       <SettingsAccordions></SettingsAccordions>
     </LeftMenu>
 }

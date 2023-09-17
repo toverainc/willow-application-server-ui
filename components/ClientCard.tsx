@@ -1,21 +1,19 @@
-import * as React from 'react';
-import { styled } from '@mui/material/styles';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import MinidenticonImg from '../components/MinidenticonImg'
-import ListItemText from '@mui/material/ListItemText';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import OtaDialog from './OtaDialog'
-import NameDeviceDialog from './NameDeviceDialog'
-import { Client, formatMacAddress } from '../misc/model'
-import { ResetDialog, ApplyConfigDialog, ApplyNvsDialog } from './ConfirmDialog'
-import Image from 'next/image'
+import Image from 'next/image';
+import * as React from 'react';
+import { Client, formatMacAddress } from '../misc/model';
+import { ApplyConfigDialog, ApplyNvsDialog, ResetDialog } from './ConfirmDialog';
+import NameDeviceDialog from './NameDeviceDialog';
+import OtaDialog from './OtaDialog';
 
 function ClientMenu({ client }: { client: Client }) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -77,7 +75,7 @@ export default function ClientCard({ client }: { client: Client }) {
                 avatar={
                     //<Avatar sx={{ bgcolor: 'gray' }} >
                     //<MinidenticonImg username={formatMacAddress(client.mac_addr)}></MinidenticonImg>
-                    <Image src={'/admin/static/' + client.hw_type + '.png'} width={50} height={50}></Image>
+                    <Image src={'/admin/static/' + client.hw_type + '.png'} width={50} height={50} alt={client.hw_type}></Image>
                     //</Avatar>
                 }
                 action={<ClientMenu client={client}></ClientMenu>}
