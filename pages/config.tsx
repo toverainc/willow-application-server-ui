@@ -156,7 +156,6 @@ function AdvancedSettings() {
       new FormData(event.target as any).entries()
     ) as Record<string, string>;
     const apply = (event.nativeEvent as any).submitter.id == 'saveAndApply';
-    debugger;
     let body: Partial<AdvancedSettings> = {
       aec: !!form.aec,
       bss: !!form.bss,
@@ -167,6 +166,19 @@ function AdvancedSettings() {
       vad_timeout: parseIntOrUndef(form.vad_timeout),
     };
     body = Object.assign({}, data, form, body);
+    try {
+      await post(apply ? '/api/config/apply' : '/api/config/save', body);
+      await mutate('/api/config');
+    } catch (e) {
+      console.error(`Save advanced configuration settings failed with ${e}`);
+      toast.error(`Saving advanced configuration settings to WAS failed!`);
+      return e;
+    }
+    if (apply) {
+      toast.success('Advanced configuration settings saved and applied!');
+    } else {
+      toast.success('Advanced configuration settings saved!');
+    }
   }
 
   return loading ? (
