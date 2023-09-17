@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { toast } from 'react-toastify';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -13,8 +14,15 @@ export default function NameDeviceDialog({ client, open, onClose }: { client: Cl
     const [name, setName] = React.useState<string>(client.label || '');
 
     async function onConfirm(evt: any) {
-        await post('/api/device', { mac_addr: client.mac_addr, label: name })
-        await Promise.all([mutate('/api/device'), mutate('/api/clients')])
+        try {
+            await post('/api/device', { mac_addr: client.mac_addr, label: name })
+            await Promise.all([mutate('/api/device'), mutate('/api/clients')])
+        } catch(e) {
+            console.error(`Saving label ${name} to ${client.hostname} failed with ${e}`)
+            toast(`Saving name ${name} to ${client.hostname} failed!`);
+            return(e)
+        }
+        toast(`Saved name ${name} to ${client.hostname}!`);
         onClose(true)
     }
 
