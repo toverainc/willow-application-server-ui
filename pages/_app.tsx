@@ -24,6 +24,20 @@ export const theme = createTheme({
   typography: {
     fontFamily: '"Raleway"',
   },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          'background-color': '#583759',
+          color: '#ffffff',
+          '&:hover': {
+            'background-color': '#fbe870',
+            color: '#000000',
+          },
+        },
+      },
+    },
+  },
 });
 
 export class HttpError extends Error {
