@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { toast } from 'react-toastify';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -48,7 +49,14 @@ export default function ConfirmDialog(params: ConfirmationDialogParams) {
 
 export function ResetDialog({ open, onClose, client }: { open: boolean, client: Client, onClose: (event: any) => void }) {
     async function onConfirm(evt: any) {
-        await post('/api/device/restart', { hostname: client.hostname })
+        try {
+            await post('/api/device/restart', { hostname: client.hostname })
+        } catch(e) {
+            console.error(`Restarting ${client.label || client.hostname} failed with ${e}`)
+            toast(`Restarting ${client.label || client.hostname} failed!`);
+            return(e)
+        }
+        toast(`Restarted ${client.label || client.hostname}!`);
         onClose(evt)
     }
     return <ConfirmDialog
