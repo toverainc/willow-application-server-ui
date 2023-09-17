@@ -629,24 +629,6 @@ function SettingsAccordions() {
   return (
     <div style={{ maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
       <Accordion
-        expanded={expanded === 'General'}
-        onChange={handleChange('General')}
-      >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="General-content"
-          id="General-header"
-        >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>General</Typography>
-          <Typography sx={{ color: 'text.secondary' }}>
-            General Willow Settings
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <GeneralSettings></GeneralSettings>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion
         expanded={expanded === 'Connectivity'}
         onChange={handleChange('Connectivity')}
       >
@@ -664,6 +646,24 @@ function SettingsAccordions() {
         </AccordionSummary>
         <AccordionDetails>
           <ConnectionSettings></ConnectionSettings>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion
+        expanded={expanded === 'General'}
+        onChange={handleChange('General')}
+      >
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="General-content"
+          id="General-header"
+        >
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>General</Typography>
+          <Typography sx={{ color: 'text.secondary' }}>
+            General Willow Settings
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <GeneralSettings></GeneralSettings>
         </AccordionDetails>
       </Accordion>
       <Accordion
