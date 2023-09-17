@@ -66,7 +66,7 @@ export function ResetDialog({ open, onClose, client }: { open: boolean, client: 
         onConfirm={onConfirm} />
 }
 
-export function ApplyConfigDialog({ open, onClose, client }: { open: boolean, client?: Client, onClose: (event: any) => void }) {
+export function ApplyConfigDialog({ open, onClose, client }: { open: boolean, client: Client, onClose: (event: any) => void }) {
     async function onConfirm(evt: any) {
         try {
             //note if client is not supplied this applies config to all
@@ -86,7 +86,7 @@ export function ApplyConfigDialog({ open, onClose, client }: { open: boolean, cl
         onConfirm={onConfirm} />
 }
 
-export function ApplyNvsDialog({ open, onClose, client }: { open: boolean, client?: Client, onClose: (event: any) => void }) {
+export function ApplyNvsDialog({ open, onClose, client }: { open: boolean, client: Client, onClose: (event: any) => void }) {
     async function onConfirm(evt: any) {
         try {
             //note if client is not supplied this applies config to all
