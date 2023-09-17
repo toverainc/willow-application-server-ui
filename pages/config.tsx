@@ -306,13 +306,13 @@ function GeneralSettings() {
       await mutate('/api/config');
     } catch (e) {
       console.error(`Save general configuration settings failed with ${e}`);
-      toast(`Saving general configuration settings to WAS failed!`);
+      toast.error(`Saving general configuration settings to WAS failed!`);
       return e;
     }
     if (apply) {
-      toast('General configuration settings saved and applied!');
+      toast.success('General configuration settings saved and applied!');
     } else {
-      toast('General configuration settings saved!');
+      toast.success('General configuration settings saved!');
     }
   }
 
@@ -561,13 +561,13 @@ function ConnectionSettings() {
       await mutate('/api/nvs');
     } catch (e) {
       console.error(`Save connectivity settings failed with ${e}`);
-      toast(`Saving connectivity settings to WAS failed!`);
+      toast.error(`Saving connectivity settings to WAS failed!`);
       return e;
     }
     if (apply) {
-      toast('Connectivity configuration settings saved and applied!');
+      toast.success('Connectivity configuration settings saved and applied!');
     } else {
-      toast('Connectivity configuration settings saved!');
+      toast.success('Connectivity configuration settings saved!');
     }
   }
 

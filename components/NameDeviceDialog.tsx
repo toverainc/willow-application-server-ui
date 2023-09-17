@@ -29,10 +29,10 @@ export default function NameDeviceDialog({
       console.error(
         `Saving label ${name} to ${client.hostname} failed with ${e}`
       );
-      toast(`Saving name ${name} to ${client.hostname} failed!`);
+      toast.error(`Saving name ${name} to ${client.hostname} failed!`);
       return e;
     }
-    toast(`Saved name ${name} to ${client.hostname}!`);
+    toast.success(`Saved name ${name} to ${client.hostname}!`);
     onClose(true);
   }
 

@@ -67,10 +67,10 @@ export function ResetDialog({
       console.error(
         `Restarting ${client.label || client.hostname} failed with ${e}`
       );
-      toast(`Restarting ${client.label || client.hostname} failed!`);
+      toast.error(`Restarting ${client.label || client.hostname} failed!`);
       return e;
     }
-    toast(`Restarted ${client.label || client.hostname}!`);
+    toast.success(`Restarted ${client.label || client.hostname}!`);
     onClose(evt);
   }
   return (
@@ -104,14 +104,14 @@ export function ApplyConfigDialog({
           client.label || client.hostname
         } failed with ${e}`
       );
-      toast(
+      toast.error(
         `Applying general configuration to ${
           client.label || client.hostname
         } failed!`
       );
       return e;
     }
-    toast(
+    toast.success(
       `Applied general configuration to ${client.label || client.hostname}!`
     );
     onClose(evt);
@@ -151,14 +151,14 @@ export function ApplyNvsDialog({
           client.label || client.hostname
         } failed with ${e}`
       );
-      toast(
+      toast.error(
         `Applying connectivity configuration to ${
           client.label || client.hostname
         } failed!`
       );
       return e;
     }
-    toast(
+    toast.success(
       `Applied connectivity configuration to ${
         client.label || client.hostname
       }!`
