@@ -1,3 +1,4 @@
+import "@fontsource/raleway";
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { SWRConfig } from 'swr'
@@ -19,6 +20,9 @@ export const theme = createTheme({
     secondary: {
       main: '#fbe870',
     },
+  },
+  typography: {
+    fontFamily: '"Raleway"',
   },
 })
 
