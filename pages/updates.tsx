@@ -77,7 +77,7 @@ const Updates: NextPage = () => {
         return releases
     }
     return <LeftMenu>
-        <Grid container spacing={2} justifyContent="center" alignItems="center">
+        <Grid container spacing={2}>
             {data && cleanReleases(data).map(r => <ReleaseCard key={r.id} release={r}></ReleaseCard>)}
         </Grid>
     </LeftMenu>
