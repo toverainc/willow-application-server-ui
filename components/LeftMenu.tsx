@@ -75,7 +75,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 function MenuItem({ text, children, page }: { text: string, page: string, children: React.ReactNode }) {
-  return <Link href={page}><ListItem key={text} disablePadding>
+  return <Link href={page} style={{textDecoration: 'inherit', color: 'inherit'}}><ListItem key={text} disablePadding>
     <ListItemButton>
       <ListItemIcon>
         {children}
@@ -111,7 +111,7 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
           >
             <MenuIcon />
           </IconButton>
-          <Link href="/">
+          <Link href="/" style={{textDecoration: 'inherit', color: 'inherit'}}>
             <Typography variant="h6" noWrap component="div">
               Willow Application Server
             </Typography>
