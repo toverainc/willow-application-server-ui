@@ -195,11 +195,12 @@ function GeneralSettings() {
       lcd_brightness: parseIntOrUndef(form.lcd_brightness),
     }
     body = Object.assign({}, data, form, body)
+
     try {
       await post(apply ? "/api/config/apply" : "/api/config/save", body);
       await mutate('/api/config')
     } catch(e) {
-      console.error(`Save settings failed with ${e}`)
+      console.error(`Save general configuration settings failed with ${e}`)
       toast(`Saving general configuration settings to WAS failed!`);
       return(e)
     }
@@ -286,12 +287,12 @@ function ConnectionSettings() {
 
     try {
       await post(apply ? "/api/nvs/apply" : "/api/nvs/save", body);
+      await mutate('/api/nvs')
     } catch(e) {
       console.error(`Save connectivity settings failed with ${e}`)
       toast(`Saving connectivity settings to WAS failed!`);
       return(e)
     }
-    await mutate('/api/nvs')
     if (apply) {
       toast("Connectivity configuration settings saved and applied!");
     } else {
