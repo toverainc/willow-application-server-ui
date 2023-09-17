@@ -13,7 +13,7 @@ const Home: NextPage = () => {
   const { data, error } = useSWR<Client[]>('/api/clients', fetcherClients);
 
   return <LeftMenu>
-    <Grid container spacing={2} style={{justifyContent: "center"}}>
+    <Grid container spacing={2}>
       {data?.map(client =>
         <React.Fragment key={client.hostname}>
           <Grid item md={4} sm={6} xs={12} lg={3}>
