@@ -5,6 +5,8 @@ const nextConfig = {
     unoptimized: true,
   },
   basePath: '/admin',
+  trailingSlash: true,
+  output: 'export',
 };
 
 module.exports = nextConfig;
