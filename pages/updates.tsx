@@ -114,7 +114,9 @@ function ReleaseCard({ release }: { release: Release }) {
 }
 
 const Updates: NextPage = () => {
-  const { data, error } = useSWR<Release[]>('/api/releases/github/?refresh=true');
+  const { data, error } = useSWR<Release[]>(
+    '/api/releases/github/?refresh=true'
+  );
 
   function cleanReleases(releases: Release[]): Release[] {
     releases.forEach((r) => {
