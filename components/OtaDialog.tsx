@@ -12,8 +12,9 @@ import Select from '@mui/material/Select';
 import useSWR from 'swr';
 import { post } from '../misc/fetchers';
 import { mutate } from 'swr';
+import { mergeReleases } from '../pages/updates';
 
-import { Client, Release } from '../misc/model';
+import { Client } from '../misc/model';
 
 export default function OtaDialog({
   client,
@@ -24,13 +25,12 @@ export default function OtaDialog({
   open: boolean;
   onClose: (event: any) => void;
 }) {
-  const { data: releaseData, error } = useSWR<Release[]>('/api/releases/github/?refresh=true');
-  const [release, setRelease] = React.useState<string>('');
+  const { data: releaseData, error } = useSWR<any[]>('/api/releases/internal/?refresh=false');
+  const [wasUrl, setWasUrl] = React.useState<string>('');
 
   async function onFlash(event: any) {
-    const releaseToOta = releaseData?.find((r) => r.name === release);
     await post('/api/ota', {
-      ota_url: releaseToOta?.assets[0].url,
+      ota_url: wasUrl,
       hostname: client.hostname,
     });
     await mutate('/api/clients'); //OTA update is very async so this won't really work but better than nothing
@@ -51,14 +51,17 @@ export default function OtaDialog({
           <Select
             labelId="release-label"
             fullWidth={true}
-            value={release}
+            value={wasUrl}
             label="Release"
-            onChange={(event) => setRelease(event.target.value as string)}>
-            {releaseData?.map((release) => (
-              <MenuItem key={release.id} value={release.name}>
-                {release.name}
-              </MenuItem>
-            ))}
+            onChange={(event) => setWasUrl(event.target.value as string)}>
+            {releaseData &&
+              mergeReleases(undefined, releaseData)
+                .filter((r) => r.platform == client.hw_type && r.was_url)
+                .map((asset) => (
+                  <MenuItem key={client.hostname + asset.gh_url} value={asset.was_url as any}>
+                    {asset.name}
+                  </MenuItem>
+                ))}
           </Select>
         </FormControl>
       </DialogContent>

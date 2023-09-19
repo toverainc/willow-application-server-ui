@@ -18,18 +18,12 @@ export interface Client {
 }
 
 export interface ReleaseAsset {
-  url: string;
   name: string;
-  id: number;
+  platform: string;
+  file_name: string;
+  gh_url: string;
+  html_url?: string;
   size: number;
-  local?: boolean;
-  browser_download_url: string;
-}
-
-export interface Release {
-  id: number;
-  name: string;
-  assets: Array<ReleaseAsset>;
-  html_url: string;
-  published_at: string;
+  was_url: string | null;
+  cached: boolean;
 }
