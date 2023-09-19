@@ -117,14 +117,10 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
             aria-label="open drawer"
             onClick={handleDrawerOpen}
             edge="start"
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}
-          >
+            sx={{ mr: 2, ...(open && { display: 'none' }) }}>
             <MenuIcon />
           </IconButton>
-          <Link
-            href="/"
-            style={{ textDecoration: 'inherit', color: 'inherit' }}
-          >
+          <Link href="/" style={{ textDecoration: 'inherit', color: 'inherit' }}>
             <Typography variant="h6" noWrap component="div">
               Willow Application Server
             </Typography>
@@ -142,15 +138,10 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
         }}
         variant="persistent"
         anchor="left"
-        open={open}
-      >
+        open={open}>
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? (
-              <ChevronLeftIcon />
-            ) : (
-              <ChevronRightIcon />
-            )}
+            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </DrawerHeader>
         <Divider />

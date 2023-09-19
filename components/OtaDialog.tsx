@@ -24,9 +24,7 @@ export default function OtaDialog({
   open: boolean;
   onClose: (event: any) => void;
 }) {
-  const { data: releaseData, error } = useSWR<Release[]>(
-    '/api/releases/github/?refresh=true'
-  );
+  const { data: releaseData, error } = useSWR<Release[]>('/api/releases/github/?refresh=true');
   const [release, setRelease] = React.useState<string>('');
 
   async function onFlash(event: any) {
@@ -55,8 +53,7 @@ export default function OtaDialog({
             fullWidth={true}
             value={release}
             label="Release"
-            onChange={(event) => setRelease(event.target.value as string)}
-          >
+            onChange={(event) => setRelease(event.target.value as string)}>
             {releaseData?.map((release) => (
               <MenuItem key={release.id} value={release.name}>
                 {release.name}

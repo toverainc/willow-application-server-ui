@@ -56,9 +56,7 @@ function ReleaseCard({ release }: { release: Release }) {
             <Link href={release.html_url} target="_blank">
               {release.name}
             </Link>{' '}
-            <Typography fontSize={10}>
-              {formatTimestamp(release.published_at)}
-            </Typography>
+            <Typography fontSize={10}>{formatTimestamp(release.published_at)}</Typography>
           </>
         }
         sx={{ paddingBottom: 0 }}
@@ -74,13 +72,8 @@ function ReleaseCard({ release }: { release: Release }) {
                   <Tooltip
                     style={{ boxShadow: 'none' }}
                     title="Delete this release"
-                    enterTouchDelay={0}
-                  >
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      onClick={(e) => handleDelete(a)}
-                    >
+                    enterTouchDelay={0}>
+                    <IconButton edge="end" aria-label="delete" onClick={(e) => handleDelete(a)}>
                       <DeleteIcon />
                     </IconButton>
                   </Tooltip>
@@ -88,19 +81,13 @@ function ReleaseCard({ release }: { release: Release }) {
                   <Tooltip
                     style={{ boxShadow: 'none' }}
                     title="Download this release"
-                    enterTouchDelay={0}
-                  >
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      onClick={(e) => handleDownload(a)}
-                    >
+                    enterTouchDelay={0}>
+                    <IconButton edge="end" aria-label="delete" onClick={(e) => handleDownload(a)}>
                       <DownloadIcon />
                     </IconButton>
                   </Tooltip>
                 )
-              }
-            >
+              }>
               <ListItemText
                 sx={{ margin: 0 }}
                 primary={`${a.name.replace(/willow-ota-|\.bin/g, '')}`}
@@ -114,9 +101,7 @@ function ReleaseCard({ release }: { release: Release }) {
 }
 
 const Updates: NextPage = () => {
-  const { data, error } = useSWR<Release[]>(
-    '/api/releases/github/?refresh=true'
-  );
+  const { data, error } = useSWR<Release[]>('/api/releases/github/?refresh=true');
 
   function cleanReleases(releases: Release[]): Release[] {
     releases.forEach((r) => {
@@ -127,10 +112,7 @@ const Updates: NextPage = () => {
   return (
     <LeftMenu>
       <Grid container spacing={2}>
-        {data &&
-          cleanReleases(data).map((r) => (
-            <ReleaseCard key={r.id} release={r}></ReleaseCard>
-          ))}
+        {data && cleanReleases(data).map((r) => <ReleaseCard key={r.id} release={r}></ReleaseCard>)}
       </Grid>
     </LeftMenu>
   );

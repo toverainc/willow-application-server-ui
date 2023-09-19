@@ -11,8 +11,7 @@ export default function WebFlashCard() {
         marginLeft: 'auto',
         marginRight: 'auto',
         maxWidth: '800px',
-      }}
-    >
+      }}>
       <CardHeader
         title={
           <>

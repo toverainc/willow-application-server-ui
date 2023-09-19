@@ -26,9 +26,7 @@ export default function NameDeviceDialog({
       await post('/api/device', { mac_addr: client.mac_addr, label: name });
       await Promise.all([mutate('/api/device'), mutate('/api/clients')]);
     } catch (e) {
-      console.error(
-        `Saving label "${name}" to ${client.hostname} failed with ${e}`
-      );
+      console.error(`Saving label "${name}" to ${client.hostname} failed with ${e}`);
       toast.error(`Saving name "${name}" to ${client.hostname} failed!`);
       return e;
     }

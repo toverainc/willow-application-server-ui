@@ -14,13 +14,11 @@ const Home: NextPage = () => {
           alignItems: 'center',
           flexDirection: 'column',
           marginTop: 3,
-        }}
-      >
+        }}>
         <Typography variant="h4" sx={{ textAlign: 'center' }}>
           <DeviceHubIcon style={{ transform: 'scale(3)' }}></DeviceHubIcon>
           <br></br>
-          The speech recognition mode is not set to Multinet<br></br>This
-          feature is coming soon
+          The speech recognition mode is not set to Multinet<br></br>This feature is coming soon
         </Typography>
       </Box>
     </LeftMenu>

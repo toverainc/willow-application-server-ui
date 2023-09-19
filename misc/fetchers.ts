@@ -16,9 +16,7 @@ export const BASE_URL =
     ? window.location.origin
     : process.env.NEXT_PUBLIC_WAS_ADDRESS;
 export const WAS_URL =
-  BASE_URL?.toLowerCase()
-    .replace('https://', 'wss://')
-    .replace('http://', 'ws://') + '/ws';
+  BASE_URL?.toLowerCase().replace('https://', 'wss://').replace('http://', 'ws://') + '/ws';
 export const WAS_FLASH_URL = `https://flash.heywillow.io/?wasURL=${WAS_URL}`;
 
 export type MethodTypes = 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -52,11 +50,10 @@ export async function fetcher(url: string) {
 
 //the label for the client comes back in 2nd request :( this fetcher merges things
 export async function fetcherClients(url: string) {
-  const [clients, devices]: [Client[], { mac_addr: MacAddr; label: string }[]] =
-    (await Promise.all(['/api/clients', '/api/devices'].map(fetcher))) as any;
-  const deviceMap = Object.fromEntries(
-    devices.map((i) => [formatMacAddress(i.mac_addr), i.label])
-  );
+  const [clients, devices]: [Client[], { mac_addr: MacAddr; label: string }[]] = (await Promise.all(
+    ['/api/clients', '/api/devices'].map(fetcher)
+  )) as any;
+  const deviceMap = Object.fromEntries(devices.map((i) => [formatMacAddress(i.mac_addr), i.label]));
   clients.forEach((c) => (c.label = deviceMap[formatMacAddress(c.mac_addr)]));
   return clients;
 }

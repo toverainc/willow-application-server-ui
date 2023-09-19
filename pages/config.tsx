@@ -111,8 +111,7 @@ function EnumSelectHelper(params: {
       size="small"
       margin="dense"
       variant="outlined"
-      sx={{ flexDirection: 'row' }}
-    >
+      sx={{ flexDirection: 'row' }}>
       <InputLabel>{params.label}</InputLabel>
       <Select
         name={params.name}
@@ -120,19 +119,16 @@ function EnumSelectHelper(params: {
         defaultValue={params.defaultValue || ''}
         label={params.label}
         onChange={params.onChange}
-        sx={{ flexGrow: '1' }}
-      >
-        {(Array.isArray(params.options)
-          ? params.options
-          : Object.entries(params.options)
-        ).map((o) => (
-          <MenuItem
-            key={(typeof o == 'string' ? o : o[0]) as string}
-            value={(typeof o == 'string' ? o : o[0]) as string}
-          >
-            {(typeof o == 'string' ? o : o[1]) as string}
-          </MenuItem>
-        ))}
+        sx={{ flexGrow: '1' }}>
+        {(Array.isArray(params.options) ? params.options : Object.entries(params.options)).map(
+          (o) => (
+            <MenuItem
+              key={(typeof o == 'string' ? o : o[0]) as string}
+              value={(typeof o == 'string' ? o : o[0]) as string}>
+              {(typeof o == 'string' ? o : o[1]) as string}
+            </MenuItem>
+          )
+        )}
       </Select>
       {params.tooltip && <HelpTooltip tooltip={params.tooltip}></HelpTooltip>}
     </FormControl>
@@ -152,9 +148,10 @@ function AdvancedSettings() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!data || error) return; //sanity check
-    const form = Object.fromEntries(
-      new FormData(event.target as any).entries()
-    ) as Record<string, string>;
+    const form = Object.fromEntries(new FormData(event.target as any).entries()) as Record<
+      string,
+      string
+    >;
     const apply = (event.nativeEvent as any).submitter.id == 'saveAndApply';
     let body: Partial<AdvancedSettings> = {
       aec: !!form.aec,
@@ -281,9 +278,7 @@ function GeneralSettings() {
   const [loading, setLoading] = React.useState(true);
   const [commandEndpoint, setCommandEndpoint] =
     React.useState<keyof typeof COMMAND_ENDPOINT>('Home Assistant');
-  const [restAuthType, setRestAuthType] = React.useState<string>(
-    REST_AUTH_TYPES[0]
-  );
+  const [restAuthType, setRestAuthType] = React.useState<string>(REST_AUTH_TYPES[0]);
   const { data, error } = useSWR<GeneralSettings>('/api/config');
 
   React.useEffect(() => {
@@ -297,17 +292,14 @@ function GeneralSettings() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!data || error) return; //sanity check
-    const form = Object.fromEntries(
-      new FormData(event.target as any).entries()
-    ) as Record<string, string>;
+    const form = Object.fromEntries(new FormData(event.target as any).entries()) as Record<
+      string,
+      string
+    >;
     const apply = (event.nativeEvent as any).submitter.id == 'saveAndApply';
     let body: Partial<GeneralSettings> = {
-      hass_port:
-        commandEndpoint == 'Home Assistant'
-          ? parseIntOrUndef(form.hass_port)
-          : undefined,
-      hass_tls:
-        commandEndpoint == 'Home Assistant' ? !!form.hass_tls : undefined,
+      hass_port: commandEndpoint == 'Home Assistant' ? parseIntOrUndef(form.hass_port) : undefined,
+      hass_tls: commandEndpoint == 'Home Assistant' ? !!form.hass_tls : undefined,
       speaker_volume: parseIntOrUndef(form.speaker_volume),
       lcd_brightness: parseIntOrUndef(form.lcd_brightness),
     };
@@ -559,9 +551,10 @@ function ConnectionSettings() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const data = Object.fromEntries(
-      new FormData(event.target as any).entries()
-    ) as Record<string, string>;
+    const data = Object.fromEntries(new FormData(event.target as any).entries()) as Record<
+      string,
+      string
+    >;
     const apply = (event.nativeEvent as any).submitter.id == 'saveAndApply';
     const body: NvsSettings = {
       WAS: { URL: data.url },
@@ -633,64 +626,43 @@ function ConnectionSettings() {
 function SettingsAccordions() {
   const [expanded, setExpanded] = React.useState<string | false>('General');
 
-  const handleChange =
-    (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-      setExpanded(isExpanded ? panel : false);
-    };
+  const handleChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+    setExpanded(isExpanded ? panel : false);
+  };
 
   return (
     <div style={{ maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
-      <Accordion
-        expanded={expanded === 'Connectivity'}
-        onChange={handleChange('Connectivity')}
-      >
+      <Accordion expanded={expanded === 'Connectivity'} onChange={handleChange('Connectivity')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="Connectivity-content"
-          id="Connectivity-header"
-        >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>
-            Connectivity
-          </Typography>
-          <Typography sx={{ color: 'text.secondary' }}>
-            WiFi and WAS Settings
-          </Typography>
+          id="Connectivity-header">
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>Connectivity</Typography>
+          <Typography sx={{ color: 'text.secondary' }}>WiFi and WAS Settings</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <ConnectionSettings></ConnectionSettings>
         </AccordionDetails>
       </Accordion>
-      <Accordion
-        expanded={expanded === 'General'}
-        onChange={handleChange('General')}
-      >
+      <Accordion expanded={expanded === 'General'} onChange={handleChange('General')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="General-content"
-          id="General-header"
-        >
+          id="General-header">
           <Typography sx={{ width: '33%', flexShrink: 0 }}>General</Typography>
-          <Typography sx={{ color: 'text.secondary' }}>
-            General Willow Settings
-          </Typography>
+          <Typography sx={{ color: 'text.secondary' }}>General Willow Settings</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <GeneralSettings></GeneralSettings>
         </AccordionDetails>
       </Accordion>
-      <Accordion
-        expanded={expanded === 'Advanced'}
-        onChange={handleChange('Advanced')}
-      >
+      <Accordion expanded={expanded === 'Advanced'} onChange={handleChange('Advanced')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="Advanced-content"
-          id="Advanced-header"
-        >
+          id="Advanced-header">
           <Typography sx={{ width: '33%', flexShrink: 0 }}>Advanced</Typography>
-          <Typography sx={{ color: 'text.secondary' }}>
-            Advanced Settings for Tinkering
-          </Typography>
+          <Typography sx={{ color: 'text.secondary' }}>Advanced Settings for Tinkering</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <AdvancedSettings></AdvancedSettings>
@@ -701,19 +673,15 @@ function SettingsAccordions() {
 }
 
 const Config: NextPage = () => {
-  const { data: nvsData, isLoading: nvsIsLoading } =
-    useSWR<NvsSettings>('/api/nvs');
-  const { data: configData, isLoading: configIsLoading } =
-    useSWR<GeneralSettings>('/api/config');
+  const { data: nvsData, isLoading: nvsIsLoading } = useSWR<NvsSettings>('/api/nvs');
+  const { data: configData, isLoading: configIsLoading } = useSWR<GeneralSettings>('/api/config');
 
   return nvsIsLoading || configIsLoading ? (
     <LoadingSpinner />
   ) : (
     <LeftMenu>
       {(nvsData ? Object.keys(nvsData).length > 0 : false) &&
-        (configData ? Object.keys(configData).length > 0 : false) && (
-          <WebFlashCard></WebFlashCard>
-        )}
+        (configData ? Object.keys(configData).length > 0 : false) && <WebFlashCard></WebFlashCard>}
       <SettingsAccordions></SettingsAccordions>
     </LeftMenu>
   );
