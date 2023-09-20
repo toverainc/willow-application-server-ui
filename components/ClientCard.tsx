@@ -10,7 +10,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Image from 'next/image';
 import * as React from 'react';
-import { Client, formatMacAddress } from '../misc/model';
+import { Client } from '../misc/model';
 import { ApplyConfigDialog, ApplyNvsDialog, ResetDialog } from './ConfirmDialog';
 import NameDeviceDialog from './NameDeviceDialog';
 import OtaDialog from './OtaDialog';
