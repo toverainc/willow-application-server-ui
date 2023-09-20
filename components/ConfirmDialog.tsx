@@ -86,7 +86,7 @@ export function ApplyConfigDialog({
   async function onConfirm(evt: any) {
     try {
       //note if client is not supplied this applies config to all
-      await post('/api/config/apply', { hostname: client?.hostname });
+      await post('/api/config?type=config&apply=1', { hostname: client?.hostname });
     } catch (e) {
       console.error(
         `Applying configuration to "${client.label || client.hostname}" failed with ${e}`
@@ -123,7 +123,7 @@ export function ApplyNvsDialog({
   async function onConfirm(evt: any) {
     try {
       //note if client is not supplied this applies config to all
-      await post('/api/nvs/apply', { hostname: client?.hostname });
+      await post('/api/config?type=nvs&apply=1', { hostname: client?.hostname });
     } catch (e) {
       console.error(
         `Applying connectivity configuration to "${
