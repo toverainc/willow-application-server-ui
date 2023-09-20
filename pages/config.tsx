@@ -543,7 +543,7 @@ interface NvsSettings {
 
 function ConnectionSettings() {
   const [loading, setLoading] = React.useState(true);
-  const { data, error } = useSWR<NvsSettings>('/api/nvs');
+  const { data, error } = useSWR<NvsSettings>('/api/config?type=nvs');
 
   React.useEffect(() => {
     if (data) setLoading(false);
