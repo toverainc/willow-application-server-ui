@@ -137,7 +137,7 @@ function EnumSelectHelper(params: {
 
 function AdvancedSettings() {
   const [loading, setLoading] = React.useState(true);
-  const { data, error } = useSWR<AdvancedSettings>('/api/config');
+  const { data, error } = useSWR<AdvancedSettings>('/api/config?type=config');
 
   React.useEffect(() => {
     if (data) {
@@ -164,8 +164,8 @@ function AdvancedSettings() {
     };
     body = Object.assign({}, data, form, body);
     try {
-      await post(apply ? '/api/config/apply' : '/api/config/save', body);
-      await mutate('/api/config');
+      await post(apply ? '/api/config?type=config&apply=1' : '/api/config?type=config', body);
+      await mutate('/api/config?type=config');
     } catch (e) {
       console.error(`Save advanced configuration settings failed with ${e}`);
       toast.error(`Saving advanced configuration settings to WAS failed!`);
@@ -279,7 +279,7 @@ function GeneralSettings() {
   const [commandEndpoint, setCommandEndpoint] =
     React.useState<keyof typeof COMMAND_ENDPOINT>('Home Assistant');
   const [restAuthType, setRestAuthType] = React.useState<string>(REST_AUTH_TYPES[0]);
-  const { data, error } = useSWR<GeneralSettings>('/api/config');
+  const { data, error } = useSWR<GeneralSettings>('/api/config?type=config');
 
   React.useEffect(() => {
     if (data) {
@@ -306,8 +306,8 @@ function GeneralSettings() {
     body = Object.assign({}, data, form, body);
 
     try {
-      await post(apply ? '/api/config/apply' : '/api/config/save', body);
-      await mutate('/api/config');
+      await post(apply ? '/api/config?type=config&apply=1' : '/api/config?type=config', body);
+      await mutate('/api/config?type=config');
     } catch (e) {
       console.error(`Save general configuration settings failed with ${e}`);
       toast.error(`Saving general configuration settings to WAS failed!`);
@@ -562,8 +562,8 @@ function ConnectionSettings() {
     };
 
     try {
-      await post(apply ? '/api/nvs/apply' : '/api/nvs/save', body);
-      await mutate('/api/nvs');
+      await post(apply ? '/api/config?type=nvs&apply=1' : '/api/config?type=nvs', body);
+      await mutate('/api/config?type=nvs');
     } catch (e) {
       console.error(`Save connectivity settings failed with ${e}`);
       toast.error(`Saving connectivity settings to WAS failed!`);
@@ -673,8 +673,9 @@ function SettingsAccordions() {
 }
 
 const Config: NextPage = () => {
-  const { data: nvsData, isLoading: nvsIsLoading } = useSWR<NvsSettings>('/api/nvs');
-  const { data: configData, isLoading: configIsLoading } = useSWR<GeneralSettings>('/api/config');
+  const { data: nvsData, isLoading: nvsIsLoading } = useSWR<NvsSettings>('/api/config?type=nvs');
+  const { data: configData, isLoading: configIsLoading } =
+    useSWR<GeneralSettings>('/api/config?type=config');
 
   return nvsIsLoading || configIsLoading ? (
     <LoadingSpinner />
