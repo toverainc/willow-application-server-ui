@@ -29,7 +29,7 @@ export default function OtaDialog({
   const [wasUrl, setWasUrl] = React.useState<string>('');
 
   async function onFlash(event: any) {
-    await post('/api/ota', {
+    await post('/api/device?action=update', {
       ota_url: wasUrl,
       hostname: client.hostname,
     });
