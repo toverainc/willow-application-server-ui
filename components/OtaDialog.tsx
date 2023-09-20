@@ -26,7 +26,7 @@ export default function OtaDialog({
   open: boolean;
   onClose: (event: any) => void;
 }) {
-  const { data: releaseData, error } = useSWR<any[]>('/api/release?type=internal');
+  const { data: releaseData, error } = useSWR<any[]>('/api/release?type=was');
   const [wasUrl, setWasUrl] = React.useState<string>('');
 
   async function onFlash(event: any) {
@@ -45,7 +45,7 @@ export default function OtaDialog({
       <DialogContent>
         <DialogContentText sx={{ marginBottom: 2 }}>
           Select a release to update the client &quot;
-          {client.label || client.hostname}&quot; OTA
+          {client.label || client.hostname}&quot;
         </DialogContentText>
         <FormControl fullWidth>
           <InputLabel id="release-label">Release</InputLabel>
@@ -56,7 +56,7 @@ export default function OtaDialog({
             label="Release"
             onChange={(event) => setWasUrl(event.target.value as string)}>
             {releaseData &&
-              mergeReleases(undefined, releaseData)
+              mergeReleases(releaseData)
                 .filter((r) => r.platform == client.hw_type && r.was_url)
                 .map((asset) => (
                   <MenuItem key={client.hostname + asset.willow_url} value={asset.was_url as any}>
