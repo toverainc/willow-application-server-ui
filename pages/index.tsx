@@ -10,7 +10,7 @@ import { useRouter } from 'next/router';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const Home: NextPage = () => {
-  const { data, error } = useSWR<Client[]>('/api/clients', fetcherClients, {
+  const { data, error } = useSWR<Client[]>('/api/client', fetcherClients, {
     refreshInterval: 10000,
   }); //we refresh clients every 10 seconds so we can detect offline, new, & updated clients
 

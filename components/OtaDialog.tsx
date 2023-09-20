@@ -33,8 +33,8 @@ export default function OtaDialog({
       ota_url: wasUrl,
       hostname: client.hostname,
     });
-    await mutate('/api/clients'); //OTA update is very async so this won't really work but better than nothing
-    setTimeout(() => mutate('/api/clients'), 30 * 1000); //hackz to make it work. Mutate in 30 seconds so we catch changes
+    await mutate('/api/client'); //OTA update is very async so this won't really work but better than nothing
+    setTimeout(() => mutate('/api/client'), 30 * 1000); //hackz to make it work. Mutate in 30 seconds so we catch changes
     onClose(event);
   }
 
