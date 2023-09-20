@@ -40,7 +40,7 @@ function ReleaseCard({ release }: { release: ReleaseAsset[] }) {
     await post('/api/release/cache', {
       version: asset.name,
       file_name: asset.file_name,
-      gh_url: asset.gh_url,
+      willow_url: asset.willow_url,
       size: asset.size,
     });
   }
@@ -63,7 +63,7 @@ function ReleaseCard({ release }: { release: ReleaseAsset[] }) {
         <List dense={true}>
           {release.map((a) => (
             <ListItem
-              key={a.gh_url}
+              key={a.willow_url}
               secondaryAction={
                 !a.cached ? (
                   <Tooltip
@@ -92,19 +92,22 @@ function ReleaseCard({ release }: { release: ReleaseAsset[] }) {
   );
 }
 
-//super gross function that merges gh releases and our api format
-export function mergeReleases(ghReleases: any[] | undefined, localReleases: any): ReleaseAsset[] {
+//super gross function that merges willow releases and our api format
+export function mergeReleases(
+  willowReleases: any[] | undefined,
+  localReleases: any
+): ReleaseAsset[] {
   const ret: ReleaseAsset[] = [];
-  for (const release of ghReleases || []) {
+  for (const release of willowReleases || []) {
     for (const a of release.assets) {
-      if (a.name.indexOf('-ota-') === -1) continue; //Not OTA file ignore
+      if (a.name.build_type != 'ota') continue; //Not OTA file ignore
       const name: string = release.tag_name;
-      const platform: string = a.name.replace(/willow-ota-|\.bin/g, '');
+      const platform: string = a.hw_type;
       const ra: ReleaseAsset = {
         name,
         platform,
         file_name: a.name,
-        gh_url: a.browser_download_url,
+        willow_url: a.browser_download_url,
         size: a.size,
         was_url: null,
         cached: false,
@@ -115,8 +118,8 @@ export function mergeReleases(ghReleases: any[] | undefined, localReleases: any)
   }
   for (const name in localReleases) {
     for (const platform in localReleases[name]) {
-      const gh_url = localReleases[name][platform].gh_url;
-      const asset = ret.find((a) => a.gh_url === gh_url); //the backend mutates name & platform a bunch so join on gh url
+      const willow_url = localReleases[name][platform].willow_url;
+      const asset = ret.find((a) => a.willow_url === willow_url); //the backend mutates name & platform a bunch so join on willow url
       if (asset) {
         Object.assign(asset, localReleases[name][platform], { name, platform });
       } else {
@@ -132,17 +135,15 @@ export function mergeReleases(ghReleases: any[] | undefined, localReleases: any)
 }
 
 const Updates: NextPage = () => {
-  const { data: ghData, error: ghError } = useSWR<any[]>('/api/releases/github/?refresh=true');
+  const { data: willowData, error: willowError } = useSWR<any[]>('/api/releases');
 
-  const { data: localData, error: localError } = useSWR<any[]>(
-    '/api/releases/internal/?refresh=false'
-  );
+  const { data: localData, error: localError } = useSWR<any[]>('/api/releases/internal');
 
   return (
     <LeftMenu>
       <Grid container spacing={2}>
         {localData &&
-          Object.entries(groupBy<ReleaseAsset>(mergeReleases(ghData, localData), 'name')).map(
+          Object.entries(groupBy<ReleaseAsset>(mergeReleases(willowData, localData), 'name')).map(
             ([name, releases]) => <ReleaseCard key={name} release={releases}></ReleaseCard>
           )}
       </Grid>

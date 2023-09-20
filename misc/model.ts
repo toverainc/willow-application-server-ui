@@ -21,7 +21,7 @@ export interface ReleaseAsset {
   name: string;
   platform: string;
   file_name: string;
-  gh_url: string;
+  willow_url: string;
   html_url?: string;
   size: number;
   was_url: string | null;
