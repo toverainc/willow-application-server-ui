@@ -135,9 +135,9 @@ export function mergeReleases(
 }
 
 const Updates: NextPage = () => {
-  const { data: willowData, error: willowError } = useSWR<any[]>('/api/release');
+  const { data: willowData, error: willowError } = useSWR<any[]>('/api/release?type=willow');
 
-  const { data: localData, error: localError } = useSWR<any[]>('/api/release/internal');
+  const { data: localData, error: localError } = useSWR<any[]>('/api/release?type=internal');
 
   return (
     <LeftMenu>

@@ -25,7 +25,7 @@ export default function OtaDialog({
   open: boolean;
   onClose: (event: any) => void;
 }) {
-  const { data: releaseData, error } = useSWR<any[]>('/api/release/internal');
+  const { data: releaseData, error } = useSWR<any[]>('/api/release?type=internal');
   const [wasUrl, setWasUrl] = React.useState<string>('');
 
   async function onFlash(event: any) {
