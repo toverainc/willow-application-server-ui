@@ -23,7 +23,7 @@ export default function NameDeviceDialog({
 
   async function onConfirm(evt: any) {
     try {
-      await post('/api/device', { mac_addr: client.mac_addr, label: name });
+      await post('/api/device?action=config', { mac_addr: client.mac_addr, label: name });
       await Promise.all([mutate('/api/device'), mutate('/api/clients')]);
     } catch (e) {
       console.error(`Saving label "${name}" to ${client.hostname} failed with ${e}`);

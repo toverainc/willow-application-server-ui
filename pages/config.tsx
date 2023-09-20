@@ -164,7 +164,10 @@ function AdvancedSettings() {
     };
     body = Object.assign({}, data, form, body);
     try {
-      await post(apply ? '/api/config?type=config&apply=1' : '/api/config?type=config', body);
+      await post(
+        apply ? '/api/config?type=config&apply=1' : '/api/config?type=config&apply=0',
+        body
+      );
       await mutate('/api/config?type=config');
     } catch (e) {
       console.error(`Save advanced configuration settings failed with ${e}`);
@@ -306,7 +309,10 @@ function GeneralSettings() {
     body = Object.assign({}, data, form, body);
 
     try {
-      await post(apply ? '/api/config?type=config&apply=1' : '/api/config?type=config', body);
+      await post(
+        apply ? '/api/config?type=config&apply=1' : '/api/config?type=config&apply=0',
+        body
+      );
       await mutate('/api/config?type=config');
     } catch (e) {
       console.error(`Save general configuration settings failed with ${e}`);
@@ -562,7 +568,7 @@ function ConnectionSettings() {
     };
 
     try {
-      await post(apply ? '/api/config?type=nvs&apply=1' : '/api/config?type=nvs', body);
+      await post(apply ? '/api/config?type=nvs&apply=1' : '/api/config?type=nvs&apply=0', body);
       await mutate('/api/config?type=nvs');
     } catch (e) {
       console.error(`Save connectivity settings failed with ${e}`);
