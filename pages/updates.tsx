@@ -92,6 +92,8 @@ function ReleaseCard({ release }: { release: ReleaseAsset[] }) {
   );
 }
 
+// This needs to be updated to use type the format from '/api/release?type=was'
+// Will no longer require merging, etc, etc
 //super gross function that merges willow releases and our api format
 export function mergeReleases(
   willowReleases: any[] | undefined,
