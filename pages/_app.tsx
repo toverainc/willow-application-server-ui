@@ -59,7 +59,18 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta httpEquiv="x-ua-compatible" content="ie=edge" />
         <link rel="shortcut icon" href="/admin/static/favicon.svg" />
       </Head>
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <SWRConfig value={{ fetcher }}>
