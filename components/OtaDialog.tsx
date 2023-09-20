@@ -58,7 +58,7 @@ export default function OtaDialog({
               mergeReleases(undefined, releaseData)
                 .filter((r) => r.platform == client.hw_type && r.was_url)
                 .map((asset) => (
-                  <MenuItem key={client.hostname + asset.gh_url} value={asset.was_url as any}>
+                  <MenuItem key={client.hostname + asset.willow_url} value={asset.was_url as any}>
                     {asset.name}
                   </MenuItem>
                 ))}
