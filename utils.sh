@@ -12,6 +12,8 @@ fi
 case $1 in
 
 build)
+    # Hack to not include our environment in build
+    mv .env .env.dis
     docker run --rm -it -v "$PWD":/was-ui "$TAG" npm run build
     if [ "$WAS_DIR" ]; then
         WAS_ADMIN_DIR="$WAS_DIR/static/admin"
@@ -19,6 +21,7 @@ build)
         mkdir -p "$WAS_ADMIN_DIR"
         rsync -aP --delete out/* "$WAS_ADMIN_DIR"/
     fi
+    mv .env.dis .env
 ;;
 
 build-docker|docker-build)
