@@ -55,7 +55,7 @@ export function ResetDialog({
 }) {
   async function onConfirm(evt: any) {
     try {
-      await post('/api/device/restart', { hostname: client.hostname });
+      await post('/api/device?action=restart', { hostname: client.hostname });
     } catch (e) {
       console.error(`Restarting "${client.label || client.hostname}" failed with ${e}`);
       toast.error(`Restarting "${client.label || client.hostname}" failed!`);
