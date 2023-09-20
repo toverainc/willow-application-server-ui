@@ -37,7 +37,7 @@ function groupBy<T>(
 
 function ReleaseCard({ release }: { release: ReleaseAsset[] }) {
   async function handleDownload(asset: ReleaseAsset) {
-    await post('/api/release/cache', {
+    await post('/api/release?action=cache', {
       version: asset.name,
       file_name: asset.file_name,
       willow_url: asset.willow_url,
