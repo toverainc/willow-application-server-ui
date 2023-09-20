@@ -39,7 +39,7 @@ function ReleaseCard({ release }: { release: ReleaseAsset[] }) {
   async function handleDownload(asset: ReleaseAsset) {
     await post('/api/release?action=cache', {
       version: asset.name,
-      file_name: asset.file_name,
+      platform: asset.platform,
       willow_url: asset.willow_url,
       size: asset.size,
     });
@@ -92,17 +92,13 @@ function ReleaseCard({ release }: { release: ReleaseAsset[] }) {
   );
 }
 
-// This needs to be updated to use type the format from '/api/release?type=was'
-// Will no longer require merging, etc, etc
 //super gross function that merges willow releases and our api format
-export function mergeReleases(
-  willowReleases: any[] | undefined,
-  localReleases: any
-): ReleaseAsset[] {
+//works but possibly update with new API format?
+export function mergeReleases(willowReleases: any[] | undefined): ReleaseAsset[] {
   const ret: ReleaseAsset[] = [];
   for (const release of willowReleases || []) {
     for (const a of release.assets) {
-      if (a.name.build_type != 'ota') continue; //Not OTA file ignore
+      if (a.build_type != 'ota') continue; //Not OTA file ignore
       const name: string = release.tag_name;
       const platform: string = a.hw_type;
       const ra: ReleaseAsset = {
@@ -111,26 +107,11 @@ export function mergeReleases(
         file_name: a.name,
         willow_url: a.browser_download_url,
         size: a.size,
-        was_url: null,
-        cached: false,
+        was_url: a.was_url,
+        cached: a.cached,
         html_url: release.html_url,
       };
       ret.push(ra);
-    }
-  }
-  for (const name in localReleases) {
-    for (const platform in localReleases[name]) {
-      const willow_url = localReleases[name][platform].willow_url;
-      const asset = ret.find((a) => a.willow_url === willow_url); //the backend mutates name & platform a bunch so join on willow url
-      if (asset) {
-        Object.assign(asset, localReleases[name][platform], { name, platform });
-      } else {
-        const asset = Object.assign({}, localReleases[name][platform], {
-          name,
-          platform,
-        });
-        ret.push(asset);
-      }
     }
   }
   return ret;
@@ -140,15 +121,16 @@ const Updates: NextPage = () => {
   const { data: willowData, error: willowError } = useSWR<any[]>('/api/release?type=was');
 
   // This is no longer valid
-  const { data: localData, error: localError } = useSWR<any[]>('/api/release?type=internal');
+  //const { data: localData, error: localError } = useSWR<any[]>('/api/release?type=was');
 
   return (
     <LeftMenu>
       <Grid container spacing={2}>
-        {localData &&
-          Object.entries(groupBy<ReleaseAsset>(mergeReleases(willowData, localData), 'name')).map(
-            ([name, releases]) => <ReleaseCard key={name} release={releases}></ReleaseCard>
-          )}
+        {Object.entries(groupBy<ReleaseAsset>(mergeReleases(willowData), 'name')).map(
+          ([name, releases]) => (
+            <ReleaseCard key={name} release={releases}></ReleaseCard>
+          )
+        )}
       </Grid>
     </LeftMenu>
   );
