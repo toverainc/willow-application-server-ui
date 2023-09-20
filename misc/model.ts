@@ -1,16 +1,7 @@
-export function formatMacAddress(mac_addr: MacAddr): string {
-  return mac_addr
-    .map((x) => x.toString(16).padStart(2, '0'))
-    .join(':')
-    .toUpperCase();
-}
-
-export type MacAddr = [number, number, number, number, number, number];
-
 export interface Client {
   hostname: string;
   hw_type: string;
-  mac_addr: MacAddr;
+  mac_addr: string;
   ip: string;
   port: number;
   user_agent: string;

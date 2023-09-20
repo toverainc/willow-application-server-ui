@@ -99,7 +99,7 @@ export default function ClientCard({ client }: { client: Client }) {
         }
         action={<ClientMenu client={client}></ClientMenu>}
         title={client.label || client.hostname}
-        subheader={formatMacAddress(client.mac_addr)}
+        subheader={client.mac_addr}
         sx={{ paddingBottom: 0 }}
       />
       <CardContent sx={{ padding: 1 }}>

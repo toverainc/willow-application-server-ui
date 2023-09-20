@@ -1,4 +1,4 @@
-import { Client, formatMacAddress, MacAddr } from './model';
+import { Client } from './model';
 
 export class HttpError extends Error {
   httpStatus: number;
@@ -50,10 +50,10 @@ export async function fetcher(url: string) {
 
 //the label for the client comes back in 2nd request :( this fetcher merges things
 export async function fetcherClients(url: string) {
-  const [clients, devices]: [Client[], { mac_addr: MacAddr; label: string }[]] = (await Promise.all(
+  const [clients, devices]: [Client[], { mac_addr: string; label: string }[]] = (await Promise.all(
     ['/api/client', '/api/device'].map(fetcher)
   )) as any;
-  const deviceMap = Object.fromEntries(devices.map((i) => [formatMacAddress(i.mac_addr), i.label]));
-  clients.forEach((c) => (c.label = deviceMap[formatMacAddress(c.mac_addr)]));
+  const deviceMap = Object.fromEntries(devices.map((i) => [i.mac_addr, i.label]));
+  clients.forEach((c) => (c.label = deviceMap[c.mac_addr]));
   return clients;
 }
