@@ -30,6 +30,7 @@ yarn-error.log*
 
 # utils.sh .env
 .env
+.env.dis
 
 # vercel
 .vercel

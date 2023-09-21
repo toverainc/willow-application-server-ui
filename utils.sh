@@ -9,11 +9,31 @@ if [ -r .env ]; then
     . .env
 fi
 
+user_env() {
+    if [ ! -f .env ]; then
+        return
+    fi
+
+    case $1 in
+
+        disable)
+            echo "Disabling user .env"
+            mv .env .env.dis
+        ;;
+
+        enable)
+            echo "Enabling user .env"
+            mv .env.dis .env
+        ;;
+
+    esac
+}
+
 case $1 in
 
 build)
     # Hack to not include our environment in build
-    mv .env .env.dis
+    user_env disable
     docker run --rm -it -v "$PWD":/was-ui "$TAG" npm run build
     if [ "$WAS_DIR" ]; then
         WAS_ADMIN_DIR="$WAS_DIR/static/admin"
@@ -21,7 +41,7 @@ build)
         mkdir -p "$WAS_ADMIN_DIR"
         rsync -aP --delete out/* "$WAS_ADMIN_DIR"/
     fi
-    mv .env.dis .env
+    user_env enable
 ;;
 
 build-docker|docker-build)
