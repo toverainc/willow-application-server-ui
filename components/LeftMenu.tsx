@@ -22,7 +22,7 @@ import Link from 'next/link';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DeviceHubIcon from '@mui/icons-material/DeviceHub';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
-import { useMediaQuery } from 'usehooks-ts';
+import { useMediaQuery } from 'react-responsive';
 
 const drawerWidth = 240;
 
@@ -99,7 +99,13 @@ function MenuItem({
 export default function LeftMenu({ children }: { children: React.ReactNode }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
-  const mobileScreen = useMediaQuery('(min-width: 768px)');
+  const isDesktopOrLaptop = useMediaQuery({
+    query: '(min-width: 1224px)',
+  });
+  const isBigScreen = useMediaQuery({ query: '(min-width: 1824px)' });
+  const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1224px)' });
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' });
+  const isRetina = useMediaQuery({ query: '(min-resolution: 2dppx)' });
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -110,10 +116,10 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
   };
 
   React.useEffect(() => {
-    if (mobileScreen) {
+    if (isDesktopOrLaptop) {
       handleDrawerOpen();
     }
-  }, [mobileScreen]);
+  }, [isDesktopOrLaptop]);
 
   return (
     <Box sx={{ display: 'flex' }}>
