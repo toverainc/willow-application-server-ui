@@ -84,6 +84,7 @@ function ClientMenu({ client }: { client: Client }) {
 }
 
 export default function ClientCard({ client }: { client: Client }) {
+  const CLIENT_VERSION = client.user_agent?.toLowerCase().replace('willow/', '');
   return (
     <Card sx={{ maxWidth: 500 }}>
       <CardHeader
@@ -112,7 +113,7 @@ export default function ClientCard({ client }: { client: Client }) {
             <ListItemText sx={{ margin: 0 }} primary={'Platform: ' + client.hw_type} />
           </ListItem>
           <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
-            <ListItemText sx={{ margin: 0 }} primary={'Version: ' + client.user_agent} />
+            <ListItemText sx={{ margin: 0 }} primary={'Version: ' + CLIENT_VERSION} />
           </ListItem>
         </List>
       </CardContent>
