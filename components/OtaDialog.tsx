@@ -56,7 +56,7 @@ export default function OtaDialog({
             onChange={(event) => setWasUrl(event.target.value as string)}>
             {releaseData &&
               mergeReleases(releaseData)
-                .filter((r) => r.platform == client.hw_type && r.was_url)
+                .filter((r) => r.platform == client.platform && r.was_url)
                 .map((asset) => (
                   <MenuItem key={client.hostname + asset.willow_url} value={asset.was_url as any}>
                     {asset.name}

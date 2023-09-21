@@ -1,10 +1,10 @@
 export interface Client {
   hostname: string;
-  hw_type: string;
+  platform: string;
   mac_addr: string;
   ip: string;
   port: number;
-  user_agent: string;
+  version: string;
   label?: string;
 }
 

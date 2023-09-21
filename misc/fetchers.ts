@@ -47,13 +47,3 @@ export async function fetcher(url: string) {
   }
   return await res.json();
 }
-
-//the label for the client comes back in 2nd request :( this fetcher merges things
-export async function fetcherClients(url: string) {
-  const [clients, devices]: [Client[], { mac_addr: string; label: string }[]] = (await Promise.all(
-    ['/api/client', '/api/device'].map(fetcher)
-  )) as any;
-  const deviceMap = Object.fromEntries(devices.map((i) => [i.mac_addr, i.label]));
-  clients.forEach((c) => (c.label = deviceMap[c.mac_addr]));
-  return clients;
-}

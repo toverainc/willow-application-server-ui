@@ -100,7 +100,7 @@ export function mergeReleases(willowReleases: any[] | undefined): ReleaseAsset[]
     for (const a of release.assets) {
       if (a.build_type != 'ota') continue; //Not OTA file ignore
       const name: string = release.tag_name;
-      const platform: string = a.hw_type;
+      const platform: string = a.platform;
       const ra: ReleaseAsset = {
         name,
         platform,
