@@ -210,7 +210,7 @@ function AdvancedSettings() {
       <EnumSelectHelper
         name="audio_codec"
         defaultValue={data?.audio_codec}
-        label="Audio codec to use for streaming to WIS"
+        label="Audio Codec to use for streaming to WIS"
         options={AUDIO_CODECS}
         tooltip="PCM is more accurate but uses more WiFi bandwidth. If you have an especially challenging WiFi environment you can try enabling compression (AMR-WB)."
       />
@@ -359,7 +359,7 @@ function GeneralSettings() {
         defaultValue={data?.speech_rec_mode}
         label="Speech Recognition Mode"
         options={SPEECH_REC_MODE}
-        tooltip=" Willow Inference Server uses the configured URL to stream your speech to a very high quality speech recognition model.
+        tooltip=" Willow Inference Server mode uses the configured URL to stream your speech to a very high quality speech recognition implementation powered by WIS.
         Multinet uses a model on the device to recognized pre-defined commands but you currently need to build Willow yourself for that.
         WAS configuration coming soon!"
       />
@@ -413,7 +413,8 @@ function GeneralSettings() {
         onChange={(e) => setCommandEndpoint(e.target.value as any)}
         label="Command Endpoint"
         options={COMMAND_ENDPOINT}
-        tooltip="When Willow recognizes speech we need to send the transcript somewhere to actually do something with it. Select your favorite platform here or use REST to for your own."
+        tooltip="When Willow recognizes speech we need to send the transcript somewhere to execute your command.
+        Select your favorite platform here or use REST for your own."
       />
       {commandEndpoint == 'Home Assistant' && (
         <>
