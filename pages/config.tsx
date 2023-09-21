@@ -363,16 +363,22 @@ function GeneralSettings() {
         Multinet uses a model on the device to recognized pre-defined commands but you currently need to build Willow yourself for that.
         WAS configuration coming soon!"
       />
-      <TextField
-        name="wis_url"
-        defaultValue={data?.wis_url}
-        required
-        label="Willow Inference Server Speech Recognition URL"
-        margin="dense"
-        variant="outlined"
-        size="small"
-        fullWidth
-      />
+      <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
+        <TextField
+          name="wis_url"
+          defaultValue={data?.wis_url}
+          required
+          label="Willow Inference Server Speech Recognition URL"
+          margin="dense"
+          variant="outlined"
+          size="small"
+          fullWidth
+        />
+        <HelpTooltip
+          tooltip="The URL for a Willow Inference Server instance.
+        Our best-effort hosted instance is provided by default but you should really setup your own!"
+        />
+      </Stack>
       <EnumSelectHelper
         name="audio_response_type"
         defaultValue={data?.audio_response_type}
