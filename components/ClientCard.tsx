@@ -88,8 +88,6 @@ export default function ClientCard({ client }: { client: Client }) {
     <Card sx={{ maxWidth: 500 }}>
       <CardHeader
         avatar={
-          //<Avatar sx={{ bgcolor: 'gray' }} >
-          //<MinidenticonImg username={formatMacAddress(client.mac_addr)}></MinidenticonImg>
           <Image
             src={'/admin/static/' + client.hw_type + '.png'}
             width={50}
@@ -118,16 +116,6 @@ export default function ClientCard({ client }: { client: Client }) {
           </ListItem>
         </List>
       </CardContent>
-      {/*
-            <CardActions disableSpacing>
-                <IconButton aria-label="add to favorites">
-                    <FavoriteIcon />
-                </IconButton>
-                <IconButton aria-label="share">
-                    <ShareIcon />
-                </IconButton>
-            </CardActions>
-             */}
     </Card>
   );
 }

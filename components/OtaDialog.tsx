@@ -16,7 +16,6 @@ import { mergeReleases } from '../pages/updates';
 
 import { Client } from '../misc/model';
 
-// This needs to be updated to use the format from '/api/release?type=was'
 export default function OtaDialog({
   client,
   open,

@@ -120,9 +120,6 @@ export function mergeReleases(willowReleases: any[] | undefined): ReleaseAsset[]
 const Updates: NextPage = () => {
   const { data: willowData, error: willowError } = useSWR<any[]>('/api/release?type=was');
 
-  // This is no longer valid
-  //const { data: localData, error: localError } = useSWR<any[]>('/api/release?type=was');
-
   return (
     <LeftMenu>
       <Grid container spacing={2}>
