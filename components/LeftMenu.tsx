@@ -98,7 +98,7 @@ function MenuItem({
 
 export default function LeftMenu({ children }: { children: React.ReactNode }) {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
   const mobileScreen = useMediaQuery('(min-width: 768px)');
 
   const handleDrawerOpen = () => {
