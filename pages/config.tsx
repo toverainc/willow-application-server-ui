@@ -285,6 +285,9 @@ function GeneralSettings() {
   const [commandEndpoint, setCommandEndpoint] =
     React.useState<keyof typeof COMMAND_ENDPOINT>('Home Assistant');
   const [restAuthType, setRestAuthType] = React.useState<string>(REST_AUTH_TYPES[0]);
+  const [showHaToken, setShowHaToken] = React.useState(false);
+  const handleClickShowHaToken = () => setShowHaToken(!showHaToken);
+  const handleMouseDownHaToken = () => setShowHaToken(!showHaToken);
   const { data, error } = useSWR<GeneralSettings>('/api/config?type=config');
 
   React.useEffect(() => {
@@ -408,8 +411,21 @@ function GeneralSettings() {
             label="Home Assistant Token"
             margin="dense"
             variant="outlined"
+            type={showHaToken ? 'text' : 'password'}
             size="small"
             fullWidth
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle ha token visibility"
+                    onClick={handleClickShowHaToken}
+                    onMouseDown={handleMouseDownHaToken}>
+                    {showHaToken ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
           <FormControlLabel
             control={<Checkbox name="hass_tls" checked={data?.hass_tls} />}
