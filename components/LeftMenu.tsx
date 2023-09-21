@@ -160,10 +160,12 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
           <MenuItem text="Configuration" page="/config">
             <SettingsIcon></SettingsIcon>
           </MenuItem>
-          <MenuItem text="Multinet" page="/multinet">
+          {/*
+          <MenuItem text="Local Commands" page="/multinet">
             <DeviceHubIcon></DeviceHubIcon>
           </MenuItem>
-          <MenuItem text="Updates" page="/updates">
+      */}
+          <MenuItem text="Manage Updates" page="/updates">
             <SystemUpdateAltIcon></SystemUpdateAltIcon>
           </MenuItem>
         </List>

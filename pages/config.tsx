@@ -32,9 +32,16 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import WebFlashCard from '../components/WebFlashCard';
 import { fetcher, post } from '../misc/fetchers';
 
-const WAKE_WORDS = { hiesp: 'Hi ESP', alexa: 'Alexa', hilexin: 'Hi Lexin' };
-const SPEECH_REC_MODE = { WIS: 'WIS', Multinet: 'Multinet' };
-const AUDIO_RESPONSE_TYPE = { TTS: 'TTS', None: 'None', Chimes: 'Chimes' };
+const WAKE_WORDS = {
+  alexa: 'Alexa',
+  hiesp: 'Hi E.S.P.',
+  hilexin: 'Hi Lexin (Chinese pronunciation)',
+};
+const SPEECH_REC_MODE = {
+  WIS: 'Willow Inference Server',
+  Multinet: 'On Device Command Recognition (developers only)',
+};
+const AUDIO_RESPONSE_TYPE = { TTS: 'Text to Speech', Chimes: 'Chimes', None: 'Silence' };
 const COMMAND_ENDPOINT = {
   'Home Assistant': 'Home Assistant',
   openHAB: 'openHAB',
@@ -350,14 +357,17 @@ function GeneralSettings() {
       <EnumSelectHelper
         name="speech_rec_mode"
         defaultValue={data?.speech_rec_mode}
-        label="Willow Speech Recognition Mode"
+        label="Speech Recognition Mode"
         options={SPEECH_REC_MODE}
+        tooltip=" Willow Inference Server uses the configured URL to stream your speech to a very high quality speech recognition model.
+        Multinet uses a model on the device to recognized pre-defined commands but you currently need to build Willow yourself for that.
+        WAS configuration coming soon!"
       />
       <TextField
         name="wis_url"
         defaultValue={data?.wis_url}
         required
-        label="Willow Inference Server URL"
+        label="Willow Inference Server Speech Recognition URL"
         margin="dense"
         variant="outlined"
         size="small"
@@ -366,14 +376,16 @@ function GeneralSettings() {
       <EnumSelectHelper
         name="audio_response_type"
         defaultValue={data?.audio_response_type}
-        label="Willow audio response type"
+        label="Willow Audio Response Type"
         options={AUDIO_RESPONSE_TYPE}
+        tooltip="Text to speech uses the configured Willow Inference Server (WIS) to speak the result of your command.
+        Chimes plays success/failure tones depending on the response from your command endpoint. Silence has no audio output."
       />
       <TextField
         name="wis_tts_url"
         defaultValue={data?.wis_tts_url}
         required
-        label="Willow Inference Server TTS URL"
+        label="Willow Inference Server Text to Speech URL"
         margin="dense"
         variant="outlined"
         size="small"
@@ -382,15 +394,20 @@ function GeneralSettings() {
       <EnumSelectHelper
         name="wake_word"
         defaultValue={data?.wake_word}
-        label="Willow Wake Word"
+        label="Wake Word"
         options={WAKE_WORDS}
+        tooltip="Alexa is pretty easy for everyone.
+        Hi ESP generally needs to be said very clearly.
+        Hi Lexin uses Chinese pronunciation which can be difficult for non-native speakers.
+        More wake words coming soon!"
       />
       <EnumSelectHelper
         name="command_endpoint"
         value={commandEndpoint}
         onChange={(e) => setCommandEndpoint(e.target.value as any)}
-        label="Willow Command Endpoint"
+        label="Command Endpoint"
         options={COMMAND_ENDPOINT}
+        tooltip="When Willow recognizes speech we need to send the transcript somewhere to actually do something with it. Select your favorite platform here or use REST to for your own."
       />
       {commandEndpoint == 'Home Assistant' && (
         <>
@@ -440,7 +457,7 @@ function GeneralSettings() {
           />
           <FormControlLabel
             control={<Checkbox name="hass_tls" checked={data?.hass_tls} />}
-            label="Home Assistant Use TLS"
+            label="Use TLS with Home Assistant"
           />
         </>
       )}
@@ -659,7 +676,7 @@ function ConnectionSettings() {
         name="ssid"
         defaultValue={data?.WIFI?.SSID}
         required
-        label="WiFi SSID"
+        label="WiFi Network Name"
         margin="dense"
         variant="outlined"
         size="small"
@@ -669,7 +686,7 @@ function ConnectionSettings() {
         name="psk"
         defaultValue={data?.WIFI?.PSK}
         required
-        label="WiFi Password"
+        label="WiFi Network Password"
         margin="dense"
         variant="outlined"
         type={showPsk ? 'text' : 'password'}
@@ -716,7 +733,7 @@ function SettingsAccordions() {
           aria-controls="Connectivity-content"
           id="Connectivity-header">
           <Typography sx={{ width: '33%', flexShrink: 0 }}>Basic</Typography>
-          <Typography sx={{ color: 'text.secondary' }}>WiFi and WAS</Typography>
+          <Typography sx={{ color: 'text.secondary' }}>Connectivity</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <ConnectionSettings></ConnectionSettings>
