@@ -714,8 +714,8 @@ function SettingsAccordions() {
           expandIcon={<ExpandMoreIcon />}
           aria-controls="Connectivity-content"
           id="Connectivity-header">
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>Connectivity</Typography>
-          <Typography sx={{ color: 'text.secondary' }}>WiFi and WAS Settings</Typography>
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>Basic</Typography>
+          <Typography sx={{ color: 'text.secondary' }}>WiFi and WAS</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <ConnectionSettings></ConnectionSettings>
@@ -727,7 +727,7 @@ function SettingsAccordions() {
           aria-controls="General-content"
           id="General-header">
           <Typography sx={{ width: '33%', flexShrink: 0 }}>General</Typography>
-          <Typography sx={{ color: 'text.secondary' }}>General Willow Settings</Typography>
+          <Typography sx={{ color: 'text.secondary' }}>Willow</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <GeneralSettings></GeneralSettings>
@@ -739,7 +739,7 @@ function SettingsAccordions() {
           aria-controls="Advanced-content"
           id="Advanced-header">
           <Typography sx={{ width: '33%', flexShrink: 0 }}>Advanced</Typography>
-          <Typography sx={{ color: 'text.secondary' }}>Advanced Settings for Tinkering</Typography>
+          <Typography sx={{ color: 'text.secondary' }}>Willow (Advanced)</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <AdvancedSettings></AdvancedSettings>
