@@ -107,7 +107,7 @@ export default function ClientCard({ client }: { client: Client }) {
             <ListItemText sx={{ margin: 0 }} primary={'Hostname: ' + client.hostname} />
           </ListItem>
           <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
-            <ListItemText sx={{ margin: 0 }} primary={'Remote: ' + client.ip + ':' + client.port} />
+            <ListItemText sx={{ margin: 0 }} primary={'IP Address: ' + client.ip} />
           </ListItem>
           <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
             <ListItemText sx={{ margin: 0 }} primary={'Platform: ' + client.hw_type} />
