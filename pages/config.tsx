@@ -67,7 +67,7 @@ interface GeneralSettings {
   ntp_config: keyof typeof NTP_CONFIG;
 }
 
-const AUDIO_CODECS = { 'AMR-WB': 'AMR-WB', PCM: 'PCM', WAV: 'WAV' };
+const AUDIO_CODECS = { PCM: 'PCM', 'AMR-WB': 'AMR-WB' };
 const VAD_MODES = [1, 2, 3, 4];
 const WAKE_MODES = ['1CH_90', '1CH_95', '2CH_90', '2CH_95', '3CH_90', '3CH_95'];
 
@@ -205,6 +205,7 @@ function AdvancedSettings() {
         defaultValue={data?.audio_codec}
         label="Audio codec to use for streaming to WIS"
         options={AUDIO_CODECS}
+        tooltip="PCM is more accurate but uses more WiFi bandwidth. If you have an especially challenging WiFi environment you can try enabling compression (AMR-WB)."
       />
       <EnumSelectHelper
         name="vad_mode"
@@ -218,7 +219,7 @@ function AdvancedSettings() {
         defaultValue={data?.wake_mode}
         label="Wake Word Recognition Mode"
         options={WAKE_MODES}
-        tooltip="he probability of being recognized as a wake word increases with increasing mode. As a consequence, a higher mode will result in more false positives."
+        tooltip="The probability of being recognized as a wake word increases with increasing mode. As a consequence, a higher mode can result in more false positives."
       />
       <InputLabel>Microphone Gain</InputLabel>
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
@@ -228,9 +229,9 @@ function AdvancedSettings() {
           min={0}
           max={14}
           size="small"
-          valueLabelDisplay="auto"
+          valueLabelDisplay="on"
         />
-        <HelpTooltip tooltip="0dB (0), 3dB (1), 6dB (2), 9dB (3), 12dB (4), 15dB (5), 18dB (6), 21dB (7), 24dB (8), 27dB (9), 30dB (10), 33dB (11), 34.5dB (12), 36dB (13), 37.5 (dB)" />
+        <HelpTooltip tooltip="General audio volume level. Has wide ranging effects from wake sensitivity to speech recognition accuracy." />
       </Stack>
       <InputLabel>Record Buffer</InputLabel>
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
@@ -240,7 +241,7 @@ function AdvancedSettings() {
           min={0}
           max={16}
           size="small"
-          valueLabelDisplay="auto"
+          valueLabelDisplay="on"
         />
         <HelpTooltip tooltip="Custom record buffer for timing and latency. Users with a local WIS instance may want to try setting lower (10 or so)"></HelpTooltip>
       </Stack>
@@ -252,9 +253,9 @@ function AdvancedSettings() {
           min={1}
           max={30}
           size="small"
-          valueLabelDisplay="auto"
+          valueLabelDisplay="on"
         />
-        <HelpTooltip tooltip="Stop speech recognition after N seconds after wake event to avoid endless stream when VAD END does not trigger."></HelpTooltip>
+        <HelpTooltip tooltip="How long to wait after wake starts to force the end of recognition."></HelpTooltip>
       </Stack>
       <InputLabel>VAD Timeout</InputLabel>
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
@@ -264,9 +265,9 @@ function AdvancedSettings() {
           min={0}
           max={1000}
           size="small"
-          valueLabelDisplay="auto"
+          valueLabelDisplay="on"
         />
-        <HelpTooltip tooltip="VAD (Voice Activity Detection) timeout in ms. How long to wait after end of speech to trigger end of VAD. Improves response times but can also clip speech if you do not talk fast enough. Allows for entering 1 - 1000 ms but if you go lower than 50 or so good luck..."></HelpTooltip>
+        <HelpTooltip tooltip="How long to wait after end of speech to end audio capture. Improves response times but can also clip speech if you do not talk fast enough. Allows for entering 1 - 1000 ms but if you go lower than 50 or so good luck!"></HelpTooltip>
       </Stack>
       <Stack direction="row" spacing={2} justifyContent="flex-end">
         <Button id="save" type="submit" variant="outlined">
@@ -562,7 +563,7 @@ function GeneralSettings() {
           min={0}
           max={100}
           size="small"
-          valueLabelDisplay="auto"
+          valueLabelDisplay="on"
         />
         <VolumeUp />
       </Stack>
@@ -575,7 +576,7 @@ function GeneralSettings() {
           min={0}
           max={1023}
           size="small"
-          valueLabelDisplay="auto"
+          valueLabelDisplay="on"
         />
         <Brightness5Icon />
       </Stack>
