@@ -81,6 +81,7 @@ const WAKE_MODES = ['1CH_90', '1CH_95', '2CH_90', '2CH_95', '3CH_90', '3CH_95'];
 interface AdvancedSettings {
   aec: boolean; //Acoustic Echo Cancellation
   bss: boolean; //Blind Source Separation
+  multiwake: boolean; // Multiwake / Willow One Wake
   audio_codec: keyof typeof AUDIO_CODECS;
   vad_mode: number; //Voice Activity Detection Mode
   wake_mode: string; //aka WAKE_MODES
@@ -166,6 +167,7 @@ function AdvancedSettings() {
     let body: Partial<AdvancedSettings> = {
       aec: !!form.aec,
       bss: !!form.bss,
+      multiwake: !!form.multiwake,
       vad_mode: parseIntOrUndef(form.vad_mode),
       mic_gain: parseIntOrUndef(form.mic_gain),
       record_buffer: parseIntOrUndef(form.record_buffer),
@@ -205,6 +207,12 @@ function AdvancedSettings() {
         <FormControlLabel
           control={<Checkbox name="bss" defaultChecked={data?.bss} />}
           label="Blind Source Separation"
+        />
+      </FormControl>
+      <FormControl fullWidth>
+        <FormControlLabel
+          control={<Checkbox name="multiwake" defaultChecked={data?.multiwake} />}
+          label="Willow One Wake (EXPERIMENTAL)"
         />
       </FormControl>
       <EnumSelectHelper
