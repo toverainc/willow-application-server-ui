@@ -12,6 +12,7 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -26,6 +27,8 @@ import { toast } from 'react-toastify';
 import useSWR, { mutate } from 'swr';
 import LeftMenu from '../components/LeftMenu';
 import LoadingSpinner from '../components/LoadingSpinner';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import WebFlashCard from '../components/WebFlashCard';
 import { fetcher, post } from '../misc/fetchers';
 
@@ -549,6 +552,9 @@ interface NvsSettings {
 
 function ConnectionSettings() {
   const [loading, setLoading] = React.useState(true);
+  const [showPsk, setShowPsk] = React.useState(false);
+  const handleClickShowPsk = () => setShowPsk(!showPsk);
+  const handleMouseDownPsk = () => setShowPsk(!showPsk);
   const { data, error } = useSWR<NvsSettings>('/api/config?type=nvs');
 
   React.useEffect(() => {
@@ -597,8 +603,8 @@ function ConnectionSettings() {
         fullWidth
       />
       <TextField
-        name="psk"
-        defaultValue={data?.WIFI?.PSK}
+        name="ssid"
+        defaultValue={data?.WIFI?.SSID}
         required
         label="WiFi SSID"
         margin="dense"
@@ -607,14 +613,27 @@ function ConnectionSettings() {
         fullWidth
       />
       <TextField
-        name="ssid"
-        defaultValue={data?.WIFI?.SSID}
+        name="psk"
+        defaultValue={data?.WIFI?.PSK}
         required
         label="WiFi Password"
         margin="dense"
         variant="outlined"
+        type={showPsk ? 'text' : 'password'}
         size="small"
         fullWidth
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="toggle psk visibility"
+                onClick={handleClickShowPsk}
+                onMouseDown={handleMouseDownPsk}>
+                {showPsk ? <VisibilityIcon /> : <VisibilityOffIcon />}
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
       />
       {/*XXX: this does not seem to work in current UI? <FormControlLabel control={<Checkbox />} label="Skip connectivity checks" />*/}
       <Stack direction="row" spacing={2} justifyContent="flex-end">
