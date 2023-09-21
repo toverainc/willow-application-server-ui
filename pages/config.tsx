@@ -47,7 +47,7 @@ const COMMAND_ENDPOINT = {
   openHAB: 'openHAB',
   REST: 'REST',
 };
-const NTP_CONFIG = { Host: 'Host', DHCP: 'DHCP' };
+const NTP_CONFIG = { Host: 'Specify an NTP server host', DHCP: 'Use DHCP provided NTP Server' };
 const REST_AUTH_TYPES = ['None', 'Basic', 'Header'];
 
 interface GeneralSettings {
@@ -606,8 +606,9 @@ function GeneralSettings() {
       <EnumSelectHelper
         name="ntp_config"
         defaultValue={data?.ntp_config}
-        label="NTP Configuration"
+        label="Automatic Time and Date (NTP)"
         options={NTP_CONFIG}
+        tooltip=""
       />
       <Stack direction="row" spacing={2} justifyContent="flex-end">
         <Button id="save" type="submit" variant="outlined">
