@@ -285,9 +285,19 @@ function GeneralSettings() {
   const [commandEndpoint, setCommandEndpoint] =
     React.useState<keyof typeof COMMAND_ENDPOINT>('Home Assistant');
   const [restAuthType, setRestAuthType] = React.useState<string>(REST_AUTH_TYPES[0]);
+
   const [showHaToken, setShowHaToken] = React.useState(false);
   const handleClickShowHaToken = () => setShowHaToken(!showHaToken);
   const handleMouseDownHaToken = () => setShowHaToken(!showHaToken);
+
+  const [showOhToken, setShowOhToken] = React.useState(false);
+  const handleClickShowOhToken = () => setShowOhToken(!showOhToken);
+  const handleMouseDownOhToken = () => setShowOhToken(!showOhToken);
+
+  const [showRestPassword, setShowRestPassword] = React.useState(false);
+  const handleClickShowRestPassword = () => setShowRestPassword(!showRestPassword);
+  const handleMouseDownRestPassword = () => setShowRestPassword(!showRestPassword);
+
   const { data, error } = useSWR<GeneralSettings>('/api/config?type=config');
 
   React.useEffect(() => {
@@ -452,8 +462,21 @@ function GeneralSettings() {
             label="openHAB Token"
             margin="dense"
             variant="outlined"
+            type={showOhToken ? 'text' : 'password'}
             size="small"
             fullWidth
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle oh token visibility"
+                    onClick={handleClickShowOhToken}
+                    onMouseDown={handleMouseDownOhToken}>
+                    {showOhToken ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
         </>
       )}
@@ -495,8 +518,21 @@ function GeneralSettings() {
                 label="REST Basic Password"
                 margin="dense"
                 variant="outlined"
+                type={showRestPassword ? 'text' : 'password'}
                 size="small"
                 fullWidth
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle rest password visibility"
+                        onClick={handleClickShowRestPassword}
+                        onMouseDown={handleMouseDownRestPassword}>
+                        {showRestPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </>
           )}
