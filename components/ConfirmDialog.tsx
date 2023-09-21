@@ -55,7 +55,7 @@ export function ResetDialog({
 }) {
   async function onConfirm(evt: any) {
     try {
-      await post('/api/device?action=restart', { hostname: client.hostname });
+      await post('/api/client?action=restart', { hostname: client.hostname });
     } catch (e) {
       console.error(`Restarting "${client.label || client.hostname}" failed with ${e}`);
       toast.error(`Restarting "${client.label || client.hostname}" failed!`);
@@ -104,7 +104,7 @@ export function ApplyConfigDialog({
       message={
         client
           ? `Clicking confirm will apply current config to "${client.label || client.hostname}"`
-          : `Clicking confirm will apply current config to all devices.`
+          : `Clicking confirm will apply current config to all clients.`
       }
       onConfirm={onConfirm}
     />
@@ -145,7 +145,7 @@ export function ApplyNvsDialog({
       message={
         client
           ? `Clicking confirm will apply current NVS config to "${client.label || client.hostname}"`
-          : `Clicking confirm will apply current NVS config to all devices.`
+          : `Clicking confirm will apply current NVS config to all clients.`
       }
       onConfirm={onConfirm}
     />

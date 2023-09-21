@@ -10,7 +10,7 @@ import { post } from '../misc/fetchers';
 import { Client } from '../misc/model';
 import { mutate } from 'swr';
 
-export default function NameDeviceDialog({
+export default function NameClientDialog({
   client,
   open,
   onClose,
@@ -23,8 +23,8 @@ export default function NameDeviceDialog({
 
   async function onConfirm(evt: any) {
     try {
-      await post('/api/device?action=config', { mac_addr: client.mac_addr, label: name });
-      await Promise.all([mutate('/api/device'), mutate('/api/clients')]);
+      await post('/api/client?action=config', { mac_addr: client.mac_addr, label: name });
+      await Promise.all([mutate('/api/client')]);
     } catch (e) {
       console.error(`Saving label "${name}" to ${client.hostname} failed with ${e}`);
       toast.error(`Saving name "${name}" to ${client.hostname} failed!`);
@@ -36,14 +36,14 @@ export default function NameDeviceDialog({
 
   return (
     <Dialog open={open} onClose={() => onClose(false)}>
-      <DialogTitle>Rename Device</DialogTitle>
+      <DialogTitle>Rename Client</DialogTitle>
       <DialogContent>
         <TextField
           sx={{ marginTop: 2 }}
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          label="Device Name"
+          label="Client Name"
           variant="outlined"
           fullWidth
         />

@@ -12,7 +12,7 @@ import Image from 'next/image';
 import * as React from 'react';
 import { Client } from '../misc/model';
 import { ApplyConfigDialog, ApplyNvsDialog, ResetDialog } from './ConfirmDialog';
-import NameDeviceDialog from './NameDeviceDialog';
+import NameClientDialog from './NameClientDialog';
 import OtaDialog from './OtaDialog';
 
 function ClientMenu({ client }: { client: Client }) {
@@ -22,7 +22,7 @@ function ClientMenu({ client }: { client: Client }) {
   const [openResetDialog, setOpenResetDialog] = React.useState<boolean>(false);
   const [openApplyConfigDialog, setOpenApplyConfigDialog] = React.useState<boolean>(false);
   const [openApplyNvsDialog, setOpenApplyNvsDialog] = React.useState<boolean>(false);
-  const [openNameDeviceDialog, setOpenNameDeviceDialog] = React.useState<boolean>(false);
+  const [openNameClientDialog, setOpenNameClientDialog] = React.useState<boolean>(false);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -49,7 +49,7 @@ function ClientMenu({ client }: { client: Client }) {
         MenuListProps={{
           'aria-labelledby': 'basic-button',
         }}>
-        <MenuItem onClick={() => handleClose() && setOpenNameDeviceDialog(true)}>
+        <MenuItem onClick={() => handleClose() && setOpenNameClientDialog(true)}>
           Edit Name
         </MenuItem>
         <MenuItem onClick={() => handleClose() && setOpenApplyConfigDialog(true)}>
@@ -59,10 +59,10 @@ function ClientMenu({ client }: { client: Client }) {
         <MenuItem onClick={() => handleClose() && setOpenResetDialog(true)}>Restart</MenuItem>
         <MenuItem onClick={() => handleClose() && setOpenOtaDialog(true)}>OTA Update</MenuItem>
       </Menu>
-      <NameDeviceDialog
+      <NameClientDialog
         client={client}
-        open={openNameDeviceDialog}
-        onClose={() => setOpenNameDeviceDialog(false)}></NameDeviceDialog>
+        open={openNameClientDialog}
+        onClose={() => setOpenNameClientDialog(false)}></NameClientDialog>
       <OtaDialog
         client={client}
         open={openOtaDialog}
