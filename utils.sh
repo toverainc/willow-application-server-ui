@@ -51,9 +51,18 @@ build-docker|docker-build)
     docker build -t "$TAG" -f Dockerfile.dev .
 ;;
 
+install)
+    docker run --rm -it -v "$PWD":/was-ui "$TAG" npm install
+;;
+
 run)
     echo "Use HTTP port $NEXT_DEV_PORT to access development server"
     docker run --rm -it -v "$PWD":/was-ui -p "$NEXT_DEV_PORT":3000 "$TAG"
+;;
+
+*)
+    echo "Passing unknown argument directly to container"
+    docker run --rm -it -v "$PWD":/was-ui -p "$NEXT_DEV_PORT":3000 "$TAG" "$@"
 ;;
 
 esac
