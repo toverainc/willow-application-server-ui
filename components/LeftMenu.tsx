@@ -96,10 +96,10 @@ function MenuItem({
 
 export default function LeftMenu({ children }: { children: React.ReactNode }) {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(true);
   const isDesktopOrLaptop = useMediaQuery({
     query: '(min-width: 1224px)',
   });
+  const [open, setOpen] = React.useState(isDesktopOrLaptop);
   const isBigScreen = useMediaQuery({ query: '(min-width: 1824px)' });
   const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1224px)' });
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' });
@@ -112,12 +112,6 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  React.useEffect(() => {
-    if (isDesktopOrLaptop) {
-      handleDrawerOpen();
-    }
-  }, [isDesktopOrLaptop]);
 
   return (
     <Box sx={{ display: 'flex' }}>
