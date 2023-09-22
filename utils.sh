@@ -39,10 +39,12 @@ build)
     docker run --rm -it -v "$PWD":/was-ui --name "$NAME" "$TAG" npm run build
     user_env enable
     if [ "$WAS_DIR" ]; then
-        WAS_ADMIN_DIR="$WAS_DIR/static/admin"
-        echo "Copying Next build to $WAS_ADMIN_DIR"
-        mkdir -p "$WAS_ADMIN_DIR"
-        rsync -a --delete out/* "$WAS_ADMIN_DIR"/
+        for i in $WAS_DIR; do
+            WAS_ADMIN_DIR="$i/static/admin"
+            echo "Copying Next build to $i"
+            mkdir -p "$i"
+            rsync -a --delete out/* "$i"/
+        done
     fi
 ;;
 
