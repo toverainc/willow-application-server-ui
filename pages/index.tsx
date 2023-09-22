@@ -3,11 +3,9 @@ import * as React from 'react';
 import LeftMenu from '../components/LeftMenu';
 import ClientCard from '../components/ClientCard';
 import { Client } from '../misc/model';
-import { fetcher, fetcherClients } from '../misc/fetchers';
+import { fetcher } from '../misc/fetchers';
 import Grid from '@mui/material/Grid';
 import useSWR from 'swr';
-import { useRouter } from 'next/router';
-import LoadingSpinner from '../components/LoadingSpinner';
 
 const Home: NextPage = () => {
   const { data, error } = useSWR<Client[]>('/api/client', fetcher, {

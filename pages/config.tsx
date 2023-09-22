@@ -30,7 +30,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import WebFlashCard from '../components/WebFlashCard';
-import { fetcher, post } from '../misc/fetchers';
+import { post } from '../misc/fetchers';
 
 const WAKE_WORDS = {
   alexa: 'Alexa',

@@ -16,11 +16,9 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import HomeIcon from '@mui/icons-material/Home';
 import DevicesIcon from '@mui/icons-material/Devices';
 import Link from 'next/link';
 import SettingsIcon from '@mui/icons-material/Settings';
-import DeviceHubIcon from '@mui/icons-material/DeviceHub';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import { useMediaQuery } from 'react-responsive';
 
