@@ -10,6 +10,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import useSWR from 'swr';
+import { toast } from 'react-toastify';
 import { post } from '../misc/fetchers';
 import { mutate } from 'swr';
 import { mergeReleases } from '../pages/updates';
@@ -29,10 +30,17 @@ export default function OtaDialog({
   const [wasUrl, setWasUrl] = React.useState<string>('');
 
   async function onFlash(event: any) {
-    await post('/api/client?action=update', {
-      ota_url: wasUrl,
-      hostname: client.hostname,
-    });
+    try {
+      await post('/api/client?action=update', {
+        ota_url: wasUrl,
+        hostname: client.hostname,
+      });
+    } catch (e) {
+      toast.error('Client update request failed!');
+      console.error(`Client update request failed with ${e}`);
+      return e;
+    }
+    toast.success('Client update requested!');
     await mutate('/api/client'); //OTA update is very async so this won't really work but better than nothing
     setTimeout(() => mutate('/api/client'), 30 * 1000); //hackz to make it work. Mutate in 30 seconds so we catch changes
     onClose(event);
