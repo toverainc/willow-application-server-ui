@@ -202,7 +202,7 @@ function AdvancedSettings() {
   ) : (
     <form onSubmit={handleSubmit}>
       <FormControl fullWidth>
-        <Stack spacing={0} direction="row" sx={{ mb: 0 }} alignItems="center">
+        <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
           <FormControlLabel
             control={<Checkbox name="aec" defaultChecked={data?.aec} />}
             label="Acoustic Echo Cancellation"
@@ -213,7 +213,7 @@ function AdvancedSettings() {
         </Stack>
       </FormControl>
       <FormControl fullWidth>
-        <Stack spacing={0} direction="row" sx={{ mb: 0 }} alignItems="center">
+        <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
           <FormControlLabel
             control={<Checkbox name="bss" defaultChecked={data?.bss} />}
             label="Blind Source Separation"
@@ -225,7 +225,7 @@ function AdvancedSettings() {
       </FormControl>
 
       <FormControl fullWidth>
-        <Stack spacing={0} direction="row" sx={{ mb: 0 }} alignItems="center">
+        <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
           <FormControlLabel
             control={<Checkbox name="multiwake" defaultChecked={data?.multiwake} />}
             label="Willow One Wake (EXPERIMENTAL)"
