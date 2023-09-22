@@ -315,13 +315,19 @@ function AdvancedSettings() {
         Improves response times but can also clip speech if you do not talk fast enough.
         Allows for entering 1 - 1000 ms but if you go lower than 100 or so good luck!"></HelpTooltip>
       </Stack>
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
+      <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="flex-end">
         <Button id="save" type="submit" variant="outlined">
-          Save
+          Save Settings
         </Button>
+        <HelpTooltip
+          tooltip="Save your configuration to WAS.
+          If you want to test your configuration you can go to the Clients page to save to individual clients."></HelpTooltip>
+      </Stack>
+      <Stack direction="row" spacing={2} justifyContent="flex-end">
         <Button id="saveAndApply" type="submit" variant="outlined">
-          Save & Apply
+          Save Settings & Apply Everywhere
         </Button>
+        <HelpTooltip tooltip="Save your configuration to WAS and apply to all connected clients immediately."></HelpTooltip>
       </Stack>
     </form>
   );

@@ -35,8 +35,8 @@ export default function ConfirmDialog(params: ConfirmationDialogParams) {
         <></>
       )}
       <DialogActions>
-        <Button onClick={(evt) => params.onClose(evt)}>{params.cancelText || 'Cancel'}</Button>
-        <Button onClick={(evt) => params.onConfirm(evt)} autoFocus>
+        <Button onClick={(evt: any) => params.onClose(evt)}>{params.cancelText || 'Cancel'}</Button>
+        <Button onClick={(evt: any) => params.onConfirm(evt)} autoFocus>
           {params.confirmText || 'Confirm'}
         </Button>
       </DialogActions>
@@ -105,6 +105,41 @@ export function ApplyConfigDialog({
         client
           ? `Clicking confirm will apply current config to "${client.label || client.hostname}"`
           : `Clicking confirm will apply current config to all clients.`
+      }
+      onConfirm={onConfirm}
+    />
+  );
+}
+
+export function SaveAndApplyConfigDialog({
+  open,
+  onClose,
+  client,
+}: {
+  open: boolean;
+  client: Client;
+  onClose: (event: any) => void;
+}) {
+  async function onConfirm(evt: any) {
+    try {
+      //note if client is not supplied this applies config to all
+      await post('/api/config?type=config&apply=1', { hostname: client?.hostname });
+    } catch (e) {
+      console.error(`Saving and applying configuration failed with ${e}`);
+      toast.error(`Saving and applying configuration failed!`);
+      return e;
+    }
+    toast.success(`Saved and applied configuration to call clients!`);
+    onClose(evt);
+  }
+  return (
+    <ConfirmDialog
+      open={open}
+      onClose={onClose}
+      message={
+        client
+          ? `Clicking confirm will apply current config to "${client.label || client.hostname}"`
+          : `Are you sure?`
       }
       onConfirm={onConfirm}
     />

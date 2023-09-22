@@ -15,7 +15,7 @@ const Home: NextPage = () => {
   return (
     <LeftMenu>
       <Grid container spacing={2}>
-        {data?.map((client) => (
+        {data?.map((client: any) => (
           <React.Fragment key={client.hostname}>
             <Grid item md={4} sm={6} xs={12} lg={3}>
               <ClientCard client={client}></ClientCard>

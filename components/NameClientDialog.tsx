@@ -41,7 +41,7 @@ export default function NameClientDialog({
         <TextField
           sx={{ marginTop: 2 }}
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e: any) => setName(e.target.value)}
           required
           label="Client Name"
           variant="outlined"

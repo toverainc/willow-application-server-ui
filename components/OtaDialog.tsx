@@ -61,7 +61,7 @@ export default function OtaDialog({
             fullWidth={true}
             value={wasUrl}
             label="Release"
-            onChange={(event) => setWasUrl(event.target.value as string)}>
+            onChange={(event: any) => setWasUrl(event.target.value as string)}>
             {releaseData &&
               mergeReleases(releaseData)
                 .filter((r) => r.platform == client.platform && r.was_url)
