@@ -53,11 +53,13 @@ function ClientMenu({ client }: { client: Client }) {
           Edit Name
         </MenuItem>
         <MenuItem onClick={() => handleClose() && setOpenApplyConfigDialog(true)}>
-          Apply Config
+          Apply Configuration
         </MenuItem>
-        <MenuItem onClick={() => handleClose() && setOpenApplyNvsDialog(true)}>Apply NVS</MenuItem>
+        <MenuItem onClick={() => handleClose() && setOpenApplyNvsDialog(true)}>
+          Apply Connectivity Configuration
+        </MenuItem>
         <MenuItem onClick={() => handleClose() && setOpenResetDialog(true)}>Restart</MenuItem>
-        <MenuItem onClick={() => handleClose() && setOpenOtaDialog(true)}>OTA Update</MenuItem>
+        <MenuItem onClick={() => handleClose() && setOpenOtaDialog(true)}>Update</MenuItem>
       </Menu>
       <NameClientDialog
         client={client}

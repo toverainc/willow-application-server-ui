@@ -40,10 +40,10 @@ export default function OtaDialog({
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Flash Release OTA</DialogTitle>
+      <DialogTitle>Over the Air (OTA) Update</DialogTitle>
       <DialogContent>
         <DialogContentText sx={{ marginBottom: 2 }}>
-          Select a release to update the client &quot;
+          Select a release to update &quot;
           {client.label || client.hostname}&quot;
         </DialogContentText>
         <FormControl fullWidth>
@@ -67,7 +67,7 @@ export default function OtaDialog({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={onFlash}>Flash Release</Button>
+        <Button onClick={onFlash}>Update</Button>
       </DialogActions>
     </Dialog>
   );
