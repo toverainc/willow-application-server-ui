@@ -202,22 +202,38 @@ function AdvancedSettings() {
   ) : (
     <form onSubmit={handleSubmit}>
       <FormControl fullWidth>
-        <FormControlLabel
-          control={<Checkbox name="aec" defaultChecked={data?.aec} />}
-          label="Acoustic Echo Cancellation"
-        />
+        <Stack spacing={0} direction="row" sx={{ mb: 0 }} alignItems="center">
+          <FormControlLabel
+            control={<Checkbox name="aec" defaultChecked={data?.aec} />}
+            label="Acoustic Echo Cancellation"
+          />
+          <HelpTooltip
+            tooltip="Acoustic Echo Cancellation (AEC) removes echo from the environment on the device before Willow processes commands.
+            It is highly recommended to leave it enabled."></HelpTooltip>
+        </Stack>
       </FormControl>
       <FormControl fullWidth>
-        <FormControlLabel
-          control={<Checkbox name="bss" defaultChecked={data?.bss} />}
-          label="Blind Source Separation"
-        />
+        <Stack spacing={0} direction="row" sx={{ mb: 0 }} alignItems="center">
+          <FormControlLabel
+            control={<Checkbox name="bss" defaultChecked={data?.bss} />}
+            label="Blind Source Separation"
+          />
+          <HelpTooltip
+            tooltip="Blind Source Separation is a technique to reduce noise from captured audio by 'focusing' on the speaker.
+            It is useful in some cases but it's generally recommended to leave it disabled."></HelpTooltip>
+        </Stack>
       </FormControl>
+
       <FormControl fullWidth>
-        <FormControlLabel
-          control={<Checkbox name="multiwake" defaultChecked={data?.multiwake} />}
-          label="Willow One Wake (EXPERIMENTAL)"
-        />
+        <Stack spacing={0} direction="row" sx={{ mb: 0 }} alignItems="center">
+          <FormControlLabel
+            control={<Checkbox name="multiwake" defaultChecked={data?.multiwake} />}
+            label="Willow One Wake (EXPERIMENTAL)"
+          />
+          <HelpTooltip
+            tooltip="When you have multiple devices close enough to wake at the same time it's annoying.
+          Willow One Wake (WOW) is an experimental feature to only capture audio on the device closest to the person speaking."></HelpTooltip>
+        </Stack>
       </FormControl>
       <EnumSelectHelper
         name="audio_codec"
