@@ -147,6 +147,7 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
             width: drawerWidth,
             boxSizing: 'border-box',
           },
+          height: '100%'
         }}
         variant="persistent"
         anchor="left"
