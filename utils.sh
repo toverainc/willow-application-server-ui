@@ -49,9 +49,6 @@ build)
 ;;
 
 build-docker|docker-build)
-    if ["$NEXT_PUBLIC_WAS_URL" ]; then
-        NEXT_PUBLIC_WAS_URL="$NEXT_PUBLIC_WAS_URL"
-    fi
     docker build -t "$TAG" -f Dockerfile.dev .
 ;;
 
