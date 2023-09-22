@@ -378,7 +378,7 @@ function GeneralSettings() {
         Multinet uses a model on the device to recognized pre-defined commands but you currently need to build Willow yourself for that.
         WAS configuration coming soon!"
       />
-      <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
+      <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} alignItems="center">
         <TextField
           name="wis_url"
           defaultValue={data?.wis_url}
