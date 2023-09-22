@@ -39,7 +39,7 @@ const WAKE_WORDS = {
 };
 const SPEECH_REC_MODE = {
   WIS: 'Willow Inference Server',
-  Multinet: 'On Device Command Recognition (developers only)',
+  Multinet: 'On Client Command Recognition (developers only)',
 };
 const AUDIO_RESPONSE_TYPE = { TTS: 'Text to Speech', Chimes: 'Chimes', None: 'Silence' };
 const COMMAND_ENDPOINT = {
@@ -208,7 +208,7 @@ function AdvancedSettings() {
             label="Acoustic Echo Cancellation"
           />
           <HelpTooltip
-            tooltip="Acoustic Echo Cancellation (AEC) removes echo from the environment on the device before Willow processes commands.
+            tooltip="Acoustic Echo Cancellation (AEC) removes echo from the environment on the client before Willow processes commands.
             It is highly recommended to leave it enabled."></HelpTooltip>
         </Stack>
       </FormControl>
@@ -231,8 +231,8 @@ function AdvancedSettings() {
             label="Willow One Wake (EXPERIMENTAL)"
           />
           <HelpTooltip
-            tooltip="When you have multiple devices close enough to wake at the same time it's annoying.
-          Willow One Wake (WOW) is an experimental feature to only capture audio on the device closest to the person speaking."></HelpTooltip>
+            tooltip="When you have multiple clients close enough to wake at the same time it's annoying.
+          Willow One Wake (WOW) is an experimental feature to only capture audio on the client closest to the person speaking."></HelpTooltip>
         </Stack>
       </FormControl>
       <EnumSelectHelper
@@ -240,21 +240,24 @@ function AdvancedSettings() {
         defaultValue={data?.audio_codec}
         label="Audio Codec to use for streaming to WIS"
         options={AUDIO_CODECS}
-        tooltip="PCM is more accurate but uses more WiFi bandwidth. If you have an especially challenging WiFi environment you can try enabling compression (AMR-WB)."
+        tooltip="PCM is more accurate but uses more WiFi bandwidth.
+        If you have an especially challenging WiFi environment you can try enabling compression (AMR-WB)."
       />
       <EnumSelectHelper
         name="vad_mode"
         defaultValue={data?.vad_mode?.toString()}
         label="Voice Activity Detection Mode"
         options={VAD_MODES.map((v) => v.toString())}
-        tooltip="Higher modes are more aggressive and are more restrictive in detecting speech"
+        tooltip="If Willow thinks you stop talking too soon or too late you can change the aggressiveness of Voice Activity Mode (VAD).
+        Higher values are more likely to end the voice session earlier."
       />
       <EnumSelectHelper
         name="wake_mode"
         defaultValue={data?.wake_mode}
         label="Wake Word Recognition Mode"
         options={WAKE_MODES}
-        tooltip="The probability of being recognized as a wake word increases with increasing mode. As a consequence, a higher mode can result in more false positives."
+        tooltip="Wake Word Recognition Mode generally configures the sensitivity of detecting the wake word.
+        Higher values are more sensitive but can lead to Willow waking up when it shouldn't."
       />
       <InputLabel>Microphone Gain</InputLabel>
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
@@ -266,7 +269,10 @@ function AdvancedSettings() {
           size="small"
           valueLabelDisplay="on"
         />
-        <HelpTooltip tooltip="General audio volume level. Has wide ranging effects from wake sensitivity to speech recognition accuracy." />
+        <HelpTooltip
+          tooltip="General audio capture volume level.
+        Has wide ranging effects from wake sensitivity to speech recognition accuracy."
+        />
       </Stack>
       <InputLabel>Record Buffer</InputLabel>
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
@@ -278,7 +284,9 @@ function AdvancedSettings() {
           size="small"
           valueLabelDisplay="on"
         />
-        <HelpTooltip tooltip="Custom record buffer for timing and latency. Users with a local WIS instance may want to try setting lower (10 or so)"></HelpTooltip>
+        <HelpTooltip
+          tooltip="Record buffer configures the timing between when the client wakes and when it starts capturing commands.
+        Users with a local WIS instance may want to try setting lower (10 or so)."></HelpTooltip>
       </Stack>
       <InputLabel>Maximum speech duration</InputLabel>
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
@@ -302,7 +310,10 @@ function AdvancedSettings() {
           size="small"
           valueLabelDisplay="on"
         />
-        <HelpTooltip tooltip="How long to wait after end of speech to end audio capture. Improves response times but can also clip speech if you do not talk fast enough. Allows for entering 1 - 1000 ms but if you go lower than 50 or so good luck!"></HelpTooltip>
+        <HelpTooltip
+          tooltip="How long to wait after end of speech to end audio capture.
+        Improves response times but can also clip speech if you do not talk fast enough.
+        Allows for entering 1 - 1000 ms but if you go lower than 100 or so good luck!"></HelpTooltip>
       </Stack>
       <Stack direction="row" spacing={2} justifyContent="flex-end">
         <Button id="save" type="submit" variant="outlined">
@@ -391,7 +402,7 @@ function GeneralSettings() {
         label="Speech Recognition Mode"
         options={SPEECH_REC_MODE}
         tooltip=" Willow Inference Server mode uses the configured URL to stream your speech to a very high quality speech recognition implementation powered by WIS.
-        Multinet uses a model on the device to recognized pre-defined commands but you currently need to build Willow yourself for that.
+        On client commands uses a model on the client to recognized pre-defined commands but you currently need to build Willow yourself for that.
         WAS configuration coming soon!"
       />
       <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} alignItems="center">
@@ -415,8 +426,9 @@ function GeneralSettings() {
         defaultValue={data?.audio_response_type}
         label="Willow Audio Response Type"
         options={AUDIO_RESPONSE_TYPE}
-        tooltip="Text to speech uses the configured Willow Inference Server (WIS) to speak the result of your command.
-        Chimes plays success/failure tones depending on the response from your command endpoint. Silence has no audio output."
+        tooltip="Text to Speech uses the configured Willow Inference Server (WIS) to speak the result of your command.
+        Chimes plays success/failure tones depending on the response from your command endpoint.
+        Silence has no audio output."
       />
       <TextField
         name="wis_tts_url"
@@ -444,8 +456,8 @@ function GeneralSettings() {
         onChange={(e) => setCommandEndpoint(e.target.value as any)}
         label="Command Endpoint"
         options={COMMAND_ENDPOINT}
-        tooltip="When Willow recognizes speech we need to send the transcript somewhere to execute your command.
-        Select your favorite platform here or use REST for your own."
+        tooltip="When Willow recognizes speech we need to send the transcript somewhere to execute your commands.
+        Select your favorite platform here or use REST for your own!"
       />
       {commandEndpoint == 'Home Assistant' && (
         <>
@@ -658,13 +670,19 @@ function GeneralSettings() {
           />
         </>
       )}
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
+      <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="flex-end">
         <Button id="save" type="submit" variant="outlined">
-          Save
+          Save Settings
         </Button>
+        <HelpTooltip
+          tooltip="Save your configuration to WAS.
+          If you want to test your configuration you can go to the Clients page to save to individual clients."></HelpTooltip>
+      </Stack>
+      <Stack direction="row" spacing={2} justifyContent="flex-end">
         <Button id="saveAndApply" type="submit" variant="outlined">
-          Save & Apply
+          Save Settings & Apply Everywhere
         </Button>
+        <HelpTooltip tooltip="Save your configuration to WAS and apply to all connected clients immediately."></HelpTooltip>
       </Stack>
     </form>
   );
