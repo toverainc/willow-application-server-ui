@@ -17,8 +17,8 @@ export default function WebFlashCard() {
           <>
             Go to the{' '}
             <a target="_blank" rel="noreferrer" href={WAS_FLASH_URL}>
-              Willow Web Flasher{' '}
-            </a>
+              Willow Web Flasher
+            </a>{' '}
             to flash your devices.
           </>
         }
