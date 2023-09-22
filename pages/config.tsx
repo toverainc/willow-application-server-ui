@@ -47,7 +47,10 @@ const COMMAND_ENDPOINT = {
   openHAB: 'openHAB',
   REST: 'REST',
 };
-const NTP_CONFIG = { Host: 'Specify an NTP server host', DHCP: 'Use DHCP provided NTP Server' };
+const NTP_CONFIG = {
+  Host: 'Specify an NTP server host',
+  DHCP: 'Use DHCP provided NTP Server',
+};
 const REST_AUTH_TYPES = ['None', 'Basic', 'Header'];
 
 interface GeneralSettings {
@@ -72,6 +75,7 @@ interface GeneralSettings {
   speaker_volume: number;
   lcd_brightness: number;
   ntp_config: keyof typeof NTP_CONFIG;
+  ntp_host: string;
 }
 
 const AUDIO_CODECS = { PCM: 'PCM', 'AMR-WB': 'AMR-WB' };
@@ -300,6 +304,8 @@ function GeneralSettings() {
   const [loading, setLoading] = React.useState(true);
   const [commandEndpoint, setCommandEndpoint] =
     React.useState<keyof typeof COMMAND_ENDPOINT>('Home Assistant');
+
+  const [ntpConfig, setNtpConfig] = React.useState<keyof typeof NTP_CONFIG>('Host');
   const [restAuthType, setRestAuthType] = React.useState<string>(REST_AUTH_TYPES[0]);
 
   const [showHaToken, setShowHaToken] = React.useState(false);
@@ -320,6 +326,7 @@ function GeneralSettings() {
     if (data) {
       setCommandEndpoint(data.command_endpoint);
       setRestAuthType(data.rest_auth_type);
+      setNtpConfig(data.ntp_config);
       setLoading(false);
     }
   }, [data]);
@@ -614,11 +621,27 @@ function GeneralSettings() {
       </Stack>
       <EnumSelectHelper
         name="ntp_config"
-        defaultValue={data?.ntp_config}
+        value={ntpConfig}
+        onChange={(e) => setNtpConfig(e.target.value as any)}
         label="Automatic Time and Date (NTP)"
         options={NTP_CONFIG}
-        tooltip=""
+        tooltip="If your DHCP server provides an NTP server DHCP option you can select DHCP.
+        If you don't know what this means use an NTP host."
       />
+      {ntpConfig == 'Host' && (
+        <>
+          <TextField
+            name="ntp_host"
+            defaultValue={data?.ntp_host}
+            required
+            label="NTP Server"
+            margin="dense"
+            variant="outlined"
+            size="small"
+            fullWidth
+          />
+        </>
+      )}
       <Stack direction="row" spacing={2} justifyContent="flex-end">
         <Button id="save" type="submit" variant="outlined">
           Save
