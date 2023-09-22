@@ -15,10 +15,11 @@ export default function WebFlashCard() {
       <CardHeader
         title={
           <>
-            Ready to flash. Go to{' '}
+            Go to the{' '}
             <a target="_blank" rel="noreferrer" href={WAS_FLASH_URL}>
-              https://flash.heywillow.io
+              Willow Web Flasher{' '}
             </a>
+            to flash your devices.
           </>
         }
         sx={{ textAlign: 'center' }}
