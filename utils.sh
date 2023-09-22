@@ -41,9 +41,9 @@ build)
     if [ "$WAS_DIR" ]; then
         for i in $WAS_DIR; do
             WAS_ADMIN_DIR="$i/static/admin"
-            echo "Copying Next build to $i"
-            mkdir -p "$i"
-            rsync -a --delete out/* "$i"/
+            echo "Copying Next build to $WAS_ADMIN_DIR"
+            mkdir -p "$WAS_ADMIN_DIR"
+            rsync -a --delete out/* "$WAS_ADMIN_DIR"/
         done
     fi
 ;;
