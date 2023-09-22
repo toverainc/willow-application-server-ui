@@ -114,8 +114,8 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
   };
 
   React.useEffect(() => {
-    if (isDesktopOrLaptop) {
-      handleDrawerOpen();
+    if (!isDesktopOrLaptop) {
+      handleDrawerClose();
     }
   }, [isDesktopOrLaptop]);
 
