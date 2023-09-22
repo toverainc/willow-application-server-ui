@@ -13,7 +13,7 @@ import useSWR from 'swr';
 import { toast } from 'react-toastify';
 import { post } from '../misc/fetchers';
 import { mutate } from 'swr';
-import { mergeReleases } from '../pages/updates';
+import { mergeReleases } from '../pages/upgrades';
 
 import { Client } from '../misc/model';
 
@@ -36,22 +36,22 @@ export default function OtaDialog({
         hostname: client.hostname,
       });
     } catch (e) {
-      toast.error('Client update request failed!');
-      console.error(`Client update request failed with ${e}`);
+      toast.error('Client upgrade request failed!');
+      console.error(`Client upgrade request failed with ${e}`);
       return e;
     }
-    toast.success('Client update requested!');
-    await mutate('/api/client'); //OTA update is very async so this won't really work but better than nothing
+    toast.success('Client upgrade requested!');
+    await mutate('/api/client'); //OTA upgrade is very async so this won't really work but better than nothing
     setTimeout(() => mutate('/api/client'), 30 * 1000); //hackz to make it work. Mutate in 30 seconds so we catch changes
     onClose(event);
   }
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Over the Air (OTA) Update</DialogTitle>
+      <DialogTitle>Over the Air (OTA) Upgrade</DialogTitle>
       <DialogContent>
         <DialogContentText sx={{ marginBottom: 2 }}>
-          Select a release to update &quot;
+          Select a release to upgrade &quot;
           {client.label || client.hostname}&quot;
         </DialogContentText>
         <FormControl fullWidth>
@@ -75,7 +75,7 @@ export default function OtaDialog({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={onFlash}>Update</Button>
+        <Button onClick={onFlash}>Upgrade</Button>
       </DialogActions>
     </Dialog>
   );

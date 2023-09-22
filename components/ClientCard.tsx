@@ -59,7 +59,7 @@ function ClientMenu({ client }: { client: Client }) {
           Apply Connectivity Configuration
         </MenuItem>
         <MenuItem onClick={() => handleClose() && setOpenResetDialog(true)}>Restart</MenuItem>
-        <MenuItem onClick={() => handleClose() && setOpenOtaDialog(true)}>Update</MenuItem>
+        <MenuItem onClick={() => handleClose() && setOpenOtaDialog(true)}>Upgrade</MenuItem>
       </Menu>
       <NameClientDialog
         client={client}

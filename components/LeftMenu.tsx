@@ -169,7 +169,7 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
             <DeviceHubIcon></DeviceHubIcon>
           </MenuItem>
       */}
-          <MenuItem text="Manage Updates" page="/updates">
+          <MenuItem text="Manage Upgrades" page="/upgrades">
             <SystemUpdateAltIcon></SystemUpdateAltIcon>
           </MenuItem>
         </List>

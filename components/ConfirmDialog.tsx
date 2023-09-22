@@ -103,8 +103,10 @@ export function ApplyConfigDialog({
       onClose={onClose}
       message={
         client
-          ? `Clicking confirm will apply current config to "${client.label || client.hostname}"`
-          : `Clicking confirm will apply current config to all clients.`
+          ? `Clicking confirm will apply the current configuration to "${
+              client.label || client.hostname
+            }"`
+          : `Clicking confirm will apply the current configuration to all clients.`
       }
       onConfirm={onConfirm}
     />
@@ -138,7 +140,9 @@ export function SaveAndApplyConfigDialog({
       onClose={onClose}
       message={
         client
-          ? `Clicking confirm will apply current config to "${client.label || client.hostname}"`
+          ? `Clicking confirm will apply the current configuration to "${
+              client.label || client.hostname
+            }"`
           : `Are you sure?`
       }
       onConfirm={onConfirm}
@@ -179,8 +183,10 @@ export function ApplyNvsDialog({
       onClose={onClose}
       message={
         client
-          ? `Clicking confirm will apply current NVS config to "${client.label || client.hostname}"`
-          : `Clicking confirm will apply current NVS config to all clients.`
+          ? `Clicking confirm will apply the current connectivity configuration to "${
+              client.label || client.hostname
+            }"`
+          : `Clicking confirm will apply the current connectivity configuration to all clients.`
       }
       onConfirm={onConfirm}
     />
