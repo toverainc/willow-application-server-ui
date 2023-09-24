@@ -817,6 +817,7 @@ function GeneralSettings() {
           size="small"
           valueLabelDisplay="auto"
         />
+        <VolumeUp />
         <Input
           value={speakerVolumeValue}
           size="small"
@@ -830,7 +831,6 @@ function GeneralSettings() {
             'aria-labelledby': 'input-slider',
           }}
         />
-        <VolumeUp />
       </Stack>
       <InputLabel>LCD Brightness</InputLabel>
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
@@ -844,6 +844,7 @@ function GeneralSettings() {
           size="small"
           valueLabelDisplay="auto"
         />
+        <Brightness5Icon />
         <Input
           value={lcdBrightnessValue}
           size="small"
@@ -857,7 +858,6 @@ function GeneralSettings() {
             'aria-labelledby': 'input-slider',
           }}
         />
-        <Brightness5Icon />
       </Stack>
       <EnumSelectHelper
         name="ntp_config"
