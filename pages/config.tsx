@@ -31,6 +31,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import WebFlashCard from '../components/WebFlashCard';
 import { post } from '../misc/fetchers';
+import Input from '@mui/material/Input';
 
 const WAKE_WORDS = {
   alexa: 'Alexa',
@@ -153,6 +154,86 @@ function EnumSelectHelper(params: {
 function AdvancedSettings() {
   const [loading, setLoading] = React.useState(true);
   const { data, error } = useSWR<AdvancedSettings>('/api/config?type=config');
+  const [micGainValue, setMicGainValue] = React.useState(data?.mic_gain);
+  const [recordBufferValue, setRecordBufferValue] = React.useState(data?.record_buffer);
+  const [streamTimeoutValue, setStreamTimeoutValue] = React.useState(data?.stream_timeout);
+  const [vadTimeoutValue, setVadTimeoutValue] = React.useState(data?.vad_timeout);
+
+  // Handlers for Mic Gain Slider and Input
+  const handleMicGainInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setMicGainValue(event.target.value === '' ? undefined : Number(event.target.value));
+  };
+
+  const handleMicGainSliderChange = (event: Event, newValue: number | number[]) => {
+    setMicGainValue(newValue as number);
+  };
+
+  const handleMicGainBlur = () => {
+    if (micGainValue && micGainValue < 0) {
+      setMicGainValue(0);
+    } else if (micGainValue && micGainValue > 14) {
+      setMicGainValue(14);
+    } else if (!micGainValue) {
+      setMicGainValue(data?.mic_gain);
+    }
+  };
+
+  // Handlers for Record Buffer Slider and Input
+  const handleRecordBufferInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRecordBufferValue(event.target.value === '' ? undefined : Number(event.target.value));
+  };
+
+  const handleRecordBufferSliderChange = (event: Event, newValue: number | number[]) => {
+    setRecordBufferValue(newValue as number);
+  };
+
+  const handleRecordBufferBlur = () => {
+    if (recordBufferValue && recordBufferValue < 0) {
+      setRecordBufferValue(0);
+    } else if (recordBufferValue && recordBufferValue > 16) {
+      setRecordBufferValue(16);
+    } else if (!recordBufferValue) {
+      setRecordBufferValue(data?.record_buffer);
+    }
+  };
+
+  // Handlers for Stream Timeout Slider and Input
+  const handleStreamTimeoutInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setStreamTimeoutValue(event.target.value === '' ? undefined : Number(event.target.value));
+  };
+
+  const handleStreamTimeoutSliderChange = (event: Event, newValue: number | number[]) => {
+    setStreamTimeoutValue(newValue as number);
+  };
+
+  const handleStreamTimeoutBlur = () => {
+    if (streamTimeoutValue && streamTimeoutValue < 1) {
+      setStreamTimeoutValue(1);
+    } else if (streamTimeoutValue && streamTimeoutValue > 30) {
+      setStreamTimeoutValue(30);
+    } else if (!streamTimeoutValue) {
+      setStreamTimeoutValue(data?.stream_timeout);
+    }
+  };
+
+  // Handlers for VAD Timeout Slider and Input
+  const handleVADTimeoueInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setVadTimeoutValue(event.target.value === '' ? undefined : Number(event.target.value));
+  };
+
+  const handleVADTimeoutSliderChange = (event: Event, newValue: number | number[]) => {
+    setVadTimeoutValue(newValue as number);
+  };
+
+  const handleVADTimeoutBlur = () => {
+    if (vadTimeoutValue && vadTimeoutValue < 0) {
+      setVadTimeoutValue(0);
+    } else if (vadTimeoutValue && vadTimeoutValue > 1000) {
+      setVadTimeoutValue(1000);
+    } else if (!vadTimeoutValue) {
+      setVadTimeoutValue(data?.vad_timeout);
+    }
+  };
 
   React.useEffect(() => {
     if (data) {
@@ -263,11 +344,25 @@ function AdvancedSettings() {
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
         <Slider
           name="mic_gain"
-          defaultValue={data?.mic_gain}
+          value={micGainValue}
           min={0}
           max={14}
           size="small"
-          valueLabelDisplay="on"
+          onChange={handleMicGainSliderChange}
+          valueLabelDisplay="auto"
+        />
+        <Input
+          value={micGainValue}
+          size="small"
+          onChange={handleMicGainInputChange}
+          onBlur={handleMicGainBlur}
+          inputProps={{
+            step: 1,
+            min: 0,
+            max: 14,
+            type: 'number',
+            'aria-labelledby': 'input-slider',
+          }}
         />
         <HelpTooltip
           tooltip="General audio capture volume level.
@@ -278,11 +373,25 @@ function AdvancedSettings() {
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
         <Slider
           name="record_buffer"
-          defaultValue={data?.record_buffer}
+          value={recordBufferValue}
+          onChange={handleRecordBufferSliderChange}
           min={0}
           max={16}
           size="small"
-          valueLabelDisplay="on"
+          valueLabelDisplay="auto"
+        />
+        <Input
+          value={recordBufferValue}
+          size="small"
+          onChange={handleRecordBufferInputChange}
+          onBlur={handleRecordBufferBlur}
+          inputProps={{
+            step: 1,
+            min: 0,
+            max: 16,
+            type: 'number',
+            'aria-labelledby': 'input-slider',
+          }}
         />
         <HelpTooltip
           tooltip="Record buffer configures the timing between when the client wakes and when it starts capturing commands.
@@ -292,11 +401,25 @@ function AdvancedSettings() {
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
         <Slider
           name="stream_timeout"
-          defaultValue={data?.stream_timeout}
+          value={streamTimeoutValue}
+          onChange={handleStreamTimeoutSliderChange}
           min={1}
           max={30}
           size="small"
-          valueLabelDisplay="on"
+          valueLabelDisplay="auto"
+        />
+        <Input
+          value={streamTimeoutValue}
+          size="small"
+          onChange={handleStreamTimeoutInputChange}
+          onBlur={handleStreamTimeoutBlur}
+          inputProps={{
+            step: 1,
+            min: 1,
+            max: 30,
+            type: 'number',
+            'aria-labelledby': 'input-slider',
+          }}
         />
         <HelpTooltip tooltip="How long to wait after wake starts to force the end of recognition."></HelpTooltip>
       </Stack>
@@ -304,11 +427,25 @@ function AdvancedSettings() {
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
         <Slider
           name="vad_timeout"
-          defaultValue={data?.vad_timeout}
+          value={vadTimeoutValue}
+          onChange={handleVADTimeoutSliderChange}
           min={0}
           max={1000}
           size="small"
-          valueLabelDisplay="on"
+          valueLabelDisplay="auto"
+        />
+        <Input
+          value={vadTimeoutValue}
+          size="small"
+          onChange={handleVADTimeoueInputChange}
+          onBlur={handleVADTimeoutBlur}
+          inputProps={{
+            step: 1,
+            min: 0,
+            max: 1000,
+            type: 'number',
+            'aria-labelledby': 'input-slider',
+          }}
         />
         <HelpTooltip
           tooltip="How long to wait after end of speech to end audio capture.
@@ -354,6 +491,47 @@ function GeneralSettings() {
   const handleMouseDownRestPassword = () => setShowRestPassword(!showRestPassword);
 
   const { data, error } = useSWR<GeneralSettings>('/api/config?type=config');
+
+  const [speakerVolumeValue, setSpeakerVolumeValue] = React.useState(data?.speaker_volume);
+  const [lcdBrightnessValue, setLcdBrightnessValue] = React.useState(data?.lcd_brightness);
+
+  // Handlers for Speaker Volume Slider and Input
+  const handleSpeakerVolumeInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSpeakerVolumeValue(event.target.value === '' ? undefined : Number(event.target.value));
+  };
+
+  const handleSpeakerVolumeSliderChange = (event: Event, newValue: number | number[]) => {
+    setSpeakerVolumeValue(newValue as number);
+  };
+
+  const handleSpeakerVolumeBlur = () => {
+    if (speakerVolumeValue && speakerVolumeValue < 0) {
+      setSpeakerVolumeValue(0);
+    } else if (speakerVolumeValue && speakerVolumeValue > 100) {
+      setSpeakerVolumeValue(100);
+    } else if (!speakerVolumeValue) {
+      setSpeakerVolumeValue(data?.speaker_volume);
+    }
+  };
+
+  // Handlers for LCD Brightness Slider and Input
+  const handleLcdBrightnessInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLcdBrightnessValue(event.target.value === '' ? undefined : Number(event.target.value));
+  };
+
+  const handleLcdBrightnessSliderChange = (event: Event, newValue: number | number[]) => {
+    setLcdBrightnessValue(newValue as number);
+  };
+
+  const handleLcdBrightnessBlur = () => {
+    if (lcdBrightnessValue && lcdBrightnessValue < 0) {
+      setLcdBrightnessValue(0);
+    } else if (lcdBrightnessValue && lcdBrightnessValue > 1023) {
+      setLcdBrightnessValue(1023);
+    } else if (!lcdBrightnessValue) {
+      setLcdBrightnessValue(data?.lcd_brightness);
+    }
+  };
 
   React.useEffect(() => {
     if (data) {
@@ -632,11 +810,25 @@ function GeneralSettings() {
         <VolumeDown />
         <Slider
           name="speaker_volume"
-          defaultValue={data?.speaker_volume}
+          value={speakerVolumeValue}
+          onChange={handleSpeakerVolumeSliderChange}
           min={0}
           max={100}
           size="small"
-          valueLabelDisplay="on"
+          valueLabelDisplay="auto"
+        />
+        <Input
+          value={speakerVolumeValue}
+          size="small"
+          onChange={handleSpeakerVolumeInputChange}
+          onBlur={handleSpeakerVolumeBlur}
+          inputProps={{
+            step: 1,
+            min: 0,
+            max: 100,
+            type: 'number',
+            'aria-labelledby': 'input-slider',
+          }}
         />
         <VolumeUp />
       </Stack>
@@ -645,11 +837,25 @@ function GeneralSettings() {
         <Brightness4Icon />
         <Slider
           name="lcd_brightness"
-          defaultValue={data?.lcd_brightness}
+          value={lcdBrightnessValue}
+          onChange={handleLcdBrightnessSliderChange}
           min={0}
           max={1023}
           size="small"
-          valueLabelDisplay="on"
+          valueLabelDisplay="auto"
+        />
+        <Input
+          value={lcdBrightnessValue}
+          size="small"
+          onChange={handleLcdBrightnessInputChange}
+          onBlur={handleLcdBrightnessBlur}
+          inputProps={{
+            step: 1,
+            min: 0,
+            max: 1023,
+            type: 'number',
+            'aria-labelledby': 'input-slider',
+          }}
         />
         <Brightness5Icon />
       </Stack>
