@@ -151,6 +151,59 @@ function EnumSelectHelper(params: {
   );
 }
 
+async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  event.preventDefault();
+  const advancedSettingsForm = Object.fromEntries(
+    new FormData(document.querySelector('form[name="advanced-settings-form"]') as any).entries()
+  ) as Record<string, string>;
+  const generalSettingsForm = Object.fromEntries(
+    new FormData(document.querySelector('form[name="general-settings-form"]') as any).entries()
+  ) as Record<string, string>;
+  const apply = (event.nativeEvent as any).submitter.id == 'saveAndApply';
+  let advancedSettings: Partial<AdvancedSettings> = {
+    aec: !!advancedSettingsForm.aec,
+    bss: !!advancedSettingsForm.bss,
+    multiwake: !!advancedSettingsForm.multiwake,
+    vad_mode: parseIntOrUndef(advancedSettingsForm.vad_mode),
+    mic_gain: parseIntOrUndef(advancedSettingsForm.mic_gain),
+    record_buffer: parseIntOrUndef(advancedSettingsForm.record_buffer),
+    stream_timeout: parseIntOrUndef(advancedSettingsForm.stream_timeout),
+    vad_timeout: parseIntOrUndef(advancedSettingsForm.vad_timeout),
+  };
+  let generalSettings: Partial<GeneralSettings> = {
+    hass_port:
+      generalSettingsForm.command_endpoint == 'Home Assistant'
+        ? parseIntOrUndef(generalSettingsForm.hass_port)
+        : undefined,
+    hass_tls:
+      generalSettingsForm.command_endpoint == 'Home Assistant'
+        ? !!generalSettingsForm.hass_tls
+        : undefined,
+    speaker_volume: parseIntOrUndef(generalSettingsForm.speaker_volume),
+    lcd_brightness: parseIntOrUndef(generalSettingsForm.lcd_brightness),
+  };
+  let body = Object.assign(
+    {},
+    generalSettingsForm,
+    advancedSettingsForm,
+    generalSettings,
+    advancedSettings
+  );
+  try {
+    await post(apply ? '/api/config?type=config&apply=1' : '/api/config?type=config&apply=0', body);
+    await mutate('/api/config?type=config');
+  } catch (e) {
+    console.error(`Save advanced configuration settings failed with ${e}`);
+    toast.error(`Saving advanced configuration settings to WAS failed!`);
+    return e;
+  }
+  if (apply) {
+    toast.success('Advanced configuration settings saved and applied!');
+  } else {
+    toast.success('Advanced configuration settings saved!');
+  }
+}
+
 function AdvancedSettings() {
   const [loading, setLoading] = React.useState(true);
   const { data, error } = useSWR<AdvancedSettings>('/api/config?type=config');
@@ -241,47 +294,10 @@ function AdvancedSettings() {
     }
   }, [data]);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!data || error) return; //sanity check
-    const form = Object.fromEntries(new FormData(event.target as any).entries()) as Record<
-      string,
-      string
-    >;
-    const apply = (event.nativeEvent as any).submitter.id == 'saveAndApply';
-    let body: Partial<AdvancedSettings> = {
-      aec: !!form.aec,
-      bss: !!form.bss,
-      multiwake: !!form.multiwake,
-      vad_mode: parseIntOrUndef(form.vad_mode),
-      mic_gain: parseIntOrUndef(form.mic_gain),
-      record_buffer: parseIntOrUndef(form.record_buffer),
-      stream_timeout: parseIntOrUndef(form.stream_timeout),
-      vad_timeout: parseIntOrUndef(form.vad_timeout),
-    };
-    body = Object.assign({}, data, form, body);
-    try {
-      await post(
-        apply ? '/api/config?type=config&apply=1' : '/api/config?type=config&apply=0',
-        body
-      );
-      await mutate('/api/config?type=config');
-    } catch (e) {
-      console.error(`Save advanced configuration settings failed with ${e}`);
-      toast.error(`Saving advanced configuration settings to WAS failed!`);
-      return e;
-    }
-    if (apply) {
-      toast.success('Advanced configuration settings saved and applied!');
-    } else {
-      toast.success('Advanced configuration settings saved!');
-    }
-  }
-
   return loading ? (
     <LoadingSpinner />
   ) : (
-    <form onSubmit={handleSubmit}>
+    <form name="advanced-settings-form" onSubmit={handleSubmit}>
       <FormControl fullWidth>
         <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
           <FormControlLabel
@@ -542,44 +558,10 @@ function GeneralSettings() {
     }
   }, [data]);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!data || error) return; //sanity check
-    const form = Object.fromEntries(new FormData(event.target as any).entries()) as Record<
-      string,
-      string
-    >;
-    const apply = (event.nativeEvent as any).submitter.id == 'saveAndApply';
-    let body: Partial<GeneralSettings> = {
-      hass_port: commandEndpoint == 'Home Assistant' ? parseIntOrUndef(form.hass_port) : undefined,
-      hass_tls: commandEndpoint == 'Home Assistant' ? !!form.hass_tls : undefined,
-      speaker_volume: parseIntOrUndef(form.speaker_volume),
-      lcd_brightness: parseIntOrUndef(form.lcd_brightness),
-    };
-    body = Object.assign({}, data, form, body);
-
-    try {
-      await post(
-        apply ? '/api/config?type=config&apply=1' : '/api/config?type=config&apply=0',
-        body
-      );
-      await mutate('/api/config?type=config');
-    } catch (e) {
-      console.error(`Save general configuration settings failed with ${e}`);
-      toast.error(`Saving general configuration settings to WAS failed!`);
-      return e;
-    }
-    if (apply) {
-      toast.success('General configuration settings saved and applied!');
-    } else {
-      toast.success('General configuration settings saved!');
-    }
-  }
-
   return loading ? (
     <LoadingSpinner />
   ) : (
-    <form onSubmit={handleSubmit}>
+    <form name="general-settings-form" onSubmit={handleSubmit}>
       <EnumSelectHelper
         name="speech_rec_mode"
         defaultValue={data?.speech_rec_mode}
@@ -991,12 +973,14 @@ function ConnectionSettings() {
         }}
       />
       {/*XXX: this does not seem to work in current UI? <FormControlLabel control={<Checkbox />} label="Skip connectivity checks" />*/}
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
+      <Stack direction="row" spacing={2} sx={{ mb: 1, mt: 1 }} justifyContent="flex-end">
         <Button id="save" type="submit" variant="outlined">
-          Save
+          Save Connection Settings
         </Button>
+      </Stack>
+      <Stack direction="row" spacing={2} sx={{ mb: 1, mt: 1 }} justifyContent="flex-end">
         <Button id="saveAndApply" type="submit" variant="outlined">
-          Save & Apply
+          Save Connection Settings & Apply Everywhere
         </Button>
       </Stack>
     </form>
