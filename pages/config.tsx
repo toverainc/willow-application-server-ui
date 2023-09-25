@@ -193,14 +193,14 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     await post(apply ? '/api/config?type=config&apply=1' : '/api/config?type=config&apply=0', body);
     await mutate('/api/config?type=config');
   } catch (e) {
-    console.error(`Save advanced configuration settings failed with ${e}`);
-    toast.error(`Saving advanced configuration settings to WAS failed!`);
+    console.error(`Save configuration settings failed with ${e}`);
+    toast.error(`Save configuration settings to WAS failed!`);
     return e;
   }
   if (apply) {
-    toast.success('Advanced configuration settings saved and applied!');
+    toast.success('Configuration settings saved and applied!');
   } else {
-    toast.success('Advanced configuration settings saved!');
+    toast.success('Configuration settings saved!');
   }
 }
 
