@@ -21,6 +21,7 @@ import Link from 'next/link';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import { useMediaQuery } from 'react-responsive';
+import { OnboardingContext } from '../pages/_app';
 
 const drawerWidth = 240;
 
@@ -77,13 +78,15 @@ function MenuItem({
   text,
   children,
   page,
+  display,
 }: {
   text: string;
   page: string;
   children: React.ReactNode;
+  display: boolean;
 }) {
   return (
-    <Link href={page} style={{ textDecoration: 'inherit', color: 'inherit' }}>
+    <Link href={page} style={{ textDecoration: 'inherit', color: 'inherit', display: display ? undefined : 'none' }}>
       <ListItem key={text} disablePadding>
         <ListItemButton>
           <ListItemIcon>{children}</ListItemIcon>
@@ -118,6 +121,8 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
       handleDrawerClose();
     }
   }, [isDesktopOrLaptop]);
+
+  const onboardingState = React.useContext(OnboardingContext);
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -159,10 +164,10 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
         </DrawerHeader>
         <Divider />
         <List>
-          <MenuItem text="Clients" page="/">
+          <MenuItem text="Clients" page="/" display={onboardingState.isOnboardingComplete}>
             <DevicesIcon></DevicesIcon>
           </MenuItem>
-          <MenuItem text="Configuration" page="/config">
+          <MenuItem text="Configuration" page="/config" display={true}>
             <SettingsIcon></SettingsIcon>
           </MenuItem>
           {/*
@@ -170,7 +175,7 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
             <DeviceHubIcon></DeviceHubIcon>
           </MenuItem>
       */}
-          <MenuItem text="Manage Upgrades" page="/upgrades">
+          <MenuItem text="Manage Upgrades" page="/upgrades" display={onboardingState.isOnboardingComplete}>
             <SystemUpdateAltIcon></SystemUpdateAltIcon>
           </MenuItem>
         </List>

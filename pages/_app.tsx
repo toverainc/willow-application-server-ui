@@ -3,14 +3,17 @@ import type { AppProps } from 'next/app';
 import { SWRConfig } from 'swr';
 import Head from 'next/head';
 import CssBaseline from '@mui/material/CssBaseline';
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { ThemeProvider } from '@mui/material/styles';
 import { createTheme } from '@mui/material/styles';
 import { fetcher } from '../misc/fetchers';
+import useSWR from 'swr';
+import { GeneralSettings, NvsSettings } from '../misc/model';
 
 import 'react-toastify/dist/ReactToastify.css';
 import '../styles/globals.css';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export const theme = createTheme({
   palette: {
@@ -40,6 +43,12 @@ export const theme = createTheme({
   },
 });
 
+export const OnboardingContext = React.createContext({
+  isNvsComplete: false,
+  isGeneralConfigComplete: false,
+  isOnboardingComplete: false,
+});
+
 export class HttpError extends Error {
   constructor(status: number, msg: string) {
     super(`${status}: ${msg}`);
@@ -48,8 +57,27 @@ export class HttpError extends Error {
 }
 
 export default function App({ Component, pageProps }: AppProps) {
+  const { data: nvsData, isLoading: nvsIsLoading } = useSWR<NvsSettings>(
+    '/api/config?type=nvs',
+    fetcher
+  );
+  const { data: configData, isLoading: configIsLoading } = useSWR<GeneralSettings>(
+    '/api/config?type=config',
+    fetcher
+  );
+
+  const onboardingContext = useContext(OnboardingContext);
+  onboardingContext.isGeneralConfigComplete = configData
+    ? Object.keys(configData).length > 0
+    : false;
+  onboardingContext.isNvsComplete = nvsData ? Object.keys(nvsData).length > 0 : false;
+  onboardingContext.isOnboardingComplete =
+    onboardingContext.isGeneralConfigComplete && onboardingContext.isNvsComplete;
+
   //XXX: write a real fetcher
-  return (
+  return nvsIsLoading || configIsLoading ? (
+    <LoadingSpinner />
+  ) : (
     <>
       <Head>
         <meta charSet="utf-8" />
@@ -74,7 +102,9 @@ export default function App({ Component, pageProps }: AppProps) {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <SWRConfig value={{ fetcher }}>
-          <Component {...pageProps} />
+          <OnboardingContext.Provider value={onboardingContext}>
+            <Component {...pageProps} />
+          </OnboardingContext.Provider>
         </SWRConfig>
       </ThemeProvider>
     </>

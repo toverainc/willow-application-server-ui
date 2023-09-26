@@ -4,8 +4,17 @@ import LeftMenu from '../components/LeftMenu';
 import DeviceHubIcon from '@mui/icons-material/DeviceHub';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { OnboardingContext } from './_app';
+import { useRouter } from 'next/navigation';
 
 const Home: NextPage = () => {
+  const onboardingContext = React.useContext(OnboardingContext);
+  const router = useRouter();
+
+  if (!onboardingContext.isOnboardingComplete) {
+    router.replace('/config');
+    return <></>;
+  }
   return (
     <LeftMenu>
       <Box

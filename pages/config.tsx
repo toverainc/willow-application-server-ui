@@ -32,69 +32,24 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import WebFlashCard from '../components/WebFlashCard';
 import { post } from '../misc/fetchers';
 import Input from '@mui/material/Input';
-
-const WAKE_WORDS = {
-  alexa: 'Alexa',
-  hiesp: 'Hi E.S.P.',
-  hilexin: 'Hi Lexin (Chinese pronunciation)',
-};
-const SPEECH_REC_MODE = {
-  WIS: 'Willow Inference Server',
-  Multinet: 'On Client Command Recognition (developers only)',
-};
-const AUDIO_RESPONSE_TYPE = { TTS: 'Text to Speech', Chimes: 'Chimes', None: 'Silence' };
-const COMMAND_ENDPOINT = {
-  'Home Assistant': 'Home Assistant',
-  openHAB: 'openHAB',
-  REST: 'REST',
-};
-const NTP_CONFIG = {
-  Host: 'Specify an NTP server host',
-  DHCP: 'Use DHCP provided NTP Server',
-};
-const REST_AUTH_TYPES = ['None', 'Basic', 'Header'];
-
-interface GeneralSettings {
-  speech_rec_mode: keyof typeof SPEECH_REC_MODE;
-  wis_url: string;
-  audio_response_type: keyof typeof AUDIO_RESPONSE_TYPE;
-  wis_tts_url: string;
-  wake_word: keyof typeof WAKE_WORDS;
-  command_endpoint: keyof typeof COMMAND_ENDPOINT;
-  hass_host: string;
-  hass_port: number;
-  hass_tls: boolean;
-  hass_token: string;
-  openhab_url: string;
-  openhab_token: string;
-  rest_url: string;
-  rest_auth_type: string; //aka REST_AUTH_TYPE
-  rest_auth_user: string;
-  rest_auth_pass: string;
-  rest_auth_header: string;
-  timezone_continent_city: string;
-  speaker_volume: number;
-  lcd_brightness: number;
-  ntp_config: keyof typeof NTP_CONFIG;
-  ntp_host: string;
-}
-
-const AUDIO_CODECS = { PCM: 'PCM', 'AMR-WB': 'AMR-WB' };
-const VAD_MODES = [1, 2, 3, 4];
-const WAKE_MODES = ['1CH_90', '1CH_95', '2CH_90', '2CH_95', '3CH_90', '3CH_95'];
-
-interface AdvancedSettings {
-  aec: boolean; //Acoustic Echo Cancellation
-  bss: boolean; //Blind Source Separation
-  multiwake: boolean; // Multiwake / Willow One Wake
-  audio_codec: keyof typeof AUDIO_CODECS;
-  vad_mode: number; //Voice Activity Detection Mode
-  wake_mode: string; //aka WAKE_MODES
-  mic_gain: number;
-  record_buffer: number;
-  stream_timeout: number;
-  vad_timeout: number;
-}
+import { WAS_URL } from '../misc/fetchers';
+import {
+  GeneralSettings,
+  AdvancedSettings,
+  NvsSettings,
+  AUDIO_CODECS,
+  AUDIO_RESPONSE_TYPE,
+  VAD_MODES,
+  WAKE_MODES,
+  COMMAND_ENDPOINT,
+  NTP_CONFIG,
+  REST_AUTH_TYPES,
+  SPEECH_REC_MODE,
+  WAKE_WORDS,
+} from '../misc/model';
+import { OnboardingContext } from './_app';
+import { Card, CardContent, CardHeader } from '@mui/material';
+import InformationCard from '../components/InformationCard';
 
 function parseIntOrUndef(val: string | number | null | undefined) {
   if (!val) return undefined;
@@ -151,7 +106,10 @@ function EnumSelectHelper(params: {
   );
 }
 
-async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+async function handleSubmit(
+  event: React.FormEvent<HTMLFormElement>,
+  shouldScrollToTop: boolean = false
+) {
   event.preventDefault();
   const advancedSettingsForm = Object.fromEntries(
     new FormData(document.querySelector('form[name="advanced-settings-form"]') as any).entries()
@@ -192,6 +150,9 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
   try {
     await post(apply ? '/api/config?type=config&apply=1' : '/api/config?type=config&apply=0', body);
     await mutate('/api/config?type=config');
+    if (typeof window !== 'undefined' && shouldScrollToTop) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   } catch (e) {
     console.error(`Save configuration settings failed with ${e}`);
     toast.error(`Save configuration settings to WAS failed!`);
@@ -206,11 +167,16 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 
 function AdvancedSettings() {
   const [loading, setLoading] = React.useState(true);
-  const { data, error } = useSWR<AdvancedSettings>('/api/config?type=config');
-  const [micGainValue, setMicGainValue] = React.useState(data?.mic_gain);
-  const [recordBufferValue, setRecordBufferValue] = React.useState(data?.record_buffer);
-  const [streamTimeoutValue, setStreamTimeoutValue] = React.useState(data?.stream_timeout);
-  const [vadTimeoutValue, setVadTimeoutValue] = React.useState(data?.vad_timeout);
+  const { data: advancedSettings, error: advancedSettingsError } =
+    useSWR<AdvancedSettings>('/api/config?type=config');
+  const { data: defaultAdvancedSettings, error: defaultAdvancedSettingsError } =
+    useSWR<AdvancedSettings>('/api/config?type=config&default=true');
+  const [micGainValue, setMicGainValue] = React.useState(advancedSettings?.mic_gain);
+  const [recordBufferValue, setRecordBufferValue] = React.useState(advancedSettings?.record_buffer);
+  const [streamTimeoutValue, setStreamTimeoutValue] = React.useState(
+    advancedSettings?.stream_timeout
+  );
+  const [vadTimeoutValue, setVadTimeoutValue] = React.useState(advancedSettings?.vad_timeout);
 
   // Handlers for Mic Gain Slider and Input
   const handleMicGainInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -227,7 +193,13 @@ function AdvancedSettings() {
     } else if (micGainValue && micGainValue > 14) {
       setMicGainValue(14);
     } else if (!micGainValue) {
-      setMicGainValue(data?.mic_gain);
+      setMicGainValue(
+        advancedSettings?.mic_gain
+          ? advancedSettings.mic_gain
+          : defaultAdvancedSettings?.mic_gain
+          ? defaultAdvancedSettings.mic_gain
+          : 0
+      );
     }
   };
 
@@ -246,7 +218,13 @@ function AdvancedSettings() {
     } else if (recordBufferValue && recordBufferValue > 16) {
       setRecordBufferValue(16);
     } else if (!recordBufferValue) {
-      setRecordBufferValue(data?.record_buffer);
+      setRecordBufferValue(
+        advancedSettings?.record_buffer
+          ? advancedSettings.record_buffer
+          : defaultAdvancedSettings?.record_buffer
+          ? defaultAdvancedSettings.record_buffer
+          : 0
+      );
     }
   };
 
@@ -265,7 +243,13 @@ function AdvancedSettings() {
     } else if (streamTimeoutValue && streamTimeoutValue > 30) {
       setStreamTimeoutValue(30);
     } else if (!streamTimeoutValue) {
-      setStreamTimeoutValue(data?.stream_timeout);
+      setStreamTimeoutValue(
+        advancedSettings?.stream_timeout
+          ? advancedSettings.stream_timeout
+          : defaultAdvancedSettings?.stream_timeout
+          ? defaultAdvancedSettings.stream_timeout
+          : 1
+      );
     }
   };
 
@@ -284,15 +268,39 @@ function AdvancedSettings() {
     } else if (vadTimeoutValue && vadTimeoutValue > 1000) {
       setVadTimeoutValue(1000);
     } else if (!vadTimeoutValue) {
-      setVadTimeoutValue(data?.vad_timeout);
+      setVadTimeoutValue(
+        advancedSettings?.vad_timeout
+          ? advancedSettings.vad_timeout
+          : defaultAdvancedSettings?.vad_timeout
+          ? defaultAdvancedSettings.vad_timeout
+          : 0
+      );
     }
   };
 
   React.useEffect(() => {
-    if (data) {
+    if (advancedSettings && defaultAdvancedSettings) {
+      setMicGainValue(
+        advancedSettings?.mic_gain ? advancedSettings.mic_gain : defaultAdvancedSettings?.mic_gain
+      );
+      setRecordBufferValue(
+        advancedSettings?.record_buffer
+          ? advancedSettings.record_buffer
+          : defaultAdvancedSettings?.record_buffer
+      );
+      setStreamTimeoutValue(
+        advancedSettings?.stream_timeout
+          ? advancedSettings.stream_timeout
+          : defaultAdvancedSettings?.stream_timeout
+      );
+      setVadTimeoutValue(
+        advancedSettings?.vad_timeout
+          ? advancedSettings.vad_timeout
+          : defaultAdvancedSettings?.vad_timeout
+      );
       setLoading(false);
     }
-  }, [data]);
+  }, [advancedSettings, defaultAdvancedSettings]);
 
   return loading ? (
     <LoadingSpinner />
@@ -301,7 +309,14 @@ function AdvancedSettings() {
       <FormControl fullWidth>
         <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
           <FormControlLabel
-            control={<Checkbox name="aec" defaultChecked={data?.aec} />}
+            control={
+              <Checkbox
+                name="aec"
+                defaultChecked={
+                  advancedSettings?.aec ? advancedSettings.aec : defaultAdvancedSettings?.aec
+                }
+              />
+            }
             label="Acoustic Echo Cancellation"
           />
           <HelpTooltip
@@ -312,7 +327,14 @@ function AdvancedSettings() {
       <FormControl fullWidth>
         <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
           <FormControlLabel
-            control={<Checkbox name="bss" defaultChecked={data?.bss} />}
+            control={
+              <Checkbox
+                name="bss"
+                defaultChecked={
+                  advancedSettings?.bss ? advancedSettings.bss : defaultAdvancedSettings?.bss
+                }
+              />
+            }
             label="Blind Source Separation"
           />
           <HelpTooltip
@@ -324,7 +346,16 @@ function AdvancedSettings() {
       <FormControl fullWidth>
         <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
           <FormControlLabel
-            control={<Checkbox name="multiwake" defaultChecked={data?.multiwake} />}
+            control={
+              <Checkbox
+                name="multiwake"
+                defaultChecked={
+                  advancedSettings?.multiwake
+                    ? advancedSettings.multiwake
+                    : defaultAdvancedSettings?.multiwake
+                }
+              />
+            }
             label="Willow One Wake (EXPERIMENTAL)"
           />
           <HelpTooltip
@@ -334,7 +365,11 @@ function AdvancedSettings() {
       </FormControl>
       <EnumSelectHelper
         name="audio_codec"
-        defaultValue={data?.audio_codec}
+        defaultValue={
+          advancedSettings?.audio_codec
+            ? advancedSettings.audio_codec
+            : defaultAdvancedSettings?.audio_codec
+        }
         label="Audio Codec to use for streaming to WIS"
         options={AUDIO_CODECS}
         tooltip="PCM is more accurate but uses more WiFi bandwidth.
@@ -342,7 +377,11 @@ function AdvancedSettings() {
       />
       <EnumSelectHelper
         name="vad_mode"
-        defaultValue={data?.vad_mode?.toString()}
+        defaultValue={
+          advancedSettings?.vad_mode
+            ? advancedSettings.vad_mode.toString()
+            : defaultAdvancedSettings?.vad_mode?.toString()
+        }
         label="Voice Activity Detection Mode"
         options={VAD_MODES.map((v) => v.toString())}
         tooltip="If Willow thinks you stop talking too soon or too late you can change the aggressiveness of Voice Activity Mode (VAD).
@@ -350,7 +389,11 @@ function AdvancedSettings() {
       />
       <EnumSelectHelper
         name="wake_mode"
-        defaultValue={data?.wake_mode}
+        defaultValue={
+          advancedSettings?.wake_mode
+            ? advancedSettings.wake_mode
+            : defaultAdvancedSettings?.wake_mode
+        }
         label="Wake Word Recognition Mode"
         options={WAKE_MODES}
         tooltip="Wake Word Recognition Mode generally configures the sensitivity of detecting the wake word.
@@ -506,10 +549,21 @@ function GeneralSettings() {
   const handleClickShowRestPassword = () => setShowRestPassword(!showRestPassword);
   const handleMouseDownRestPassword = () => setShowRestPassword(!showRestPassword);
 
-  const { data, error } = useSWR<GeneralSettings>('/api/config?type=config');
+  const { data: generalSettings, error: generalSettingsError } =
+    useSWR<GeneralSettings>('/api/config?type=config');
+  const { data: defaultGeneralSettings, error: defaultGeneralSettingsError } =
+    useSWR<GeneralSettings>('/api/config?type=config&default=true');
 
-  const [speakerVolumeValue, setSpeakerVolumeValue] = React.useState(data?.speaker_volume);
-  const [lcdBrightnessValue, setLcdBrightnessValue] = React.useState(data?.lcd_brightness);
+  const [speakerVolumeValue, setSpeakerVolumeValue] = React.useState(
+    generalSettings?.speaker_volume
+      ? generalSettings.speaker_volume
+      : defaultGeneralSettings?.speaker_volume
+  );
+  const [lcdBrightnessValue, setLcdBrightnessValue] = React.useState(
+    generalSettings?.lcd_brightness
+      ? generalSettings.lcd_brightness
+      : defaultGeneralSettings?.lcd_brightness
+  );
 
   // Handlers for Speaker Volume Slider and Input
   const handleSpeakerVolumeInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -526,7 +580,11 @@ function GeneralSettings() {
     } else if (speakerVolumeValue && speakerVolumeValue > 100) {
       setSpeakerVolumeValue(100);
     } else if (!speakerVolumeValue) {
-      setSpeakerVolumeValue(data?.speaker_volume);
+      setSpeakerVolumeValue(
+        generalSettings?.speaker_volume
+          ? generalSettings.speaker_volume
+          : defaultGeneralSettings?.speaker_volume
+      );
     }
   };
 
@@ -545,26 +603,58 @@ function GeneralSettings() {
     } else if (lcdBrightnessValue && lcdBrightnessValue > 1023) {
       setLcdBrightnessValue(1023);
     } else if (!lcdBrightnessValue) {
-      setLcdBrightnessValue(data?.lcd_brightness);
+      setLcdBrightnessValue(
+        generalSettings?.lcd_brightness
+          ? generalSettings.lcd_brightness
+          : defaultGeneralSettings?.lcd_brightness
+      );
     }
   };
 
   React.useEffect(() => {
-    if (data) {
-      setCommandEndpoint(data.command_endpoint);
-      setRestAuthType(data.rest_auth_type);
-      setNtpConfig(data.ntp_config);
+    if (generalSettings && defaultGeneralSettings) {
+      setCommandEndpoint(
+        generalSettings.command_endpoint
+          ? generalSettings.command_endpoint
+          : defaultGeneralSettings.command_endpoint
+      );
+      setRestAuthType(
+        generalSettings.rest_auth_type
+          ? generalSettings.rest_auth_type
+          : defaultGeneralSettings.rest_auth_type
+      );
+      setNtpConfig(
+        generalSettings.ntp_config ? generalSettings.ntp_config : defaultGeneralSettings.ntp_config
+      );
+      setLcdBrightnessValue(
+        generalSettings?.lcd_brightness
+          ? generalSettings.lcd_brightness
+          : defaultGeneralSettings?.lcd_brightness
+      );
+      setSpeakerVolumeValue(
+        generalSettings?.speaker_volume
+          ? generalSettings.speaker_volume
+          : defaultGeneralSettings?.speaker_volume
+      );
       setLoading(false);
     }
-  }, [data]);
+  }, [generalSettings, defaultGeneralSettings]);
+
+  const onboardingState = React.useContext(OnboardingContext);
 
   return loading ? (
     <LoadingSpinner />
   ) : (
-    <form name="general-settings-form" onSubmit={handleSubmit}>
+    <form
+      name="general-settings-form"
+      onSubmit={(event) => handleSubmit(event, !onboardingState.isOnboardingComplete)}>
       <EnumSelectHelper
         name="speech_rec_mode"
-        defaultValue={data?.speech_rec_mode}
+        defaultValue={
+          generalSettings?.speech_rec_mode
+            ? generalSettings.speech_rec_mode
+            : defaultGeneralSettings?.speech_rec_mode
+        }
         label="Speech Recognition Mode"
         options={SPEECH_REC_MODE}
         tooltip=" Willow Inference Server mode uses the configured URL to stream your speech to a very high quality speech recognition implementation powered by WIS.
@@ -574,7 +664,9 @@ function GeneralSettings() {
       <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} alignItems="center">
         <TextField
           name="wis_url"
-          defaultValue={data?.wis_url}
+          defaultValue={
+            generalSettings?.wis_url ? generalSettings.wis_url : defaultGeneralSettings?.wis_url
+          }
           required
           label="Willow Inference Server Speech Recognition URL"
           margin="dense"
@@ -589,26 +681,42 @@ function GeneralSettings() {
       </Stack>
       <EnumSelectHelper
         name="audio_response_type"
-        defaultValue={data?.audio_response_type}
+        defaultValue={
+          generalSettings?.audio_response_type
+            ? generalSettings.audio_response_type
+            : defaultGeneralSettings?.audio_response_type
+        }
         label="Willow Audio Response Type"
         options={AUDIO_RESPONSE_TYPE}
         tooltip="Text to Speech uses the configured Willow Inference Server (WIS) to speak the result of your command.
         Chimes plays success/failure tones depending on the response from your command endpoint.
         Silence has no audio output."
       />
-      <TextField
-        name="wis_tts_url"
-        defaultValue={data?.wis_tts_url}
-        required
-        label="Willow Inference Server Text to Speech URL"
-        margin="dense"
-        variant="outlined"
-        size="small"
-        fullWidth
-      />
+      <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} alignItems="center">
+        <TextField
+          name="wis_tts_url"
+          defaultValue={
+            generalSettings?.wis_tts_url
+              ? generalSettings.wis_tts_url
+              : defaultGeneralSettings?.wis_tts_url
+          }
+          required
+          label="Willow Inference Server Text to Speech URL"
+          margin="dense"
+          variant="outlined"
+          size="small"
+          fullWidth
+        />
+        <HelpTooltip
+          tooltip="The URL for the TTS API. 
+        Our best-effort hosted instance is provided by default but you should really setup your own!"
+        />
+      </Stack>
       <EnumSelectHelper
         name="wake_word"
-        defaultValue={data?.wake_word}
+        defaultValue={
+          generalSettings?.wake_word ? generalSettings.wake_word : defaultGeneralSettings?.wake_word
+        }
         label="Wake Word"
         options={WAKE_WORDS}
         tooltip="Alexa is pretty easy for everyone.
@@ -627,61 +735,77 @@ function GeneralSettings() {
       />
       {commandEndpoint == 'Home Assistant' && (
         <>
-          <TextField
-            name="hass_host"
-            defaultValue={data?.hass_host}
-            required
-            label="Home Assistant Host"
-            margin="dense"
-            variant="outlined"
-            size="small"
-            fullWidth
-          />
-          <TextField
-            name="hass_port"
-            defaultValue={data?.hass_port}
-            type="number"
-            required
-            label="Home Assistant Port"
-            margin="dense"
-            variant="outlined"
-            size="small"
-            fullWidth
-          />
-          <TextField
-            name="hass_token"
-            defaultValue={data?.hass_token}
-            required
-            label="Home Assistant Token"
-            margin="dense"
-            variant="outlined"
-            type={showHaToken ? 'text' : 'password'}
-            size="small"
-            fullWidth
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle ha token visibility"
-                    onClick={handleClickShowHaToken}
-                    onMouseDown={handleMouseDownHaToken}>
-                    {showHaToken ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-          <FormControlLabel
-            control={<Checkbox name="hass_tls" checked={data?.hass_tls} />}
-            label="Use TLS with Home Assistant"
-          />
+          <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
+            <TextField
+              name="hass_host"
+              defaultValue={generalSettings?.hass_host}
+              required
+              label="Home Assistant Host"
+              margin="dense"
+              variant="outlined"
+              size="small"
+              fullWidth
+            />
+            <HelpTooltip tooltip="The IP address or Hostname of your Home Assistant server." />
+          </Stack>
+          <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
+            <TextField
+              name="hass_port"
+              defaultValue={
+                generalSettings?.hass_port
+                  ? generalSettings.hass_port
+                  : defaultGeneralSettings?.hass_port
+              }
+              type="number"
+              required
+              label="Home Assistant Port"
+              margin="dense"
+              variant="outlined"
+              size="small"
+              fullWidth
+            />
+            <HelpTooltip tooltip="The port your Home Assistant server is listening on. On a default Home Assistant install this is 8123." />
+          </Stack>
+          <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
+            <TextField
+              name="hass_token"
+              defaultValue={generalSettings?.hass_token}
+              required
+              label="Home Assistant Token"
+              margin="dense"
+              variant="outlined"
+              type={showHaToken ? 'text' : 'password'}
+              size="small"
+              fullWidth
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle ha token visibility"
+                      onClick={handleClickShowHaToken}
+                      onMouseDown={handleMouseDownHaToken}>
+                      {showHaToken ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <HelpTooltip tooltip="The Long-Lived Access Token generated in Home Assistant." />
+          </Stack>
+          <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
+            <FormControlLabel
+              control={<Checkbox name="hass_tls" checked={generalSettings?.hass_tls} />}
+              label="Use TLS with Home Assistant"
+            />
+            <HelpTooltip tooltip="Whether or not your Home Assistant server is using https." />
+          </Stack>
         </>
       )}
       {commandEndpoint == 'openHAB' && (
         <>
           <TextField
             name="openhab_url"
-            defaultValue={data?.openhab_url}
+            defaultValue={generalSettings?.openhab_url}
             required
             label="openHAB URL"
             margin="dense"
@@ -691,7 +815,7 @@ function GeneralSettings() {
           />
           <TextField
             name="openhab_token"
-            defaultValue={data?.openhab_token}
+            defaultValue={generalSettings?.openhab_token}
             required
             label="openHAB Token"
             margin="dense"
@@ -718,7 +842,7 @@ function GeneralSettings() {
         <>
           <TextField
             name="rest_url"
-            defaultValue={data?.rest_url}
+            defaultValue={generalSettings?.rest_url}
             required
             label="REST URL"
             margin="dense"
@@ -737,7 +861,7 @@ function GeneralSettings() {
             <>
               <TextField
                 name="rest_auth_user"
-                defaultValue={data?.rest_auth_user}
+                defaultValue={generalSettings?.rest_auth_user}
                 required
                 label="REST Basic Username"
                 margin="dense"
@@ -747,7 +871,7 @@ function GeneralSettings() {
               />
               <TextField
                 name="rest_auth_pass"
-                defaultValue={data?.rest_auth_pass}
+                defaultValue={generalSettings?.rest_auth_pass}
                 required
                 label="REST Basic Password"
                 margin="dense"
@@ -774,7 +898,7 @@ function GeneralSettings() {
             <>
               <TextField
                 name="rest_auth_header"
-                defaultValue={data?.rest_auth_header}
+                defaultValue={generalSettings?.rest_auth_header}
                 required
                 label="REST Authentication Header"
                 margin="dense"
@@ -854,7 +978,11 @@ function GeneralSettings() {
         <>
           <TextField
             name="ntp_host"
-            defaultValue={data?.ntp_host}
+            defaultValue={
+              generalSettings?.ntp_host
+                ? generalSettings.ntp_host
+                : defaultGeneralSettings?.ntp_host
+            }
             required
             label="NTP Server"
             margin="dense"
@@ -872,7 +1000,11 @@ function GeneralSettings() {
           tooltip="Save your configuration to WAS.
           If you want to test your configuration you can go to the Clients page to save to individual clients."></HelpTooltip>
       </Stack>
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{ display: onboardingState.isOnboardingComplete ? undefined : 'none' }}
+        justifyContent="flex-end">
         <Button id="saveAndApply" type="submit" variant="outlined">
           Save Settings & Apply Everywhere
         </Button>
@@ -880,11 +1012,6 @@ function GeneralSettings() {
       </Stack>
     </form>
   );
-}
-
-interface NvsSettings {
-  WAS: { URL: string };
-  WIFI: { PSK: string; SSID: string };
 }
 
 function ConnectionSettings() {
@@ -897,6 +1024,8 @@ function ConnectionSettings() {
   React.useEffect(() => {
     if (data) setLoading(false);
   }, [data]);
+
+  const onboardingContext = React.useContext(OnboardingContext);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -931,7 +1060,7 @@ function ConnectionSettings() {
     <form onSubmit={handleSubmit}>
       <TextField
         name="url"
-        defaultValue={data?.WAS?.URL}
+        defaultValue={data?.WAS?.URL ? data?.WAS?.URL : WAS_URL}
         required
         label="Willow Application Server URL"
         margin="dense"
@@ -978,7 +1107,11 @@ function ConnectionSettings() {
           Save Connection Settings
         </Button>
       </Stack>
-      <Stack direction="row" spacing={2} sx={{ mb: 1, mt: 1 }} justifyContent="flex-end">
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{ mb: 1, mt: 1, display: onboardingContext.isOnboardingComplete ? undefined : 'none' }}
+        justifyContent="flex-end">
         <Button id="saveAndApply" type="submit" variant="outlined">
           Save Connection Settings & Apply Everywhere
         </Button>
@@ -988,15 +1121,25 @@ function ConnectionSettings() {
 }
 
 function SettingsAccordions() {
-  const [expanded, setExpanded] = React.useState<string | false>('General');
+  const onboardingState = React.useContext(OnboardingContext);
+  const initialAccordion = onboardingState.isNvsComplete ? 'General' : 'Connectivity';
+  const [expanded, setExpanded] = React.useState<string | false>(initialAccordion);
+  const [overrideOnboarding, setOverrideOnboarding] = React.useState(false);
 
   const handleChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+    setOverrideOnboarding(true);
     setExpanded(isExpanded ? panel : false);
   };
 
   return (
     <div style={{ maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
-      <Accordion expanded={expanded === 'Connectivity'} onChange={handleChange('Connectivity')}>
+      <Accordion
+        expanded={
+          onboardingState.isGeneralConfigComplete || overrideOnboarding
+            ? expanded === 'Connectivity'
+            : !onboardingState.isNvsComplete
+        }
+        onChange={handleChange('Connectivity')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="Connectivity-content"
@@ -1008,7 +1151,14 @@ function SettingsAccordions() {
           <ConnectionSettings></ConnectionSettings>
         </AccordionDetails>
       </Accordion>
-      <Accordion expanded={expanded === 'General'} onChange={handleChange('General')}>
+      <Accordion
+        expanded={
+          onboardingState.isOnboardingComplete || overrideOnboarding
+            ? expanded === 'General'
+            : onboardingState.isNvsComplete
+        }
+        onChange={handleChange('General')}
+        sx={{ display: onboardingState.isNvsComplete ? undefined : 'none' }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="General-content"
@@ -1020,7 +1170,10 @@ function SettingsAccordions() {
           <GeneralSettings></GeneralSettings>
         </AccordionDetails>
       </Accordion>
-      <Accordion expanded={expanded === 'Advanced'} onChange={handleChange('Advanced')}>
+      <Accordion
+        expanded={expanded === 'Advanced'}
+        onChange={handleChange('Advanced')}
+        sx={{ display: onboardingState.isGeneralConfigComplete ? undefined : 'none' }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="Advanced-content"
@@ -1036,6 +1189,36 @@ function SettingsAccordions() {
   );
 }
 
+function GetInformationCard() {
+  const onboardingContext = React.useContext(OnboardingContext);
+
+  if (onboardingContext.isOnboardingComplete) {
+    return <WebFlashCard></WebFlashCard>;
+  } else if (!onboardingContext.isNvsComplete) {
+    return (
+      <InformationCard title="Welcome to Willow!">
+        <CardContent sx={{ textAlign: 'center' }}>
+          To get started, please enter in your WiFi network and password.
+          <b>SSID is case sensitive!</b>
+          <br />
+          We have attempted to guess your WAS url, please ensure the value is correct.
+          <br />
+          <b>Please Note: The WiFi network defined below must be able to access this server!</b>
+        </CardContent>
+      </InformationCard>
+    );
+  } else if (!onboardingContext.isGeneralConfigComplete) {
+    return (
+      <InformationCard title="Welcome to Willow!">
+        <CardContent sx={{ textAlign: 'center' }}>
+          Please configure your general settings. Refer to the tooltips for guidance on each config
+          value.
+        </CardContent>
+      </InformationCard>
+    );
+  }
+}
+
 const Config: NextPage = () => {
   const { data: nvsData, isLoading: nvsIsLoading } = useSWR<NvsSettings>('/api/config?type=nvs');
   const { data: configData, isLoading: configIsLoading } =
@@ -1045,8 +1228,7 @@ const Config: NextPage = () => {
     <LoadingSpinner />
   ) : (
     <LeftMenu>
-      {(nvsData ? Object.keys(nvsData).length > 0 : false) &&
-        (configData ? Object.keys(configData).length > 0 : false) && <WebFlashCard></WebFlashCard>}
+      {GetInformationCard()}
       <SettingsAccordions></SettingsAccordions>
     </LeftMenu>
   );

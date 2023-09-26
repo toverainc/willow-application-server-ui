@@ -19,6 +19,8 @@ import { post } from '../misc/fetchers';
 import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
 
 import Grid from '@mui/material/Grid';
+import { OnboardingContext } from './_app';
+import { useRouter } from 'next/navigation';
 
 function groupBy<T>(
   items: T[],
@@ -118,6 +120,13 @@ export function mergeReleases(willowReleases: any[] | undefined): ReleaseAsset[]
 
 const Updates: NextPage = () => {
   const { data: willowData, error: willowError } = useSWR<any[]>('/api/release?type=was');
+  const onboardingContext = React.useContext(OnboardingContext);
+  const router = useRouter();
+
+  if (!onboardingContext.isOnboardingComplete) {
+    router.replace('/config');
+    return <></>;
+  }
 
   return (
     <LeftMenu>
