@@ -149,7 +149,7 @@ async function handleSubmit(
   );
   try {
     await post(apply ? '/api/config?type=config&apply=1' : '/api/config?type=config&apply=0', body);
-    await mutate('/api/config?type=config');
+    await Promise.all([mutate('/api/config?type=config'), mutate('/api/client')]);
     if (typeof window !== 'undefined' && shouldScrollToTop) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -1041,7 +1041,7 @@ function ConnectionSettings() {
 
     try {
       await post(apply ? '/api/config?type=nvs&apply=1' : '/api/config?type=nvs&apply=0', body);
-      await mutate('/api/config?type=nvs');
+      await Promise.all([mutate('/api/config?type=nvs'), mutate('/api/client')]);
     } catch (e) {
       console.error(`Save connectivity settings failed with ${e}`);
       toast.error(`Saving connectivity settings to WAS failed!`);

@@ -8,6 +8,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { post } from '../misc/fetchers';
 import { Client } from '../misc/model';
+import { mutate } from 'swr';
 
 interface ConfirmationDialogParams {
   open: boolean;
@@ -56,6 +57,7 @@ export function ResetDialog({
   async function onConfirm(evt: any) {
     try {
       await post('/api/client?action=restart', { hostname: client.hostname });
+      await mutate('/api/client');
     } catch (e) {
       console.error(`Restarting "${client.label || client.hostname}" failed with ${e}`);
       toast.error(`Restarting "${client.label || client.hostname}" failed!`);
@@ -87,6 +89,7 @@ export function ApplyConfigDialog({
     try {
       //note if client is not supplied this applies config to all
       await post('/api/config?type=config&apply=1', { hostname: client?.hostname });
+      await mutate('/api/client');
     } catch (e) {
       console.error(
         `Applying configuration to "${client.label || client.hostname}" failed with ${e}`
@@ -126,6 +129,7 @@ export function SaveAndApplyConfigDialog({
     try {
       //note if client is not supplied this applies config to all
       await post('/api/config?type=config&apply=1', { hostname: client?.hostname });
+      await mutate('/api/client');
     } catch (e) {
       console.error(`Saving and applying configuration failed with ${e}`);
       toast.error(`Saving and applying configuration failed!`);
@@ -163,6 +167,7 @@ export function ApplyNvsDialog({
     try {
       //note if client is not supplied this applies config to all
       await post('/api/config?type=nvs&apply=1', { hostname: client?.hostname });
+      await mutate('/api/client');
     } catch (e) {
       console.error(
         `Applying connectivity configuration to "${
