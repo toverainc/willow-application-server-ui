@@ -1,4 +1,5 @@
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Button, CardActions, Stack, Tooltip } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
@@ -10,15 +11,19 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Image from 'next/image';
 import * as React from 'react';
-import { Client } from '../misc/model';
+import { Client, ReleaseAsset } from '../misc/model';
 import { ApplyConfigDialog, ApplyNvsDialog, ResetDialog } from './ConfirmDialog';
 import NameClientDialog from './NameClientDialog';
 import OtaDialog from './OtaDialog';
+import DownloadIcon from '@mui/icons-material/Download';
 
 function ClientMenu({ client }: { client: Client }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [openOtaDialog, setOpenOtaDialog] = React.useState<boolean>(false);
+  const [otaDialogSelectedVersion, setOtaDialogSelectedVersion] = React.useState<
+    string | undefined
+  >(undefined);
   const [openResetDialog, setOpenResetDialog] = React.useState<boolean>(false);
   const [openApplyConfigDialog, setOpenApplyConfigDialog] = React.useState<boolean>(false);
   const [openApplyNvsDialog, setOpenApplyNvsDialog] = React.useState<boolean>(false);
@@ -85,7 +90,15 @@ function ClientMenu({ client }: { client: Client }) {
   );
 }
 
-export default function ClientCard({ client }: { client: Client }) {
+export default function ClientCard({
+  client,
+  latestRelease,
+}: {
+  client: Client;
+  latestRelease: ReleaseAsset | undefined;
+}) {
+  const [openOtaDialog, setOpenOtaDialog] = React.useState<boolean>(false);
+
   return (
     <Card sx={{ maxWidth: 500 }}>
       <CardHeader
@@ -102,7 +115,7 @@ export default function ClientCard({ client }: { client: Client }) {
         subheader={client.mac_addr}
         sx={{ paddingBottom: 0 }}
       />
-      <CardContent sx={{ padding: 1 }}>
+      <CardContent sx={{ paddingLeft: 1, paddingBottom: 0 }}>
         <List dense={true}>
           <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
             <ListItemText sx={{ margin: 0 }} primary={'Hostname: ' + client.hostname} />
@@ -118,6 +131,30 @@ export default function ClientCard({ client }: { client: Client }) {
           </ListItem>
         </List>
       </CardContent>
+      <CardActions sx={{ paddingLeft: 1, paddingTop: 0 }}>
+        {latestRelease !== undefined && latestRelease.name !== client.version && (
+          <Stack spacing={2} sx={{ padding: 0 }}>
+            <Tooltip
+              style={{ boxShadow: 'none' }}
+              title={'Upgrade to ' + latestRelease.name}
+              enterTouchDelay={0}>
+              <IconButton
+                edge="end"
+                aria-label="delete"
+                onClick={() => {
+                  setOpenOtaDialog(true);
+                }}>
+                <DownloadIcon />
+              </IconButton>
+            </Tooltip>
+            <OtaDialog
+              client={client}
+              open={openOtaDialog}
+              selectedRelease={latestRelease}
+              onClose={() => setOpenOtaDialog(false)}></OtaDialog>
+          </Stack>
+        )}
+      </CardActions>
     </Card>
   );
 }

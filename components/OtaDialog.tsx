@@ -1,33 +1,34 @@
-import * as React from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import useSWR from 'swr';
+import * as React from 'react';
 import { toast } from 'react-toastify';
+import useSWR, { mutate } from 'swr';
 import { post } from '../misc/fetchers';
-import { mutate } from 'swr';
 import { mergeReleases } from '../pages/upgrades';
 
-import { Client } from '../misc/model';
+import { Client, ReleaseAsset } from '../misc/model';
 
 export default function OtaDialog({
   client,
+  selectedRelease,
   open,
   onClose,
 }: {
   client: Client;
+  selectedRelease?: ReleaseAsset;
   open: boolean;
   onClose: (event: any) => void;
 }) {
   const { data: releaseData, error } = useSWR<any[]>('/api/release?type=was');
-  const [wasUrl, setWasUrl] = React.useState<string>('');
+  const [wasUrl, setWasUrl] = React.useState<string>(selectedRelease?.was_url ?? '');
 
   async function onFlash(event: any) {
     try {
