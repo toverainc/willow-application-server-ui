@@ -22,16 +22,16 @@ const Home: NextPage = () => {
   }); //we refresh clients every 5 seconds so we can detect offline, new, & updated clients
   const onboardingContext = React.useContext(OnboardingContext);
   const { data: releaseData, error: releaseError } = useSWR<any[]>('/api/release?type=was');
-
-  if (!onboardingContext.isOnboardingComplete) {
-    router.replace('/config');
-    return <></>;
-  }
   const [latestRelease, setLatestRelease] = React.useState<ReleaseAsset[] | undefined>(undefined);
 
   React.useEffect(() => {
     setLatestRelease(mergeReleases(releaseData?.filter((release) => release.latest)));
   }, [releaseData]);
+
+  if (!onboardingContext.isOnboardingComplete) {
+    router.replace('/config');
+    return <></>;
+  }
   return (
     <LeftMenu>
       <Grid container spacing={2}>
