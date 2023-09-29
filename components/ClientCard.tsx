@@ -100,7 +100,7 @@ export default function ClientCard({
   const [openOtaDialog, setOpenOtaDialog] = React.useState<boolean>(false);
 
   return (
-    <Card sx={{ maxWidth: 500 }}>
+    <Card sx={{ maxWidth: 500, minHeight: 230 }}>
       <CardHeader
         avatar={
           <Image
