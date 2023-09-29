@@ -80,7 +80,9 @@ function ReleaseCard({ release }: { release: ReleaseAsset[] }) {
                     style={{ boxShadow: 'none' }}
                     title="Release Downloaded"
                     enterTouchDelay={0}>
-                    <DownloadDoneIcon></DownloadDoneIcon>
+                    <IconButton edge="end" aria-label="delete" disabled>
+                      <DownloadDoneIcon />
+                    </IconButton>
                   </Tooltip>
                 )
               }>
