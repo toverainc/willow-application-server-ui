@@ -12,9 +12,8 @@ import * as React from 'react';
 import { toast } from 'react-toastify';
 import useSWR, { mutate } from 'swr';
 import { fetcher, post } from '../misc/fetchers';
-import { mergeReleases } from '../pages/upgrades';
 
-import { Client, ReleaseAsset } from '../misc/model';
+import { Client, Release, ReleaseAsset } from '../misc/model';
 
 export default function OtaDialog({
   client,
@@ -27,7 +26,7 @@ export default function OtaDialog({
   open: boolean;
   onClose: (event: any) => void;
 }) {
-  const { data: releaseData, error } = useSWR<any[]>('/api/release?type=was');
+  const { data: releaseData, error } = useSWR<Release[]>('/api/release?type=was');
   const [wasUrl, setWasUrl] = React.useState<string>(selectedRelease?.was_url ?? '');
 
   async function onFlash(event: any) {
@@ -68,13 +67,22 @@ export default function OtaDialog({
             label="Release"
             onChange={(event: any) => setWasUrl(event.target.value as string)}>
             {releaseData &&
-              mergeReleases(releaseData)
-                .filter((r) => r.platform == client.platform && r.was_url)
-                .map((asset) => (
-                  <MenuItem key={client.hostname + asset.willow_url} value={asset.was_url as any}>
-                    {asset.name}
-                  </MenuItem>
-                ))}
+              releaseData.map((release) =>
+                release.assets
+                  .filter(
+                    (asset) =>
+                      asset.platform == client.platform &&
+                      asset.build_type != 'dist' &&
+                      asset.was_url
+                  )
+                  .map((asset) => (
+                    <MenuItem
+                      key={client.hostname + asset.browser_download_url}
+                      value={asset.was_url as any}>
+                      {release.name}
+                    </MenuItem>
+                  ))
+              )}
           </Select>
         </FormControl>
       </DialogContent>

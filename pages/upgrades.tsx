@@ -8,7 +8,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
-import { ReleaseAsset } from '../misc/model';
+import { Release, ReleaseAsset } from '../misc/model';
 import useSWR from 'swr';
 import InputLabel from '@mui/material/InputLabel';
 import Link from '@mui/material/Link';
@@ -22,26 +22,12 @@ import Grid from '@mui/material/Grid';
 import { OnboardingContext } from './_app';
 import { useRouter } from 'next/navigation';
 
-function groupBy<T>(
-  items: T[],
-  keyOrKeyFn: keyof T | ((item: T) => string | number)
-): Record<string | number, T[]> {
-  return items.reduce(
-    (acc, item) => {
-      const key = typeof keyOrKeyFn === 'function' ? keyOrKeyFn(item) : item[keyOrKeyFn];
-      (acc[key as any] = acc[key as any] || []).push(item);
-      return acc;
-    },
-    {} as Record<string | number, T[]>
-  );
-}
-
-function ReleaseCard({ release }: { release: ReleaseAsset[] }) {
+function ReleaseCard({ release }: { release: Release }) {
   async function handleDownload(asset: ReleaseAsset) {
     await post('/api/release?action=cache', {
       version: asset.name,
       platform: asset.platform,
-      willow_url: asset.willow_url,
+      willow_url: asset.browser_download_url,
       size: asset.size,
     });
   }
@@ -51,10 +37,18 @@ function ReleaseCard({ release }: { release: ReleaseAsset[] }) {
       <CardHeader
         title={
           <>
-            <Link href={release[0].html_url} target="_blank">
-              {release[0].name}
+            <Link href={release.html_url} target="_blank">
+              {release.name}
             </Link>{' '}
-            <Typography fontSize={10}>{(release[0].size / (1024 * 1024)).toFixed(2)}MB</Typography>
+            <Typography fontSize={10}>
+              {(
+                release.assets
+                  .filter((asset) => asset.cached)
+                  .reduce((totalSize, asset) => totalSize + asset.size, 0) /
+                (1024 * 1024)
+              ).toFixed(2)}
+              MB
+            </Typography>
           </>
         }
         sx={{ paddingBottom: 0 }}
@@ -62,66 +56,46 @@ function ReleaseCard({ release }: { release: ReleaseAsset[] }) {
       <CardContent sx={{ padding: 1 }}>
         <InputLabel sx={{ marginLeft: 1 }}>Hardware Type</InputLabel>
         <List dense={true}>
-          {release.map((a) => (
-            <ListItem
-              key={a.willow_url}
-              secondaryAction={
-                !a.cached ? (
-                  <Tooltip
-                    style={{ boxShadow: 'none' }}
-                    title="Download this release"
-                    enterTouchDelay={0}>
-                    <IconButton edge="end" aria-label="delete" onClick={(e) => handleDownload(a)}>
-                      <DownloadIcon />
-                    </IconButton>
-                  </Tooltip>
-                ) : (
-                  <Tooltip
-                    style={{ boxShadow: 'none' }}
-                    title="Release Downloaded"
-                    enterTouchDelay={0}>
-                    <IconButton edge="end" aria-label="delete" disabled>
-                      <DownloadDoneIcon />
-                    </IconButton>
-                  </Tooltip>
-                )
-              }>
-              <ListItemText sx={{ margin: 0 }} primary={a.platform} />
-            </ListItem>
-          ))}
+          {release.assets
+            .filter((asset) => asset.build_type !== 'dist')
+            .map((asset: ReleaseAsset) => (
+              <ListItem
+                key={asset.browser_download_url}
+                secondaryAction={
+                  !asset.cached ? (
+                    <Tooltip
+                      style={{ boxShadow: 'none' }}
+                      title="Download this release"
+                      enterTouchDelay={0}>
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={(e) => handleDownload(asset)}>
+                        <DownloadIcon />
+                      </IconButton>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip
+                      style={{ boxShadow: 'none' }}
+                      title="Release Downloaded"
+                      enterTouchDelay={0}>
+                      <IconButton edge="end" aria-label="delete" disabled>
+                        <DownloadDoneIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }>
+                <ListItemText sx={{ margin: 0 }} primary={asset.platform} />
+              </ListItem>
+            ))}
         </List>
       </CardContent>
     </Card>
   );
 }
 
-//super gross function that merges willow releases and our api format
-//works but possibly update with new API format?
-export function mergeReleases(willowReleases: any[] | undefined): ReleaseAsset[] {
-  const ret: ReleaseAsset[] = [];
-  for (const release of willowReleases || []) {
-    for (const a of release.assets) {
-      if (a.build_type != 'ota') continue; //Not OTA file ignore
-      const name: string = release.tag_name;
-      const platform: string = a.platform;
-      const ra: ReleaseAsset = {
-        name,
-        platform,
-        file_name: a.name,
-        willow_url: a.browser_download_url,
-        size: a.size,
-        was_url: a.was_url,
-        cached: a.cached,
-        html_url: release.html_url,
-      };
-      ret.push(ra);
-    }
-  }
-  return ret;
-}
-
 const Updates: NextPage = () => {
-  const { data: willowData, error: willowError } = useSWR<any[]>('/api/release?type=was');
+  const { data: releaseData, error: releaseDataError } = useSWR<Release[]>('/api/release?type=was');
   const onboardingContext = React.useContext(OnboardingContext);
   const router = useRouter();
 
@@ -133,11 +107,9 @@ const Updates: NextPage = () => {
   return (
     <LeftMenu>
       <Grid container spacing={2}>
-        {Object.entries(groupBy<ReleaseAsset>(mergeReleases(willowData), 'name')).map(
-          ([name, releases]) => (
-            <ReleaseCard key={name} release={releases}></ReleaseCard>
-          )
-        )}
+        {releaseData?.map((release: Release) => (
+          <ReleaseCard key={release.name} release={release}></ReleaseCard>
+        ))}
       </Grid>
     </LeftMenu>
   );

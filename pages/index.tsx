@@ -6,14 +6,9 @@ import useSWR from 'swr';
 import ClientCard from '../components/ClientCard';
 import LeftMenu from '../components/LeftMenu';
 import { fetcher } from '../misc/fetchers';
-import { Client, ReleaseAsset } from '../misc/model';
+import { Client, Release } from '../misc/model';
 import { OnboardingContext } from './_app';
-import { mergeReleases } from './upgrades';
-
-interface LatestRelease {
-  platform: string;
-  version: string;
-}
+import { release } from 'os';
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -21,11 +16,11 @@ const Home: NextPage = () => {
     refreshInterval: 5000,
   }); //we refresh clients every 5 seconds so we can detect offline, new, & updated clients
   const onboardingContext = React.useContext(OnboardingContext);
-  const { data: releaseData, error: releaseError } = useSWR<any[]>('/api/release?type=was');
-  const [latestRelease, setLatestRelease] = React.useState<ReleaseAsset[] | undefined>(undefined);
+  const { data: releaseData, error: releaseError } = useSWR<Release[]>('/api/release?type=was');
+  const [latestRelease, setLatestRelease] = React.useState<Release | undefined>(undefined);
 
   React.useEffect(() => {
-    setLatestRelease(mergeReleases(releaseData?.filter((release) => release.latest)));
+    setLatestRelease((releaseData?.filter((release) => release.latest) ?? [undefined])[0]);
   }, [releaseData]);
 
   if (!onboardingContext.isOnboardingComplete) {
@@ -40,11 +35,12 @@ const Home: NextPage = () => {
             <Grid item md={4} sm={6} xs={12} lg={3}>
               <ClientCard
                 client={client}
-                latestRelease={
-                  (latestRelease?.filter((r) => r.platform == client.platform && r.was_url) ?? [
-                    undefined,
-                  ])[0] ?? undefined
-                }></ClientCard>
+                latestReleaseAsset={
+                  (latestRelease?.assets?.filter(
+                    (r) => r.platform == client.platform && r.was_url
+                  ) ?? [undefined])[0] ?? undefined
+                }
+                latestReleaseName={latestRelease?.name}></ClientCard>
             </Grid>
           </React.Fragment>
         ))}

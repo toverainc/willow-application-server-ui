@@ -8,14 +8,22 @@ export interface Client {
   label?: string;
 }
 
+export interface Release {
+  name: string;
+  html_url: string;
+  assets: ReleaseAsset[];
+  latest: boolean;
+}
+
 export interface ReleaseAsset {
   name: string;
   platform: string;
-  file_name: string;
-  willow_url: string;
-  html_url?: string;
+  build_type: string;
+  url: string;
   size: number;
-  was_url: string | null;
+  created_at: string;
+  browser_download_url: string;
+  was_url: string;
   cached: boolean;
 }
 

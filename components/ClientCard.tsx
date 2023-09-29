@@ -92,10 +92,12 @@ function ClientMenu({ client }: { client: Client }) {
 
 export default function ClientCard({
   client,
-  latestRelease,
+  latestReleaseAsset,
+  latestReleaseName,
 }: {
   client: Client;
-  latestRelease: ReleaseAsset | undefined;
+  latestReleaseAsset: ReleaseAsset | undefined;
+  latestReleaseName: string | undefined;
 }) {
   const [openOtaDialog, setOpenOtaDialog] = React.useState<boolean>(false);
 
@@ -132,28 +134,30 @@ export default function ClientCard({
         </List>
       </CardContent>
       <CardActions sx={{ paddingLeft: 1, paddingTop: 0 }}>
-        {latestRelease !== undefined && latestRelease.name !== client.version && (
-          <Stack spacing={2} sx={{ padding: 0 }}>
-            <Tooltip
-              style={{ boxShadow: 'none' }}
-              title={'Upgrade to ' + latestRelease.name}
-              enterTouchDelay={0}>
-              <IconButton
-                edge="end"
-                aria-label="delete"
-                onClick={() => {
-                  setOpenOtaDialog(true);
-                }}>
-                <DownloadIcon />
-              </IconButton>
-            </Tooltip>
-            <OtaDialog
-              client={client}
-              open={openOtaDialog}
-              selectedRelease={latestRelease}
-              onClose={() => setOpenOtaDialog(false)}></OtaDialog>
-          </Stack>
-        )}
+        {latestReleaseAsset !== undefined &&
+          latestReleaseName !== undefined &&
+          latestReleaseName !== client.version && (
+            <Stack spacing={2} sx={{ padding: 0 }}>
+              <Tooltip
+                style={{ boxShadow: 'none' }}
+                title={'Upgrade to ' + latestReleaseName}
+                enterTouchDelay={0}>
+                <IconButton
+                  edge="end"
+                  aria-label="delete"
+                  onClick={() => {
+                    setOpenOtaDialog(true);
+                  }}>
+                  <DownloadIcon />
+                </IconButton>
+              </Tooltip>
+              <OtaDialog
+                client={client}
+                open={openOtaDialog}
+                selectedRelease={latestReleaseAsset}
+                onClose={() => setOpenOtaDialog(false)}></OtaDialog>
+            </Stack>
+          )}
       </CardActions>
     </Card>
   );
