@@ -281,28 +281,18 @@ function AdvancedSettings() {
   React.useEffect(() => {
     if (advancedSettings && defaultAdvancedSettings) {
       setMicGainValue(
-        advancedSettings?.mic_gain ? advancedSettings.mic_gain : defaultAdvancedSettings?.mic_gain
+        advancedSettings.mic_gain ? advancedSettings.mic_gain : defaultAdvancedSettings.mic_gain
       );
-      setRecordBufferValue(
-        advancedSettings?.record_buffer
-          ? advancedSettings.record_buffer
-          : defaultAdvancedSettings?.record_buffer
-      );
+      setRecordBufferValue(advancedSettings.record_buffer ?? defaultAdvancedSettings.record_buffer);
       setStreamTimeoutValue(
-        advancedSettings?.stream_timeout
-          ? advancedSettings.stream_timeout
-          : defaultAdvancedSettings?.stream_timeout
+        advancedSettings.stream_timeout ?? defaultAdvancedSettings.stream_timeout
       );
-      setVadTimeoutValue(
-        advancedSettings?.vad_timeout
-          ? advancedSettings.vad_timeout
-          : defaultAdvancedSettings?.vad_timeout
-      );
+      setVadTimeoutValue(advancedSettings.vad_timeout ?? defaultAdvancedSettings.vad_timeout);
       setLoading(false);
     }
   }, [advancedSettings, defaultAdvancedSettings]);
 
-  return loading ? (
+  return loading || !(advancedSettings && defaultAdvancedSettings) ? (
     <LoadingSpinner />
   ) : (
     <form name="advanced-settings-form" onSubmit={handleSubmit}>
@@ -312,9 +302,7 @@ function AdvancedSettings() {
             control={
               <Checkbox
                 name="aec"
-                defaultChecked={
-                  advancedSettings?.aec ? advancedSettings.aec : defaultAdvancedSettings?.aec
-                }
+                defaultChecked={advancedSettings.aec ?? defaultAdvancedSettings.aec}
               />
             }
             label="Acoustic Echo Cancellation"
@@ -330,9 +318,7 @@ function AdvancedSettings() {
             control={
               <Checkbox
                 name="bss"
-                defaultChecked={
-                  advancedSettings?.bss ? advancedSettings.bss : defaultAdvancedSettings?.bss
-                }
+                defaultChecked={advancedSettings.bss ?? defaultAdvancedSettings.bss}
               />
             }
             label="Blind Source Separation"
@@ -349,11 +335,7 @@ function AdvancedSettings() {
             control={
               <Checkbox
                 name="multiwake"
-                defaultChecked={
-                  advancedSettings?.multiwake
-                    ? advancedSettings.multiwake
-                    : defaultAdvancedSettings?.multiwake
-                }
+                defaultChecked={advancedSettings.multiwake ?? defaultAdvancedSettings.multiwake}
               />
             }
             label="Willow One Wake (EXPERIMENTAL)"
@@ -365,11 +347,7 @@ function AdvancedSettings() {
       </FormControl>
       <EnumSelectHelper
         name="audio_codec"
-        defaultValue={
-          advancedSettings?.audio_codec
-            ? advancedSettings.audio_codec
-            : defaultAdvancedSettings?.audio_codec
-        }
+        defaultValue={advancedSettings.audio_codec ?? defaultAdvancedSettings.audio_codec}
         label="Audio Codec to use for streaming to WIS"
         options={AUDIO_CODECS}
         tooltip="PCM is more accurate but uses more WiFi bandwidth.
@@ -378,9 +356,7 @@ function AdvancedSettings() {
       <EnumSelectHelper
         name="vad_mode"
         defaultValue={
-          advancedSettings?.vad_mode
-            ? advancedSettings.vad_mode.toString()
-            : defaultAdvancedSettings?.vad_mode?.toString()
+          advancedSettings.vad_mode?.toString() ?? defaultAdvancedSettings.vad_mode?.toString()
         }
         label="Voice Activity Detection Mode"
         options={VAD_MODES.map((v) => v.toString())}
@@ -389,11 +365,7 @@ function AdvancedSettings() {
       />
       <EnumSelectHelper
         name="wake_mode"
-        defaultValue={
-          advancedSettings?.wake_mode
-            ? advancedSettings.wake_mode
-            : defaultAdvancedSettings?.wake_mode
-        }
+        defaultValue={advancedSettings.wake_mode ?? defaultAdvancedSettings.wake_mode}
         label="Wake Word Recognition Mode"
         options={WAKE_MODES}
         tooltip="Wake Word Recognition Mode generally configures the sensitivity of detecting the wake word.
@@ -642,7 +614,7 @@ function GeneralSettings() {
 
   const onboardingState = React.useContext(OnboardingContext);
 
-  return loading ? (
+  return loading || !(generalSettings && defaultGeneralSettings) ? (
     <LoadingSpinner />
   ) : (
     <form
@@ -650,11 +622,7 @@ function GeneralSettings() {
       onSubmit={(event) => handleSubmit(event, !onboardingState.isOnboardingComplete)}>
       <EnumSelectHelper
         name="speech_rec_mode"
-        defaultValue={
-          generalSettings?.speech_rec_mode
-            ? generalSettings.speech_rec_mode
-            : defaultGeneralSettings?.speech_rec_mode
-        }
+        defaultValue={generalSettings.speech_rec_mode ?? defaultGeneralSettings.speech_rec_mode}
         label="Speech Recognition Mode"
         options={SPEECH_REC_MODE}
         tooltip=" Willow Inference Server mode uses the configured URL to stream your speech to a very high quality speech recognition implementation powered by WIS.
@@ -664,9 +632,7 @@ function GeneralSettings() {
       <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} alignItems="center">
         <TextField
           name="wis_url"
-          defaultValue={
-            generalSettings?.wis_url ? generalSettings.wis_url : defaultGeneralSettings?.wis_url
-          }
+          defaultValue={generalSettings.wis_url ?? defaultGeneralSettings.wis_url}
           required
           label="Willow Inference Server Speech Recognition URL"
           margin="dense"
@@ -682,9 +648,7 @@ function GeneralSettings() {
       <EnumSelectHelper
         name="audio_response_type"
         defaultValue={
-          generalSettings?.audio_response_type
-            ? generalSettings.audio_response_type
-            : defaultGeneralSettings?.audio_response_type
+          generalSettings.audio_response_type ?? defaultGeneralSettings.audio_response_type
         }
         label="Willow Audio Response Type"
         options={AUDIO_RESPONSE_TYPE}
@@ -695,11 +659,7 @@ function GeneralSettings() {
       <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} alignItems="center">
         <TextField
           name="wis_tts_url"
-          defaultValue={
-            generalSettings?.wis_tts_url
-              ? generalSettings.wis_tts_url
-              : defaultGeneralSettings?.wis_tts_url
-          }
+          defaultValue={generalSettings.wis_tts_url ?? defaultGeneralSettings.wis_tts_url}
           required
           label="Willow Inference Server Text to Speech URL"
           margin="dense"
@@ -714,9 +674,7 @@ function GeneralSettings() {
       </Stack>
       <EnumSelectHelper
         name="wake_word"
-        defaultValue={
-          generalSettings?.wake_word ? generalSettings.wake_word : defaultGeneralSettings?.wake_word
-        }
+        defaultValue={generalSettings.wake_word ?? defaultGeneralSettings.wake_word}
         label="Wake Word"
         options={WAKE_WORDS}
         tooltip="Alexa is pretty easy for everyone.
@@ -738,7 +696,7 @@ function GeneralSettings() {
           <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
             <TextField
               name="hass_host"
-              defaultValue={generalSettings?.hass_host}
+              defaultValue={generalSettings.hass_host}
               required
               label="Home Assistant Host"
               margin="dense"
@@ -751,11 +709,7 @@ function GeneralSettings() {
           <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
             <TextField
               name="hass_port"
-              defaultValue={
-                generalSettings?.hass_port
-                  ? generalSettings.hass_port
-                  : defaultGeneralSettings?.hass_port
-              }
+              defaultValue={generalSettings.hass_port ?? defaultGeneralSettings.hass_port}
               type="number"
               required
               label="Home Assistant Port"
@@ -769,7 +723,7 @@ function GeneralSettings() {
           <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
             <TextField
               name="hass_token"
-              defaultValue={generalSettings?.hass_token}
+              defaultValue={generalSettings.hass_token}
               required
               label="Home Assistant Token"
               margin="dense"
@@ -794,7 +748,7 @@ function GeneralSettings() {
           </Stack>
           <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
             <FormControlLabel
-              control={<Checkbox name="hass_tls" checked={generalSettings?.hass_tls} />}
+              control={<Checkbox name="hass_tls" checked={generalSettings.hass_tls} />}
               label="Use TLS with Home Assistant"
             />
             <HelpTooltip tooltip="Whether or not your Home Assistant server is using https." />
@@ -805,7 +759,7 @@ function GeneralSettings() {
         <>
           <TextField
             name="openhab_url"
-            defaultValue={generalSettings?.openhab_url}
+            defaultValue={generalSettings.openhab_url}
             required
             label="openHAB URL"
             margin="dense"
@@ -815,7 +769,7 @@ function GeneralSettings() {
           />
           <TextField
             name="openhab_token"
-            defaultValue={generalSettings?.openhab_token}
+            defaultValue={generalSettings.openhab_token}
             required
             label="openHAB Token"
             margin="dense"
@@ -842,7 +796,7 @@ function GeneralSettings() {
         <>
           <TextField
             name="rest_url"
-            defaultValue={generalSettings?.rest_url}
+            defaultValue={generalSettings.rest_url}
             required
             label="REST URL"
             margin="dense"
@@ -861,7 +815,7 @@ function GeneralSettings() {
             <>
               <TextField
                 name="rest_auth_user"
-                defaultValue={generalSettings?.rest_auth_user}
+                defaultValue={generalSettings.rest_auth_user}
                 required
                 label="REST Basic Username"
                 margin="dense"
@@ -871,7 +825,7 @@ function GeneralSettings() {
               />
               <TextField
                 name="rest_auth_pass"
-                defaultValue={generalSettings?.rest_auth_pass}
+                defaultValue={generalSettings.rest_auth_pass}
                 required
                 label="REST Basic Password"
                 margin="dense"
@@ -898,7 +852,7 @@ function GeneralSettings() {
             <>
               <TextField
                 name="rest_auth_header"
-                defaultValue={generalSettings?.rest_auth_header}
+                defaultValue={generalSettings.rest_auth_header}
                 required
                 label="REST Authentication Header"
                 margin="dense"
@@ -978,11 +932,7 @@ function GeneralSettings() {
         <>
           <TextField
             name="ntp_host"
-            defaultValue={
-              generalSettings?.ntp_host
-                ? generalSettings.ntp_host
-                : defaultGeneralSettings?.ntp_host
-            }
+            defaultValue={generalSettings.ntp_host ?? defaultGeneralSettings.ntp_host}
             required
             label="NTP Server"
             margin="dense"
@@ -1054,13 +1004,13 @@ function ConnectionSettings() {
     }
   }
 
-  return loading ? (
+  return loading || !data ? (
     <LoadingSpinner />
   ) : (
     <form onSubmit={handleSubmit}>
       <TextField
         name="url"
-        defaultValue={data?.WAS?.URL ? data?.WAS?.URL : WAS_URL}
+        defaultValue={data.WAS?.URL ? data?.WAS?.URL : WAS_URL}
         required
         label="Willow Application Server URL"
         margin="dense"
@@ -1070,7 +1020,7 @@ function ConnectionSettings() {
       />
       <TextField
         name="ssid"
-        defaultValue={data?.WIFI?.SSID}
+        defaultValue={data.WIFI?.SSID}
         required
         label="WiFi Network Name"
         margin="dense"
@@ -1080,7 +1030,7 @@ function ConnectionSettings() {
       />
       <TextField
         name="psk"
-        defaultValue={data?.WIFI?.PSK}
+        defaultValue={data.WIFI?.PSK}
         required
         label="WiFi Network Password"
         margin="dense"
