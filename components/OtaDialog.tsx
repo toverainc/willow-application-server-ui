@@ -11,7 +11,7 @@ import Select from '@mui/material/Select';
 import * as React from 'react';
 import { toast } from 'react-toastify';
 import useSWR, { mutate } from 'swr';
-import { post } from '../misc/fetchers';
+import { fetcher, post } from '../misc/fetchers';
 import { mergeReleases } from '../pages/upgrades';
 
 import { Client, ReleaseAsset } from '../misc/model';
@@ -36,14 +36,18 @@ export default function OtaDialog({
         ota_url: wasUrl,
         hostname: client.hostname,
       });
+      setTimeout(() => {
+        mutate<Client[]>('/api/client', fetcher('/api/client'));
+      }, 500);
     } catch (e) {
       toast.error('Client upgrade request failed!');
       console.error(`Client upgrade request failed with ${e}`);
       return e;
     }
     toast.success('Client upgrade requested!');
-    await mutate('/api/client'); //OTA upgrade is very async so this won't really work but better than nothing
-    setTimeout(() => mutate('/api/client'), 30 * 1000); //hackz to make it work. Mutate in 30 seconds so we catch changes
+    setTimeout(() => {
+      mutate<Client[]>('/api/client', fetcher('/api/client'));
+    }, 100);
     onClose(event);
   }
 
