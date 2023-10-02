@@ -748,7 +748,12 @@ function GeneralSettings() {
           </Stack>
           <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
             <FormControlLabel
-              control={<Checkbox name="hass_tls" checked={generalSettings.hass_tls} />}
+              control={
+                <Checkbox
+                  name="hass_tls"
+                  defaultChecked={generalSettings.hass_tls ?? defaultGeneralSettings.hass_tls}
+                />
+              }
               label="Use TLS with Home Assistant"
             />
             <HelpTooltip tooltip="Whether or not your Home Assistant server is using https." />
