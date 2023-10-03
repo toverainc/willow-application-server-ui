@@ -64,7 +64,7 @@ export default function OtaDialog({
         }
       }
     }
-  }, [releaseData]);
+  }, [releaseData, client, selectedRelease]);
 
   return (
     <Dialog open={open} onClose={onClose}>
