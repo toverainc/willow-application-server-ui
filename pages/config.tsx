@@ -940,6 +940,7 @@ function GeneralSettings() {
         size="small"
         margin="dense"
         variant="outlined"
+        required
         sx={{ flexDirection: 'row' }}>
         <InputLabel id="timezone">Timezone</InputLabel>
         <Select
