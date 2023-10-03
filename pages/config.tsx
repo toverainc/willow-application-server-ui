@@ -2,8 +2,11 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness5Icon from '@mui/icons-material/Brightness5';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VolumeDown from '@mui/icons-material/VolumeDown';
 import VolumeUp from '@mui/icons-material/VolumeUp';
+import { CardContent } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -12,6 +15,7 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
+import Input from '@mui/material/Input';
 import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -25,31 +29,27 @@ import type { NextPage } from 'next';
 import * as React from 'react';
 import { toast } from 'react-toastify';
 import useSWR, { mutate } from 'swr';
+import InformationCard from '../components/InformationCard';
 import LeftMenu from '../components/LeftMenu';
 import LoadingSpinner from '../components/LoadingSpinner';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import WebFlashCard from '../components/WebFlashCard';
-import { post } from '../misc/fetchers';
-import Input from '@mui/material/Input';
-import { WAS_URL } from '../misc/fetchers';
+import { WAS_URL, post } from '../misc/fetchers';
 import {
-  GeneralSettings,
-  AdvancedSettings,
-  NvsSettings,
   AUDIO_CODECS,
   AUDIO_RESPONSE_TYPE,
-  VAD_MODES,
-  WAKE_MODES,
+  AdvancedSettings,
   COMMAND_ENDPOINT,
+  GeneralSettings,
   NTP_CONFIG,
+  NvsSettings,
   REST_AUTH_TYPES,
   SPEECH_REC_MODE,
+  TZDictionary,
+  VAD_MODES,
+  WAKE_MODES,
   WAKE_WORDS,
 } from '../misc/model';
 import { OnboardingContext } from './_app';
-import { Card, CardContent, CardHeader } from '@mui/material';
-import InformationCard from '../components/InformationCard';
 
 function parseIntOrUndef(val: string | number | null | undefined) {
   if (!val) return undefined;
@@ -108,6 +108,7 @@ function EnumSelectHelper(params: {
 
 async function handleSubmit(
   event: React.FormEvent<HTMLFormElement>,
+  tzDictionary: TZDictionary,
   shouldScrollToTop: boolean = false
 ) {
   event.preventDefault();
@@ -140,6 +141,8 @@ async function handleSubmit(
         : undefined,
     speaker_volume: parseIntOrUndef(generalSettingsForm.speaker_volume),
     lcd_brightness: parseIntOrUndef(generalSettingsForm.lcd_brightness),
+    timezone: tzDictionary[generalSettingsForm.timezone],
+    timezone_name: generalSettingsForm.timezone,
   };
   let body = Object.assign(
     {},
@@ -172,6 +175,8 @@ function AdvancedSettings() {
     useSWR<AdvancedSettings>('/api/config?type=config');
   const { data: defaultAdvancedSettings, error: defaultAdvancedSettingsError } =
     useSWR<AdvancedSettings>('/api/config?type=config&default=true');
+  const { data: tzDictionary, error: tzDictionaryError } =
+    useSWR<TZDictionary>('/api/config?type=tz');
   const [micGainValue, setMicGainValue] = React.useState(advancedSettings?.mic_gain);
   const [recordBufferValue, setRecordBufferValue] = React.useState(advancedSettings?.record_buffer);
   const [streamTimeoutValue, setStreamTimeoutValue] = React.useState(
@@ -293,10 +298,10 @@ function AdvancedSettings() {
     }
   }, [advancedSettings, defaultAdvancedSettings]);
 
-  return loading || !(advancedSettings && defaultAdvancedSettings) ? (
+  return loading || !(advancedSettings && defaultAdvancedSettings && tzDictionary) ? (
     <LoadingSpinner />
   ) : (
-    <form name="advanced-settings-form" onSubmit={handleSubmit}>
+    <form name="advanced-settings-form" onSubmit={(event) => handleSubmit(event, tzDictionary)}>
       <FormControl fullWidth>
         <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
           <FormControlLabel
@@ -539,16 +544,22 @@ function GeneralSettings() {
     useSWR<GeneralSettings>('/api/config?type=config');
   const { data: defaultGeneralSettings, error: defaultGeneralSettingsError } =
     useSWR<GeneralSettings>('/api/config?type=config&default=true');
+  const { data: tzDictionary, error: tzDictionaryError } =
+    useSWR<TZDictionary>('/api/config?type=tz');
 
   const [speakerVolumeValue, setSpeakerVolumeValue] = React.useState(
-    generalSettings?.speaker_volume
-      ? generalSettings.speaker_volume
-      : defaultGeneralSettings?.speaker_volume
+    generalSettings?.speaker_volume ?? defaultGeneralSettings?.speaker_volume
   );
   const [lcdBrightnessValue, setLcdBrightnessValue] = React.useState(
-    generalSettings?.lcd_brightness
-      ? generalSettings.lcd_brightness
-      : defaultGeneralSettings?.lcd_brightness
+    generalSettings?.lcd_brightness ?? defaultGeneralSettings?.lcd_brightness
+  );
+  const [timezone, setTimezone] = React.useState(
+    generalSettings &&
+      defaultGeneralSettings &&
+      (generalSettings.timezone || defaultGeneralSettings.timezone) &&
+      tzDictionary
+      ? tzDictionary[generalSettings.timezone ?? defaultGeneralSettings.timezone]
+      : ''
   );
 
   // Handlers for Speaker Volume Slider and Input
@@ -567,9 +578,7 @@ function GeneralSettings() {
       setSpeakerVolumeValue(100);
     } else if (!speakerVolumeValue) {
       setSpeakerVolumeValue(
-        generalSettings?.speaker_volume
-          ? generalSettings.speaker_volume
-          : defaultGeneralSettings?.speaker_volume
+        generalSettings?.speaker_volume ?? defaultGeneralSettings?.speaker_volume
       );
     }
   };
@@ -590,50 +599,39 @@ function GeneralSettings() {
       setLcdBrightnessValue(1023);
     } else if (!lcdBrightnessValue) {
       setLcdBrightnessValue(
-        generalSettings?.lcd_brightness
-          ? generalSettings.lcd_brightness
-          : defaultGeneralSettings?.lcd_brightness
+        generalSettings?.lcd_brightness ?? defaultGeneralSettings?.lcd_brightness
       );
     }
   };
 
   React.useEffect(() => {
-    if (generalSettings && defaultGeneralSettings) {
+    if (generalSettings && defaultGeneralSettings && tzDictionary) {
       setCommandEndpoint(
-        generalSettings.command_endpoint
-          ? generalSettings.command_endpoint
-          : defaultGeneralSettings.command_endpoint
+        generalSettings.command_endpoint ?? defaultGeneralSettings.command_endpoint
       );
-      setRestAuthType(
-        generalSettings.rest_auth_type
-          ? generalSettings.rest_auth_type
-          : defaultGeneralSettings.rest_auth_type
-      );
-      setNtpConfig(
-        generalSettings.ntp_config ? generalSettings.ntp_config : defaultGeneralSettings.ntp_config
-      );
+      setRestAuthType(generalSettings.rest_auth_type ?? defaultGeneralSettings.rest_auth_type);
+      setNtpConfig(generalSettings.ntp_config ?? defaultGeneralSettings.ntp_config);
       setLcdBrightnessValue(
-        generalSettings?.lcd_brightness
-          ? generalSettings.lcd_brightness
-          : defaultGeneralSettings?.lcd_brightness
+        generalSettings.lcd_brightness ?? defaultGeneralSettings.lcd_brightness
       );
       setSpeakerVolumeValue(
-        generalSettings?.speaker_volume
-          ? generalSettings.speaker_volume
-          : defaultGeneralSettings?.speaker_volume
+        generalSettings.speaker_volume ?? defaultGeneralSettings.speaker_volume
       );
+      setTimezone(generalSettings.timezone_name ?? defaultGeneralSettings.timezone_name);
       setLoading(false);
     }
-  }, [generalSettings, defaultGeneralSettings]);
+  }, [generalSettings, defaultGeneralSettings, tzDictionary]);
 
   const onboardingState = React.useContext(OnboardingContext);
 
-  return loading || !(generalSettings && defaultGeneralSettings) ? (
+  return loading || !(generalSettings && defaultGeneralSettings && tzDictionary) ? (
     <LoadingSpinner />
   ) : (
     <form
       name="general-settings-form"
-      onSubmit={(event) => handleSubmit(event, !onboardingState.isOnboardingComplete)}>
+      onSubmit={(event) =>
+        handleSubmit(event, tzDictionary, !onboardingState.isOnboardingComplete)
+      }>
       <EnumSelectHelper
         name="speech_rec_mode"
         defaultValue={generalSettings.speech_rec_mode ?? defaultGeneralSettings.speech_rec_mode}
@@ -883,7 +881,6 @@ function GeneralSettings() {
           )}
         </>
       )}
-      {/* XXX: timezone */}
       <InputLabel>Speaker Volume</InputLabel>
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
         <VolumeDown />
@@ -938,6 +935,28 @@ function GeneralSettings() {
           }}
         />
       </Stack>
+      <FormControl
+        fullWidth
+        size="small"
+        margin="dense"
+        variant="outlined"
+        sx={{ flexDirection: 'row' }}>
+        <InputLabel id="timezone">Timezone</InputLabel>
+        <Select
+          name="timezone"
+          value={timezone}
+          defaultValue=""
+          label="Timezone Setting"
+          onChange={(e) => setTimezone(e.target.value as any)}
+          sx={{ flexGrow: '1' }}>
+          {tzDictionary &&
+            Object.entries(tzDictionary).map(([index, value]) => (
+              <MenuItem key={index + value} value={index}>
+                {index}
+              </MenuItem>
+            ))}
+        </Select>
+      </FormControl>
       <EnumSelectHelper
         name="ntp_config"
         value={ntpConfig}

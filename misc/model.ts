@@ -13,6 +13,7 @@ export interface Release {
   html_url: string;
   assets: ReleaseAsset[];
   latest: boolean;
+  prerelease: boolean;
 }
 
 export interface ReleaseAsset {
@@ -87,6 +88,8 @@ export interface GeneralSettings {
   timezone_continent_city: string;
   speaker_volume: number;
   lcd_brightness: number;
+  timezone: string;
+  timezone_name: string;
   ntp_config: keyof typeof NTP_CONFIG;
   ntp_host: string;
 }
@@ -94,4 +97,8 @@ export interface GeneralSettings {
 export interface NvsSettings {
   WAS: { URL: string };
   WIFI: { PSK: string; SSID: string };
+}
+
+export interface TZDictionary {
+  [index: string]: string;
 }
