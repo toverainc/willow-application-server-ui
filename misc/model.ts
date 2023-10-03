@@ -55,6 +55,7 @@ export const WAKE_MODES = ['1CH_90', '1CH_95', '2CH_90', '2CH_95', '3CH_90', '3C
 export interface AdvancedSettings {
   aec: boolean; //Acoustic Echo Cancellation
   bss: boolean; //Blind Source Separation
+  was_mode: boolean; //WAS Command Endpoint
   multiwake: boolean; // Multiwake / Willow One Wake
   audio_codec: keyof typeof AUDIO_CODECS;
   vad_mode: number; //Voice Activity Detection Mode

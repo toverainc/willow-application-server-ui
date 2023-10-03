@@ -121,6 +121,7 @@ async function handleSubmit(
   let advancedSettings: Partial<AdvancedSettings> = {
     aec: !!advancedSettingsForm.aec,
     bss: !!advancedSettingsForm.bss,
+    was_mode: !!advancedSettingsForm.was_mode,
     multiwake: !!advancedSettingsForm.multiwake,
     vad_mode: parseIntOrUndef(advancedSettingsForm.vad_mode),
     mic_gain: parseIntOrUndef(advancedSettingsForm.mic_gain),
@@ -328,7 +329,20 @@ function AdvancedSettings() {
             It is useful in some cases but it's generally recommended to leave it disabled."></HelpTooltip>
         </Stack>
       </FormControl>
-
+      <FormControl fullWidth>
+        <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
+          <FormControlLabel
+            control={
+              <Checkbox
+                name="was_mode"
+                defaultChecked={advancedSettings.was_mode ?? defaultAdvancedSettings.was_mode}
+              />
+            }
+            label="WAS Command Endpoint (EXPERIMENTAL)"
+          />
+          <HelpTooltip tooltip="Use WAS for connection to configured command endpoint."></HelpTooltip>
+        </Stack>
+      </FormControl>
       <FormControl fullWidth>
         <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
           <FormControlLabel
