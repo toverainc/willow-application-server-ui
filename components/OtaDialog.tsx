@@ -50,6 +50,22 @@ export default function OtaDialog({
     onClose(event);
   }
 
+  React.useEffect(() => {
+    if (releaseData && !selectedRelease?.was_url) {
+      for (const release of releaseData) {
+        let was_url = release.assets.filter(
+          (asset) =>
+            asset.platform == client.platform && asset.build_type != 'dist' && asset.was_url
+        )[0]?.was_url;
+
+        if (was_url) {
+          setWasUrl(was_url);
+          break;
+        }
+      }
+    }
+  }, [releaseData]);
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Over the Air (OTA) Upgrade</DialogTitle>
