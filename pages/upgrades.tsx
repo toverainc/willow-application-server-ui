@@ -21,7 +21,7 @@ import { OnboardingContext } from './_app';
 
 function ReleaseCard({ release }: { release: Release }) {
   return (
-    <Card sx={{ mt: 2, maxWidth: 500 }}>
+    <Card sx={{ maxWidth: 500 }}>
       <CardHeader
         title={
           <>
