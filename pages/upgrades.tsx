@@ -1,39 +1,27 @@
-import type { NextPage } from 'next';
-import * as React from 'react';
-import LeftMenu from '../components/LeftMenu';
+import DeleteForeverTwoToneIcon from '@mui/icons-material/DeleteForeverTwoTone';
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import CardHeader from '@mui/material/CardHeader';
+import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
-import ListItemText from '@mui/material/ListItemText';
-import { Release, ReleaseAsset } from '../misc/model';
-import useSWR from 'swr';
 import InputLabel from '@mui/material/InputLabel';
 import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
-import DownloadIcon from '@mui/icons-material/Download';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import Tooltip from '@mui/material/Tooltip';
-import { post } from '../misc/fetchers';
-import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
-
-import Grid from '@mui/material/Grid';
-import { OnboardingContext } from './_app';
+import Typography from '@mui/material/Typography';
+import type { NextPage } from 'next';
 import { useRouter } from 'next/navigation';
+import * as React from 'react';
+import useSWR from 'swr';
+import LeftMenu from '../components/LeftMenu';
+import { Release, ReleaseAsset } from '../misc/model';
+import { OnboardingContext } from './_app';
 
 function ReleaseCard({ release }: { release: Release }) {
-  async function handleDownload(asset: ReleaseAsset) {
-    await post('/api/release?action=cache', {
-      version: asset.name,
-      platform: asset.platform,
-      willow_url: asset.browser_download_url,
-      size: asset.size,
-    });
-  }
-
   return (
-    <Card sx={{ margin: 1, width: '300px' }}>
+    <Card sx={{ mt: 2, maxWidth: 500 }}>
       <CardHeader
         title={
           <>
@@ -62,25 +50,13 @@ function ReleaseCard({ release }: { release: Release }) {
               <ListItem
                 key={asset.browser_download_url}
                 secondaryAction={
-                  !asset.cached ? (
+                  asset.cached && (
                     <Tooltip
                       style={{ boxShadow: 'none' }}
-                      title="Download this release"
+                      title="Delete From Cache"
                       enterTouchDelay={0}>
-                      <IconButton
-                        edge="end"
-                        aria-label="delete"
-                        onClick={(e) => handleDownload(asset)}>
-                        <DownloadIcon />
-                      </IconButton>
-                    </Tooltip>
-                  ) : (
-                    <Tooltip
-                      style={{ boxShadow: 'none' }}
-                      title="Release Downloaded"
-                      enterTouchDelay={0}>
-                      <IconButton edge="end" aria-label="delete" disabled>
-                        <DownloadDoneIcon />
+                      <IconButton edge="end" aria-label="delete">
+                        <DeleteForeverTwoToneIcon />
                       </IconButton>
                     </Tooltip>
                   )
@@ -108,7 +84,11 @@ const Updates: NextPage = () => {
     <LeftMenu>
       <Grid container spacing={2}>
         {releaseData?.map((release: Release) => (
-          <ReleaseCard key={release.name} release={release}></ReleaseCard>
+          <React.Fragment key={release.name}>
+            <Grid item md={4} sm={6} xs={12} lg={3}>
+              <ReleaseCard key={release.name} release={release}></ReleaseCard>
+            </Grid>
+          </React.Fragment>
         ))}
       </Grid>
     </LeftMenu>
