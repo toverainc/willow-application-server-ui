@@ -41,7 +41,7 @@ function ReleaseCard({ release }: { release: Release }) {
         }
         sx={{ paddingBottom: 0 }}
       />
-      <CardContent sx={{ padding: 1 }}>
+      <CardContent sx={{ padding: 1, minWidth: 'max-content' }}>
         <InputLabel sx={{ marginLeft: 1 }}>Hardware Type</InputLabel>
         <List dense={true}>
           {release.assets

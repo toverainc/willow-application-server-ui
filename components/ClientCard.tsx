@@ -1,5 +1,6 @@
+import DownloadIcon from '@mui/icons-material/Download';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Button, CardActions, Stack, Tooltip } from '@mui/material';
+import { CardActions, Stack, Tooltip } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
@@ -11,11 +12,11 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Image from 'next/image';
 import * as React from 'react';
+import { BASE_URL } from '../misc/fetchers';
 import { Client, ReleaseAsset } from '../misc/model';
 import { ApplyConfigDialog, ApplyNvsDialog, ResetDialog } from './ConfirmDialog';
 import NameClientDialog from './NameClientDialog';
 import OtaDialog from './OtaDialog';
-import DownloadIcon from '@mui/icons-material/Download';
 
 function ClientMenu({ client }: { client: Client }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -106,11 +107,10 @@ export default function ClientCard({
       <CardHeader
         avatar={
           <Image
-            src={'/admin/static/' + client.platform + '.png'}
+            src={BASE_URL + '/api/asset?type=image&asset=' + client.platform}
             width={50}
             height={50}
             alt={client.platform}></Image>
-          //</Avatar>
         }
         action={<ClientMenu client={client}></ClientMenu>}
         title={client.label || client.hostname}
