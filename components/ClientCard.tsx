@@ -107,7 +107,7 @@ export default function ClientCard({
       <CardHeader
         avatar={
           <Image
-            src={BASE_URL + '/api/asset?type=image&asset=' + client.platform}
+            src={'static/' + client.platform + '.png'}
             width={50}
             height={50}
             alt={client.platform}></Image>
@@ -117,7 +117,7 @@ export default function ClientCard({
         subheader={client.mac_addr}
         sx={{ paddingBottom: 0 }}
       />
-      <CardContent sx={{ paddingLeft: 1, paddingBottom: 0 }}>
+      <CardContent sx={{ paddingLeft: 1, paddingBottom: 0, minWidth:'max-content' }}>
         <List dense={true}>
           <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
             <ListItemText sx={{ margin: 0 }} primary={'Hostname: ' + client.hostname} />
