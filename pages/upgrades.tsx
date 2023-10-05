@@ -15,11 +15,14 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import useSWR from 'swr';
+import { DeleteCache } from '../components/ConfirmDialog';
 import LeftMenu from '../components/LeftMenu';
 import { Release, ReleaseAsset } from '../misc/model';
 import { OnboardingContext } from './_app';
 
 function ReleaseCard({ release }: { release: Release }) {
+  const [openDialogState, setOpenDialogState] = React.useState(new Map<string, boolean>());
+
   return (
     <Card sx={{ maxWidth: 500 }}>
       <CardHeader
@@ -51,14 +54,35 @@ function ReleaseCard({ release }: { release: Release }) {
                 key={asset.browser_download_url}
                 secondaryAction={
                   asset.cached && (
-                    <Tooltip
-                      style={{ boxShadow: 'none' }}
-                      title="Delete From Cache"
-                      enterTouchDelay={0}>
-                      <IconButton edge="end" aria-label="delete">
-                        <DeleteForeverTwoToneIcon />
-                      </IconButton>
-                    </Tooltip>
+                    <div>
+                      <DeleteCache
+                        asset={asset}
+                        release={release}
+                        open={openDialogState.get(asset.was_url) ?? false}
+                        onClose={() => {
+                          return (
+                            true &&
+                            setOpenDialogState(
+                              new Map<string, boolean>(openDialogState).set(asset.was_url, false)
+                            )
+                          );
+                        }}></DeleteCache>
+                      <Tooltip
+                        style={{ boxShadow: 'none' }}
+                        title="Delete From Cache"
+                        enterTouchDelay={0}>
+                        <IconButton
+                          edge="end"
+                          aria-label="delete"
+                          onClick={() =>
+                            setOpenDialogState(
+                              new Map<string, boolean>(openDialogState).set(asset.was_url, true)
+                            )
+                          }>
+                          <DeleteForeverTwoToneIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </div>
                   )
                 }>
                 <ListItemText sx={{ margin: 0 }} primary={asset.platform} />

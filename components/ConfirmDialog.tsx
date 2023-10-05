@@ -7,7 +7,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { toast } from 'react-toastify';
 import { mutate } from 'swr';
 import { fetcher, post } from '../misc/fetchers';
-import { Client } from '../misc/model';
+import { Client, Release, ReleaseAsset } from '../misc/model';
 
 interface ConfirmationDialogParams {
   open: boolean;
@@ -200,6 +200,41 @@ export function ApplyNvsDialog({
             }"`
           : `Clicking confirm will apply the current connectivity configuration to all clients.`
       }
+      onConfirm={onConfirm}
+    />
+  );
+}
+
+export function DeleteCache({
+  open,
+  onClose,
+  asset,
+  release,
+}: {
+  open: boolean;
+  asset: ReleaseAsset;
+  release: Release;
+  onClose: (event: any) => void;
+}) {
+  async function onConfirm(evt: any) {
+    try {
+      // call delete here
+      throw 'Not Implemented';
+    } catch (e) {
+      console.error(
+        `Deleting "${asset.platform}" from cache for release "${release.name}" failed with ${e}`
+      );
+      toast.error(`Deleting "${asset.platform}" from cache for release "${release.name}" failed!`);
+      return e;
+    }
+    toast.success(`Deleted "${asset.platform}" from cache for release "${release.name}"!`);
+    onClose(evt);
+  }
+  return (
+    <ConfirmDialog
+      open={open}
+      onClose={onClose}
+      message={`Clicking confirm will delete "${asset.platform}" from the cache for release "${release.name}".`}
       onConfirm={onConfirm}
     />
   );
