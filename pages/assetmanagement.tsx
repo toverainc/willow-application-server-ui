@@ -68,7 +68,7 @@ function ReleaseCard({ release }: { release: Release }) {
                       }}></DeleteCache>
                     <Tooltip
                       style={{ boxShadow: 'none' }}
-                      title="Delete From Cache"
+                      title="Delete From Storage"
                       enterTouchDelay={0}>
                       <IconButton
                         edge="end"

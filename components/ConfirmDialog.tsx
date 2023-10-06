@@ -222,19 +222,21 @@ export function DeleteCache({
       throw 'Not Implemented';
     } catch (e) {
       console.error(
-        `Deleting "${asset.platform}" from cache for release "${release.name}" failed with ${e}`
+        `Deleting "${asset.platform}" from storage for release "${release.name}" failed with ${e}`
       );
-      toast.error(`Deleting "${asset.platform}" from cache for release "${release.name}" failed!`);
+      toast.error(
+        `Deleting "${asset.platform}" from storage for release "${release.name}" failed!`
+      );
       return e;
     }
-    toast.success(`Deleted "${asset.platform}" from cache for release "${release.name}"!`);
+    toast.success(`Deleted "${asset.platform}" from storage for release "${release.name}"!`);
     onClose(evt);
   }
   return (
     <ConfirmDialog
       open={open}
       onClose={onClose}
-      message={`Clicking confirm will delete "${asset.platform}" from the cache for release "${release.name}".`}
+      message={`Clicking confirm will delete "${asset.platform}" from storage for release "${release.name}".`}
       onConfirm={onConfirm}
     />
   );
