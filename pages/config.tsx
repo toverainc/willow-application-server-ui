@@ -124,6 +124,7 @@ async function handleSubmit(
     bss: !!advancedSettingsForm.bss,
     was_mode: !!advancedSettingsForm.was_mode,
     multiwake: !!advancedSettingsForm.multiwake,
+    show_prereleases: !!advancedSettingsForm.show_prereleases,
     vad_mode: parseIntOrUndef(advancedSettingsForm.vad_mode),
     mic_gain: parseIntOrUndef(advancedSettingsForm.mic_gain),
     record_buffer: parseIntOrUndef(advancedSettingsForm.record_buffer),
@@ -362,6 +363,22 @@ function AdvancedSettings() {
           <HelpTooltip
             tooltip="When you have multiple clients close enough to wake at the same time it's annoying.
           Willow One Wake (WOW) is an experimental feature to only capture audio on the client closest to the person speaking."></HelpTooltip>
+        </Stack>
+      </FormControl>
+      <FormControl fullWidth>
+        <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
+          <FormControlLabel
+            control={
+              <Checkbox
+                name="show_prereleases"
+                defaultChecked={
+                  advancedSettings.show_prereleases ?? defaultAdvancedSettings.show_prereleases
+                }
+              />
+            }
+            label="Show Prereleases"
+          />
+          <HelpTooltip tooltip="Enabling this setting will show Willow Pre-Release Builds in the Upgrade dialogs for Clients."></HelpTooltip>
         </Stack>
       </FormControl>
       <EnumSelectHelper
@@ -1128,7 +1145,8 @@ function SettingsAccordions() {
             ? expanded === 'Connectivity'
             : !onboardingState.isNvsComplete
         }
-        onChange={handleChange('Connectivity')}>
+        onChange={handleChange('Connectivity')}
+        sx={{ boxShadow: 4 }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="Connectivity-content"
@@ -1147,7 +1165,7 @@ function SettingsAccordions() {
             : onboardingState.isNvsComplete
         }
         onChange={handleChange('General')}
-        sx={{ display: onboardingState.isNvsComplete ? undefined : 'none' }}>
+        sx={{ display: onboardingState.isNvsComplete ? undefined : 'none', boxShadow: 4 }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="General-content"
@@ -1162,7 +1180,10 @@ function SettingsAccordions() {
       <Accordion
         expanded={expanded === 'Advanced'}
         onChange={handleChange('Advanced')}
-        sx={{ display: onboardingState.isGeneralConfigComplete ? undefined : 'none' }}>
+        sx={{
+          display: onboardingState.isGeneralConfigComplete ? undefined : 'none',
+          boxShadow: 4,
+        }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="Advanced-content"

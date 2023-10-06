@@ -3,7 +3,13 @@ import CardHeader from '@mui/material/CardHeader';
 import { CardContent } from '@mui/material';
 import React from 'react';
 
-export default function InformationCard({ title, children }: { title: string; children: React.ReactNode }) {
+export default function InformationCard({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <Card
       sx={{
@@ -12,6 +18,7 @@ export default function InformationCard({ title, children }: { title: string; ch
         marginLeft: 'auto',
         marginRight: 'auto',
         maxWidth: '800px',
+        boxShadow: 4,
       }}>
       {title.length > 0 && <CardHeader title={title} sx={{ textAlign: 'center' }} />}
       {children}
@@ -19,9 +26,6 @@ export default function InformationCard({ title, children }: { title: string; ch
   );
 }
 
-function GetMessages(messages: string[]){
-  
-  messages.forEach((message) => {
-
-  });
+function GetMessages(messages: string[]) {
+  messages.forEach((message) => {});
 }

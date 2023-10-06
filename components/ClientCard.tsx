@@ -22,9 +22,6 @@ function ClientMenu({ client }: { client: Client }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [openOtaDialog, setOpenOtaDialog] = React.useState<boolean>(false);
-  const [otaDialogSelectedVersion, setOtaDialogSelectedVersion] = React.useState<
-    string | undefined
-  >(undefined);
   const [openResetDialog, setOpenResetDialog] = React.useState<boolean>(false);
   const [openApplyConfigDialog, setOpenApplyConfigDialog] = React.useState<boolean>(false);
   const [openApplyNvsDialog, setOpenApplyNvsDialog] = React.useState<boolean>(false);
@@ -103,7 +100,7 @@ export default function ClientCard({
   const [openOtaDialog, setOpenOtaDialog] = React.useState<boolean>(false);
 
   return (
-    <Card sx={{ maxWidth: 500, minHeight: 230 }}>
+    <Card sx={{ maxWidth: 500, minHeight: 230, boxShadow: 4 }}>
       <CardHeader
         avatar={
           <Image
@@ -117,7 +114,7 @@ export default function ClientCard({
         subheader={client.mac_addr}
         sx={{ paddingBottom: 0 }}
       />
-      <CardContent sx={{ paddingLeft: 1, paddingBottom: 0, minWidth:'max-content' }}>
+      <CardContent sx={{ paddingLeft: 1, paddingBottom: 0, minWidth: 'max-content' }}>
         <List dense={true}>
           <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
             <ListItemText sx={{ margin: 0 }} primary={'Hostname: ' + client.hostname} />

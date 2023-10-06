@@ -58,6 +58,7 @@ export interface AdvancedSettings {
   bss: boolean; //Blind Source Separation
   was_mode: boolean; //WAS Command Endpoint
   multiwake: boolean; // Multiwake / Willow One Wake
+  show_prereleases: boolean; // Show Pre-Release builds in OTA Dialog
   audio_codec: keyof typeof AUDIO_CODECS;
   vad_mode: number; //Voice Activity Detection Mode
   wake_mode: string; //aka WAKE_MODES

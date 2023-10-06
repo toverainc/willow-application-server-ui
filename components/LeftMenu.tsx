@@ -175,7 +175,7 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
             <DeviceHubIcon></DeviceHubIcon>
           </MenuItem>
       */}
-          <MenuItem text="Manage Upgrades" page="/upgrades" display={onboardingState.isOnboardingComplete}>
+          <MenuItem text="Asset Management" page="/assetmanagement" display={onboardingState.isOnboardingComplete}>
             <SystemUpdateAltIcon></SystemUpdateAltIcon>
           </MenuItem>
         </List>

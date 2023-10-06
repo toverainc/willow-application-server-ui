@@ -24,7 +24,7 @@ function ReleaseCard({ release }: { release: Release }) {
   const [openDialogState, setOpenDialogState] = React.useState(new Map<string, boolean>());
 
   return (
-    <Card sx={{ maxWidth: 500 }}>
+    <Card sx={{ maxWidth: 500, boxShadow: 4 }}>
       <CardHeader
         title={
           <>
@@ -48,42 +48,40 @@ function ReleaseCard({ release }: { release: Release }) {
         <InputLabel sx={{ marginLeft: 1 }}>Hardware Type</InputLabel>
         <List dense={true}>
           {release.assets
-            .filter((asset) => asset.build_type !== 'dist')
+            .filter((asset) => asset.build_type !== 'dist' && asset.cached)
             .map((asset: ReleaseAsset) => (
               <ListItem
                 key={asset.browser_download_url}
                 secondaryAction={
-                  asset.cached && (
-                    <div>
-                      <DeleteCache
-                        asset={asset}
-                        release={release}
-                        open={openDialogState.get(asset.was_url) ?? false}
-                        onClose={() => {
-                          return (
-                            true &&
-                            setOpenDialogState(
-                              new Map<string, boolean>(openDialogState).set(asset.was_url, false)
-                            )
-                          );
-                        }}></DeleteCache>
-                      <Tooltip
-                        style={{ boxShadow: 'none' }}
-                        title="Delete From Cache"
-                        enterTouchDelay={0}>
-                        <IconButton
-                          edge="end"
-                          aria-label="delete"
-                          onClick={() =>
-                            setOpenDialogState(
-                              new Map<string, boolean>(openDialogState).set(asset.was_url, true)
-                            )
-                          }>
-                          <DeleteForeverTwoToneIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </div>
-                  )
+                  <div>
+                    <DeleteCache
+                      asset={asset}
+                      release={release}
+                      open={openDialogState.get(asset.was_url) ?? false}
+                      onClose={() => {
+                        return (
+                          true &&
+                          setOpenDialogState(
+                            new Map<string, boolean>(openDialogState).set(asset.was_url, false)
+                          )
+                        );
+                      }}></DeleteCache>
+                    <Tooltip
+                      style={{ boxShadow: 'none' }}
+                      title="Delete From Cache"
+                      enterTouchDelay={0}>
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={() =>
+                          setOpenDialogState(
+                            new Map<string, boolean>(openDialogState).set(asset.was_url, true)
+                          )
+                        }>
+                        <DeleteForeverTwoToneIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </div>
                 }>
                 <ListItemText sx={{ margin: 0 }} primary={asset.platform} />
               </ListItem>
@@ -94,7 +92,7 @@ function ReleaseCard({ release }: { release: Release }) {
   );
 }
 
-const Updates: NextPage = () => {
+const AssetManagement: NextPage = () => {
   const { data: releaseData, error: releaseDataError } = useSWR<Release[]>('/api/release?type=was');
   const onboardingContext = React.useContext(OnboardingContext);
   const router = useRouter();
@@ -106,17 +104,20 @@ const Updates: NextPage = () => {
 
   return (
     <LeftMenu>
+      <h2 style={{ textAlign: 'center' }}>Willow Releases</h2>
       <Grid container spacing={2}>
-        {releaseData?.map((release: Release) => (
-          <React.Fragment key={release.name}>
-            <Grid item md={4} sm={6} xs={12} lg={3}>
-              <ReleaseCard key={release.name} release={release}></ReleaseCard>
-            </Grid>
-          </React.Fragment>
-        ))}
+        {releaseData
+          ?.filter((release) => release.assets.some((asset) => asset.cached))
+          .map((release: Release) => (
+            <React.Fragment key={release.name}>
+              <Grid item md={4} sm={6} xs={12} lg={3}>
+                <ReleaseCard key={release.name} release={release}></ReleaseCard>
+              </Grid>
+            </React.Fragment>
+          ))}
       </Grid>
     </LeftMenu>
   );
 };
 
-export default Updates;
+export default AssetManagement;
