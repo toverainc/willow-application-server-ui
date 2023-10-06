@@ -24,7 +24,7 @@ function ReleaseCard({ release }: { release: Release }) {
   const [openDialogState, setOpenDialogState] = React.useState(new Map<string, boolean>());
 
   return (
-    <Card sx={{ maxWidth: 500, boxShadow: 4 }}>
+    <Card sx={{ maxWidth: 500, minWidth: 'max-content', boxShadow: 4 }}>
       <CardHeader
         title={
           <>
@@ -83,7 +83,7 @@ function ReleaseCard({ release }: { release: Release }) {
                     </Tooltip>
                   </div>
                 }>
-                <ListItemText sx={{ margin: 0 }} primary={asset.platform} />
+                <ListItemText sx={{ margin: 0, maxWidth: 300 }} primary={asset.platform} />
               </ListItem>
             ))}
         </List>
