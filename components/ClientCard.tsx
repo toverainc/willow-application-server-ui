@@ -116,13 +116,13 @@ export default function ClientCard({
       />
       <CardContent sx={{ paddingLeft: 1, paddingBottom: 0, minWidth: 'max-content' }}>
         <List dense={true}>
-          <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
+          <ListItem sx={{ paddingTop: 0, paddingBottom: 0, maxWidth: 300 }}>
             <ListItemText sx={{ margin: 0 }} primary={'Hostname: ' + client.hostname} />
           </ListItem>
-          <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
+          <ListItem sx={{ paddingTop: 0, paddingBottom: 0, maxWidth: 300 }}>
             <ListItemText sx={{ margin: 0 }} primary={'IP Address: ' + client.ip} />
           </ListItem>
-          <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
+          <ListItem sx={{ paddingTop: 0, paddingBottom: 0, maxWidth: 300 }}>
             <ListItemText sx={{ margin: 0 }} primary={'Platform: ' + client.platform} />
           </ListItem>
           <ListItem sx={{ paddingTop: 0, paddingBottom: 0, maxWidth: 300 }}>
