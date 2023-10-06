@@ -125,7 +125,7 @@ export default function ClientCard({
           <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
             <ListItemText sx={{ margin: 0 }} primary={'Platform: ' + client.platform} />
           </ListItem>
-          <ListItem sx={{ paddingTop: 0, paddingBottom: 0 }}>
+          <ListItem sx={{ paddingTop: 0, paddingBottom: 0, maxWidth: 300 }}>
             <ListItemText sx={{ margin: 0 }} primary={'Version: ' + client.version} />
           </ListItem>
         </List>
