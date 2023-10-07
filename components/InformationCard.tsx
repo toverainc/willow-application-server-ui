@@ -1,6 +1,5 @@
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import { CardContent } from '@mui/material';
 import React from 'react';
 
 export default function InformationCard({
@@ -24,8 +23,4 @@ export default function InformationCard({
       {children}
     </Card>
   );
-}
-
-function GetMessages(messages: string[]) {
-  messages.forEach((message) => {});
 }

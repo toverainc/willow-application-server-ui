@@ -27,14 +27,15 @@ const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop: any) => prop !== 'open' })<{
   open?: boolean;
-}>(({ theme, open }) => ({
+  isDesktopOrLaptop?: boolean;
+}>(({ theme, open, isDesktopOrLaptop }) => ({
   flexGrow: 1,
   padding: theme.spacing(3),
   transition: theme.transitions.create('margin', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  marginLeft: `-${drawerWidth}px`,
+  marginLeft: isDesktopOrLaptop ? `-${drawerWidth}px` : 'auto',
   ...(open && {
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.easeOut,
@@ -86,7 +87,13 @@ function MenuItem({
   display: boolean;
 }) {
   return (
-    <Link href={page} style={{ textDecoration: 'inherit', color: 'inherit', display: display ? undefined : 'none' }}>
+    <Link
+      href={page}
+      style={{
+        textDecoration: 'inherit',
+        color: 'inherit',
+        display: display ? undefined : 'none',
+      }}>
       <ListItem key={text} disablePadding>
         <ListItemButton>
           <ListItemIcon>{children}</ListItemIcon>
@@ -99,10 +106,10 @@ function MenuItem({
 
 export default function LeftMenu({ children }: { children: React.ReactNode }) {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(true);
   const isDesktopOrLaptop = useMediaQuery({
     query: '(min-width: 1224px)',
   });
+  const [open, setOpen] = React.useState(isDesktopOrLaptop);
   const isBigScreen = useMediaQuery({ query: '(min-width: 1824px)' });
   const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1224px)' });
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' });
@@ -115,12 +122,6 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  React.useEffect(() => {
-    if (!isDesktopOrLaptop) {
-      handleDrawerClose();
-    }
-  }, [isDesktopOrLaptop]);
 
   const onboardingState = React.useContext(OnboardingContext);
 
@@ -152,11 +153,12 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
             width: drawerWidth,
             boxSizing: 'border-box',
           },
-          height: '100%'
+          height: '100%',
         }}
-        variant="persistent"
+        variant={isDesktopOrLaptop ? 'persistent' : 'temporary'}
         anchor="left"
-        open={open}>
+        open={open}
+        onClick={!isDesktopOrLaptop ? handleDrawerClose : () => {}}>
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
@@ -175,12 +177,15 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
             <DeviceHubIcon></DeviceHubIcon>
           </MenuItem>
       */}
-          <MenuItem text="Asset Management" page="/assetmanagement" display={onboardingState.isOnboardingComplete}>
+          <MenuItem
+            text="Asset Management"
+            page="/assetmanagement"
+            display={onboardingState.isOnboardingComplete}>
             <SystemUpdateAltIcon></SystemUpdateAltIcon>
           </MenuItem>
         </List>
       </Drawer>
-      <Main open={open}>
+      <Main open={open} isDesktopOrLaptop={isDesktopOrLaptop}>
         <DrawerHeader />
         {children}
       </Main>
