@@ -47,18 +47,19 @@ const Main = styled('main', { shouldForwardProp: (prop: any) => prop !== 'open' 
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
+  isDesktopOrLaptop?: boolean;
 }
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop: any) => prop !== 'open',
-})<AppBarProps>(({ theme, open }) => ({
+})<AppBarProps>(({ theme, open, isDesktopOrLaptop }) => ({
   transition: theme.transitions.create(['margin', 'width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: `${drawerWidth}px`,
+    width: isDesktopOrLaptop ? `calc(100% - ${drawerWidth}px)` : '100%',
+    marginLeft: isDesktopOrLaptop ? `${drawerWidth}px` : 0,
     transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
@@ -128,14 +129,14 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
+      <AppBar position="fixed" open={open} isDesktopOrLaptop={isDesktopOrLaptop}>
         <Toolbar>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
             edge="start"
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}>
+            sx={{ mr: 2, ...(open && isDesktopOrLaptop && { display: 'none' }) }}>
             <MenuIcon />
           </IconButton>
           <Link href="/" style={{ textDecoration: 'inherit', color: 'inherit' }}>
