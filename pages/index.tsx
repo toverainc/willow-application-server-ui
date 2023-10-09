@@ -8,7 +8,6 @@ import LeftMenu from '../components/LeftMenu';
 import { fetcher } from '../misc/fetchers';
 import { Client, Release } from '../misc/model';
 import { OnboardingContext } from './_app';
-import { release } from 'os';
 
 const Home: NextPage = () => {
   const router = useRouter();
