@@ -89,6 +89,7 @@ export interface GeneralSettings {
   timezone_continent_city: string;
   speaker_volume: number;
   lcd_brightness: number;
+  display_timeout: number;
   timezone: string;
   timezone_name: string;
   ntp_config: keyof typeof NTP_CONFIG;

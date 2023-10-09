@@ -1,3 +1,4 @@
+import { HourglassEmpty, HourglassFull } from '@mui/icons-material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness5Icon from '@mui/icons-material/Brightness5';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -142,6 +143,7 @@ async function handleSubmit(
         : undefined,
     speaker_volume: parseIntOrUndef(generalSettingsForm.speaker_volume),
     lcd_brightness: parseIntOrUndef(generalSettingsForm.lcd_brightness),
+    display_timeout: parseIntOrUndef(generalSettingsForm.display_timeout),
     timezone: tzDictionary[generalSettingsForm.timezone],
     timezone_name: generalSettingsForm.timezone,
   };
@@ -570,6 +572,9 @@ function GeneralSettings() {
   const [lcdBrightnessValue, setLcdBrightnessValue] = React.useState(
     generalSettings?.lcd_brightness ?? defaultGeneralSettings?.lcd_brightness
   );
+  const [displayTimeoutValue, setDisplayTimeoutValue] = React.useState(
+    generalSettings?.display_timeout ?? defaultGeneralSettings?.display_timeout
+  );
   const [timezone, setTimezone] = React.useState(
     generalSettings &&
       defaultGeneralSettings &&
@@ -621,6 +626,27 @@ function GeneralSettings() {
     }
   };
 
+  // Handlers for Display Timeout Slider and Input
+  const handleDisplayTimeoutInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDisplayTimeoutValue(event.target.value === '' ? undefined : Number(event.target.value));
+  };
+
+  const handleDisplayTimeoutSliderChange = (event: Event, newValue: number | number[]) => {
+    setDisplayTimeoutValue(newValue as number);
+  };
+
+  const handleDisplayTimeoutBlur = () => {
+    if (displayTimeoutValue && displayTimeoutValue < 0) {
+      setDisplayTimeoutValue(0);
+    } else if (displayTimeoutValue && displayTimeoutValue > 60) {
+      setDisplayTimeoutValue(60);
+    } else if (!displayTimeoutValue) {
+      setDisplayTimeoutValue(
+        generalSettings?.display_timeout ?? defaultGeneralSettings?.display_timeout
+      );
+    }
+  };
+
   React.useEffect(() => {
     if (generalSettings && defaultGeneralSettings && tzDictionary) {
       setCommandEndpoint(
@@ -633,6 +659,9 @@ function GeneralSettings() {
       );
       setSpeakerVolumeValue(
         generalSettings.speaker_volume ?? defaultGeneralSettings.speaker_volume
+      );
+      setDisplayTimeoutValue(
+        generalSettings.display_timeout ?? defaultGeneralSettings.display_timeout
       );
       setTimezone(generalSettings.timezone_name ?? defaultGeneralSettings.timezone_name);
       setLoading(false);
@@ -947,6 +976,33 @@ function GeneralSettings() {
             step: 1,
             min: 0,
             max: 1023,
+            type: 'number',
+            'aria-labelledby': 'input-slider',
+          }}
+        />
+      </Stack>
+      <InputLabel>Display Timeout</InputLabel>
+      <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
+        <HourglassEmpty />
+        <Slider
+          name="display_timeout"
+          value={displayTimeoutValue}
+          onChange={handleDisplayTimeoutSliderChange}
+          min={0}
+          max={60}
+          size="small"
+          valueLabelDisplay="auto"
+        />
+        <HourglassFull />
+        <Input
+          value={displayTimeoutValue}
+          size="small"
+          onChange={handleDisplayTimeoutInputChange}
+          onBlur={handleDisplayTimeoutBlur}
+          inputProps={{
+            step: 1,
+            min: 0,
+            max: 60,
             type: 'number',
             'aria-labelledby': 'input-slider',
           }}
