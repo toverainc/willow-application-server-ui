@@ -144,6 +144,7 @@ async function handleSubmit(
     speaker_volume: parseIntOrUndef(generalSettingsForm.speaker_volume),
     lcd_brightness: parseIntOrUndef(generalSettingsForm.lcd_brightness),
     display_timeout: parseIntOrUndef(generalSettingsForm.display_timeout),
+    wake_confirmation: !!generalSettingsForm.wake_confirmation,
     timezone: tzDictionary[generalSettingsForm.timezone],
     timezone_name: generalSettingsForm.timezone,
   };
@@ -636,8 +637,8 @@ function GeneralSettings() {
   };
 
   const handleDisplayTimeoutBlur = () => {
-    if (displayTimeoutValue && displayTimeoutValue < 0) {
-      setDisplayTimeoutValue(0);
+    if (displayTimeoutValue && displayTimeoutValue < 1) {
+      setDisplayTimeoutValue(1);
     } else if (displayTimeoutValue && displayTimeoutValue > 60) {
       setDisplayTimeoutValue(60);
     } else if (!displayTimeoutValue) {
@@ -804,7 +805,7 @@ function GeneralSettings() {
             />
             <HelpTooltip tooltip="The Long-Lived Access Token generated in Home Assistant." />
           </Stack>
-          <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
+          <Stack spacing={2} direction="row" sx={{ mt: 1 }} justifyContent="space-between">
             <FormControlLabel
               control={
                 <Checkbox
@@ -927,6 +928,22 @@ function GeneralSettings() {
           )}
         </>
       )}
+      <FormControl fullWidth>
+        <Stack spacing={2} direction="row" sx={{ mb: 1 }} justifyContent="space-between">
+          <FormControlLabel
+            control={
+              <Checkbox
+                name="wake_confirmation"
+                defaultChecked={
+                  generalSettings.wake_confirmation ?? defaultGeneralSettings.wake_confirmation
+                }
+              />
+            }
+            label="Wake Confirmation Tone"
+          />
+          <HelpTooltip tooltip="Enabling this option will have your Willow devices chime when activated by the wake word."></HelpTooltip>
+        </Stack>
+      </FormControl>
       <InputLabel>Speaker Volume</InputLabel>
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
         <VolumeDown />
@@ -988,7 +1005,7 @@ function GeneralSettings() {
           name="display_timeout"
           value={displayTimeoutValue}
           onChange={handleDisplayTimeoutSliderChange}
-          min={0}
+          min={1}
           max={60}
           size="small"
           valueLabelDisplay="auto"
@@ -1001,7 +1018,7 @@ function GeneralSettings() {
           onBlur={handleDisplayTimeoutBlur}
           inputProps={{
             step: 1,
-            min: 0,
+            min: 1,
             max: 60,
             type: 'number',
             'aria-labelledby': 'input-slider',

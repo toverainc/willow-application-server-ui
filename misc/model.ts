@@ -90,6 +90,7 @@ export interface GeneralSettings {
   speaker_volume: number;
   lcd_brightness: number;
   display_timeout: number;
+  wake_confirmation: boolean; //Enables/Disables Wake Confirmation Chime
   timezone: string;
   timezone_name: string;
   ntp_config: keyof typeof NTP_CONFIG;
