@@ -205,7 +205,7 @@ export function ApplyNvsDialog({
   );
 }
 
-export function DeleteCache({
+export function DeleteCacheDialog({
   open,
   onClose,
   asset,
@@ -237,6 +237,41 @@ export function DeleteCache({
       open={open}
       onClose={onClose}
       message={`Clicking confirm will delete "${asset.platform}" from storage for release "${release.name}".`}
+      onConfirm={onConfirm}
+    />
+  );
+}
+
+export function LocateDeviceDialog({
+  open,
+  onClose,
+  client,
+}: {
+  open: boolean;
+  client: Client;
+  onClose: (event: any) => void;
+}) {
+  async function onConfirm(evt: any) {
+    try {
+      // call Locate Device API Here
+      throw 'Not Implemented';
+    } catch (e) {
+      console.error(
+        `Calling Locate Device for client "${client.label || client.hostname}" failed with ${e}`
+      );
+      toast.error(`Calling Locate Device for client "${client.label || client.hostname}" failed!`);
+      return e;
+    }
+    toast.success(`Locate Device triggered for client "${client.label || client.hostname}"!`);
+    onClose(evt);
+  }
+  return (
+    <ConfirmDialog
+      open={open}
+      onClose={onClose}
+      message={`Clicking confirm will trigger device location for client "${
+        client.label || client.hostname
+      }". The client will turn on its display and chime for 5 seconds.`}
       onConfirm={onConfirm}
     />
   );

@@ -15,7 +15,7 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import useSWR from 'swr';
-import { DeleteCache } from '../components/ConfirmDialog';
+import { DeleteCacheDialog } from '../components/ConfirmDialog';
 import LeftMenu from '../components/LeftMenu';
 import { Release, ReleaseAsset } from '../misc/model';
 import { OnboardingContext } from './_app';
@@ -54,7 +54,7 @@ function ReleaseCard({ release }: { release: Release }) {
                 key={asset.browser_download_url}
                 secondaryAction={
                   <div>
-                    <DeleteCache
+                    <DeleteCacheDialog
                       asset={asset}
                       release={release}
                       open={openDialogState.get(asset.was_url) ?? false}
@@ -65,7 +65,7 @@ function ReleaseCard({ release }: { release: Release }) {
                             new Map<string, boolean>(openDialogState).set(asset.was_url, false)
                           )
                         );
-                      }}></DeleteCache>
+                      }}></DeleteCacheDialog>
                     <Tooltip
                       style={{ boxShadow: 'none' }}
                       title="Delete From Storage"

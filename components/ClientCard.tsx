@@ -12,9 +12,13 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Image from 'next/image';
 import * as React from 'react';
-import { BASE_URL } from '../misc/fetchers';
 import { Client, ReleaseAsset } from '../misc/model';
-import { ApplyConfigDialog, ApplyNvsDialog, ResetDialog } from './ConfirmDialog';
+import {
+  ApplyConfigDialog,
+  ApplyNvsDialog,
+  LocateDeviceDialog,
+  ResetDialog,
+} from './ConfirmDialog';
 import NameClientDialog from './NameClientDialog';
 import OtaDialog from './OtaDialog';
 
@@ -26,6 +30,7 @@ function ClientMenu({ client }: { client: Client }) {
   const [openApplyConfigDialog, setOpenApplyConfigDialog] = React.useState<boolean>(false);
   const [openApplyNvsDialog, setOpenApplyNvsDialog] = React.useState<boolean>(false);
   const [openNameClientDialog, setOpenNameClientDialog] = React.useState<boolean>(false);
+  const [openLocateDeviceDialog, setOpenLocateDeviceDialog] = React.useState<boolean>(false);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -61,6 +66,9 @@ function ClientMenu({ client }: { client: Client }) {
         <MenuItem onClick={() => handleClose() && setOpenApplyNvsDialog(true)}>
           Apply Connectivity Configuration
         </MenuItem>
+        <MenuItem onClick={() => handleClose() && setOpenLocateDeviceDialog(true)}>
+          Locate Device
+        </MenuItem>
         <MenuItem onClick={() => handleClose() && setOpenResetDialog(true)}>Restart</MenuItem>
         <MenuItem onClick={() => handleClose() && setOpenOtaDialog(true)}>Upgrade</MenuItem>
       </Menu>
@@ -72,6 +80,10 @@ function ClientMenu({ client }: { client: Client }) {
         client={client}
         open={openOtaDialog}
         onClose={() => setOpenOtaDialog(false)}></OtaDialog>
+      <LocateDeviceDialog
+        client={client}
+        open={openLocateDeviceDialog}
+        onClose={() => setOpenLocateDeviceDialog(false)}></LocateDeviceDialog>
       <ResetDialog
         client={client}
         open={openResetDialog}
