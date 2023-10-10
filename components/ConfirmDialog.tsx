@@ -253,8 +253,7 @@ export function LocateDeviceDialog({
 }) {
   async function onConfirm(evt: any) {
     try {
-      // call Locate Device API Here
-      throw 'Not Implemented';
+      await post('/api/client?action=identify', { hostname: client.hostname });
     } catch (e) {
       console.error(
         `Calling Locate Device for client "${client.label || client.hostname}" failed with ${e}`
