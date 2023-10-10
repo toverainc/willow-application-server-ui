@@ -1272,11 +1272,11 @@ function SettingsAccordions() {
   );
 }
 
-function GetInformationCard() {
+function GetInformationCard(showPrereleases: boolean) {
   const onboardingContext = React.useContext(OnboardingContext);
 
   if (onboardingContext.isOnboardingComplete) {
-    return <WebFlashCard></WebFlashCard>;
+    return <WebFlashCard showPreReleases={showPrereleases}></WebFlashCard>;
   } else if (!onboardingContext.isNvsComplete) {
     return (
       <InformationCard title="Welcome to Willow!">
@@ -1306,12 +1306,14 @@ const Config: NextPage = () => {
   const { data: nvsData, isLoading: nvsIsLoading } = useSWR<NvsSettings>('/api/config?type=nvs');
   const { data: configData, isLoading: configIsLoading } =
     useSWR<GeneralSettings>('/api/config?type=config');
+  const { data: advancedConfigData, isLoading: advancedConfigIsLoading } =
+    useSWR<AdvancedSettings>('/api/config?type=config');
 
-  return nvsIsLoading || configIsLoading ? (
+  return nvsIsLoading || configIsLoading || advancedConfigIsLoading ? (
     <LoadingSpinner />
   ) : (
     <LeftMenu>
-      {GetInformationCard()}
+      {GetInformationCard(advancedConfigData?.show_prereleases ?? false)}
       <SettingsAccordions></SettingsAccordions>
     </LeftMenu>
   );
