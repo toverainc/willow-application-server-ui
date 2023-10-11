@@ -53,35 +53,37 @@ function ReleaseCard({ release }: { release: Release }) {
               <ListItem
                 key={asset.browser_download_url}
                 secondaryAction={
-                  <div>
-                    <DeleteCacheDialog
-                      asset={asset}
-                      release={release}
-                      open={openDialogState.get(asset.was_url) ?? false}
-                      onClose={() => {
-                        return (
-                          true &&
-                          setOpenDialogState(
-                            new Map<string, boolean>(openDialogState).set(asset.was_url, false)
-                          )
-                        );
-                      }}></DeleteCacheDialog>
-                    <Tooltip
-                      style={{ boxShadow: 'none' }}
-                      title="Delete From Storage"
-                      enterTouchDelay={0}>
-                      <IconButton
-                        edge="end"
-                        aria-label="delete"
-                        onClick={() =>
-                          setOpenDialogState(
-                            new Map<string, boolean>(openDialogState).set(asset.was_url, true)
-                          )
-                        }>
-                        <DeleteForeverTwoToneIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </div>
+                  false && ( // Temporarily disable Delete buttons until Delete API is ready.
+                    <div>
+                      <DeleteCacheDialog
+                        asset={asset}
+                        release={release}
+                        open={openDialogState.get(asset.was_url) ?? false}
+                        onClose={() => {
+                          return (
+                            true &&
+                            setOpenDialogState(
+                              new Map<string, boolean>(openDialogState).set(asset.was_url, false)
+                            )
+                          );
+                        }}></DeleteCacheDialog>
+                      <Tooltip
+                        style={{ boxShadow: 'none' }}
+                        title="Delete From Storage"
+                        enterTouchDelay={0}>
+                        <IconButton
+                          edge="end"
+                          aria-label="delete"
+                          onClick={() =>
+                            setOpenDialogState(
+                              new Map<string, boolean>(openDialogState).set(asset.was_url, true)
+                            )
+                          }>
+                          <DeleteForeverTwoToneIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </div>
+                  )
                 }>
                 <ListItemText sx={{ margin: 0, maxWidth: 300 }} primary={asset.platform} />
               </ListItem>
