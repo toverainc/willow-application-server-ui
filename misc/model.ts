@@ -35,7 +35,6 @@ export const WAKE_WORDS = {
 };
 export const SPEECH_REC_MODE = {
   WIS: 'Willow Inference Server',
-  Multinet: 'On Client Command Recognition (developers only)',
 };
 export const AUDIO_RESPONSE_TYPE = { TTS: 'Text to Speech', Chimes: 'Chimes', None: 'Silence' };
 export const COMMAND_ENDPOINT = {

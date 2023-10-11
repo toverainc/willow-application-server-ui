@@ -684,9 +684,7 @@ function GeneralSettings() {
         defaultValue={generalSettings.speech_rec_mode ?? defaultGeneralSettings.speech_rec_mode}
         label="Speech Recognition Mode"
         options={SPEECH_REC_MODE}
-        tooltip=" Willow Inference Server mode uses the configured URL to stream your speech to a very high quality speech recognition implementation powered by WIS.
-        On client commands uses a model on the client to recognized pre-defined commands but you currently need to build Willow yourself for that.
-        WAS configuration coming soon!"
+        tooltip=" Willow Inference Server mode uses the configured URL to stream your speech to a very high quality speech recognition implementation powered by WIS."
       />
       <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} alignItems="center">
         <TextField
