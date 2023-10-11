@@ -1,0 +1,28 @@
+---
+name: build-and-publish
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # fetch full history to be able to gather changed files in all new commits
+          fetch-depth: 0
+      - name: npm install
+        run: npm install
+      - name: build
+        run: npm run build
+      - name: create tarball
+        run: tar cfz willow-application-server-ui.tar.gz out/
+      - name: publish
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: false
+          artifacts: willow-application-server-ui.tar.gz
+          prerelease: ${{ contains(github.ref, 'delete') || contains(github.ref, 'pre') || contains(github.ref, 'rc') }}
