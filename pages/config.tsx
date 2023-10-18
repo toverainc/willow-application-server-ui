@@ -181,20 +181,57 @@ function AdvancedSettings() {
     useSWR<AdvancedSettings>('/api/config?type=config&default=true');
   const { data: tzDictionary, error: tzDictionaryError } =
     useSWR<TZDictionary>('/api/config?type=tz');
-  const [micGainValue, setMicGainValue] = React.useState(advancedSettings?.mic_gain);
-  const [recordBufferValue, setRecordBufferValue] = React.useState(advancedSettings?.record_buffer);
-  const [streamTimeoutValue, setStreamTimeoutValue] = React.useState(
-    advancedSettings?.stream_timeout
+
+  const [changesMade, setChangesMade] = React.useState(false);
+
+  // Field States
+  const [micGainValue, setMicGainValue] = React.useState(
+    advancedSettings?.mic_gain ?? defaultAdvancedSettings?.mic_gain
   );
-  const [vadTimeoutValue, setVadTimeoutValue] = React.useState(advancedSettings?.vad_timeout);
+  const [recordBufferValue, setRecordBufferValue] = React.useState(
+    advancedSettings?.record_buffer ?? defaultAdvancedSettings?.record_buffer
+  );
+  const [streamTimeoutValue, setStreamTimeoutValue] = React.useState(
+    advancedSettings?.stream_timeout ?? defaultAdvancedSettings?.stream_timeout
+  );
+  const [vadTimeoutValue, setVadTimeoutValue] = React.useState(
+    advancedSettings?.vad_timeout ?? defaultAdvancedSettings?.vad_timeout
+  );
+  const [aecValue, setAecValue] = React.useState(
+    advancedSettings?.aec ?? defaultAdvancedSettings?.aec
+  );
+  const [bssValue, setBssValue] = React.useState(
+    advancedSettings?.bss ?? defaultAdvancedSettings?.bss
+  );
+  const [wasModeValue, setWasModeValue] = React.useState(
+    advancedSettings?.was_mode ?? defaultAdvancedSettings?.was_mode
+  );
+  const [multiwakeValue, setMultiwakeValue] = React.useState(
+    advancedSettings?.multiwake ?? defaultAdvancedSettings?.multiwake
+  );
+  const [showPrereleasesValue, setShowPrereleasesValue] = React.useState(
+    advancedSettings?.show_prereleases ?? defaultAdvancedSettings?.show_prereleases
+  );
+  const [audioCodecValue, setAudioCodecValue] = React.useState(
+    (advancedSettings?.audio_codec ??
+      defaultAdvancedSettings?.audio_codec) as keyof typeof AUDIO_CODECS
+  );
+  const [vadModeValue, setVadModeValue] = React.useState(
+    (advancedSettings?.vad_mode ?? defaultAdvancedSettings?.vad_mode) as keyof typeof VAD_MODES
+  );
+  const [wakeModeValue, setWakeModeValue] = React.useState(
+    (advancedSettings?.wake_mode ?? defaultAdvancedSettings?.wake_mode) as keyof typeof WAKE_MODES
+  );
 
   // Handlers for Mic Gain Slider and Input
   const handleMicGainInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMicGainValue(event.target.value === '' ? undefined : Number(event.target.value));
+    setChangesMade(true);
   };
 
   const handleMicGainSliderChange = (event: Event, newValue: number | number[]) => {
     setMicGainValue(newValue as number);
+    setChangesMade(true);
   };
 
   const handleMicGainBlur = () => {
@@ -203,23 +240,20 @@ function AdvancedSettings() {
     } else if (micGainValue && micGainValue > 14) {
       setMicGainValue(14);
     } else if (!micGainValue) {
-      setMicGainValue(
-        advancedSettings?.mic_gain
-          ? advancedSettings.mic_gain
-          : defaultAdvancedSettings?.mic_gain
-          ? defaultAdvancedSettings.mic_gain
-          : 0
-      );
+      setMicGainValue(advancedSettings?.mic_gain ?? defaultAdvancedSettings?.mic_gain ?? 0);
     }
+    setChangesMade(true);
   };
 
   // Handlers for Record Buffer Slider and Input
   const handleRecordBufferInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRecordBufferValue(event.target.value === '' ? undefined : Number(event.target.value));
+    setChangesMade(true);
   };
 
   const handleRecordBufferSliderChange = (event: Event, newValue: number | number[]) => {
     setRecordBufferValue(newValue as number);
+    setChangesMade(true);
   };
 
   const handleRecordBufferBlur = () => {
@@ -229,22 +263,21 @@ function AdvancedSettings() {
       setRecordBufferValue(16);
     } else if (!recordBufferValue) {
       setRecordBufferValue(
-        advancedSettings?.record_buffer
-          ? advancedSettings.record_buffer
-          : defaultAdvancedSettings?.record_buffer
-          ? defaultAdvancedSettings.record_buffer
-          : 0
+        advancedSettings?.record_buffer ?? defaultAdvancedSettings?.record_buffer ?? 0
       );
     }
+    setChangesMade(true);
   };
 
   // Handlers for Stream Timeout Slider and Input
   const handleStreamTimeoutInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStreamTimeoutValue(event.target.value === '' ? undefined : Number(event.target.value));
+    setChangesMade(true);
   };
 
   const handleStreamTimeoutSliderChange = (event: Event, newValue: number | number[]) => {
     setStreamTimeoutValue(newValue as number);
+    setChangesMade(true);
   };
 
   const handleStreamTimeoutBlur = () => {
@@ -254,22 +287,21 @@ function AdvancedSettings() {
       setStreamTimeoutValue(30);
     } else if (!streamTimeoutValue) {
       setStreamTimeoutValue(
-        advancedSettings?.stream_timeout
-          ? advancedSettings.stream_timeout
-          : defaultAdvancedSettings?.stream_timeout
-          ? defaultAdvancedSettings.stream_timeout
-          : 1
+        advancedSettings?.stream_timeout ?? defaultAdvancedSettings?.stream_timeout ?? 1
       );
     }
+    setChangesMade(true);
   };
 
   // Handlers for VAD Timeout Slider and Input
   const handleVADTimeoueInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setVadTimeoutValue(event.target.value === '' ? undefined : Number(event.target.value));
+    setChangesMade(true);
   };
 
   const handleVADTimeoutSliderChange = (event: Event, newValue: number | number[]) => {
     setVadTimeoutValue(newValue as number);
+    setChangesMade(true);
   };
 
   const handleVADTimeoutBlur = () => {
@@ -279,20 +311,34 @@ function AdvancedSettings() {
       setVadTimeoutValue(1000);
     } else if (!vadTimeoutValue) {
       setVadTimeoutValue(
-        advancedSettings?.vad_timeout
-          ? advancedSettings.vad_timeout
-          : defaultAdvancedSettings?.vad_timeout
-          ? defaultAdvancedSettings.vad_timeout
-          : 0
+        advancedSettings?.vad_timeout ?? defaultAdvancedSettings?.vad_timeout ?? 0
       );
     }
+    setChangesMade(true);
   };
 
+  // Set initial states or refresh states on config changes
   React.useEffect(() => {
     if (advancedSettings && defaultAdvancedSettings) {
-      setMicGainValue(
-        advancedSettings.mic_gain ? advancedSettings.mic_gain : defaultAdvancedSettings.mic_gain
+      setAecValue(advancedSettings.aec ?? defaultAdvancedSettings.aec);
+      setBssValue(advancedSettings.bss ?? defaultAdvancedSettings.bss);
+      setWasModeValue(advancedSettings.was_mode ?? defaultAdvancedSettings.was_mode);
+      setMultiwakeValue(advancedSettings.multiwake ?? defaultAdvancedSettings.multiwake);
+      setShowPrereleasesValue(
+        advancedSettings.show_prereleases ?? defaultAdvancedSettings.show_prereleases
       );
+      setAudioCodecValue(
+        (advancedSettings.audio_codec ??
+          defaultAdvancedSettings.audio_codec) as keyof typeof AUDIO_CODECS
+      );
+      setVadModeValue(
+        (advancedSettings?.vad_mode ?? defaultAdvancedSettings?.vad_mode) as keyof typeof VAD_MODES
+      );
+      setWakeModeValue(
+        (advancedSettings?.wake_mode ??
+          defaultAdvancedSettings?.wake_mode) as keyof typeof WAKE_MODES
+      );
+      setMicGainValue(advancedSettings.mic_gain ?? defaultAdvancedSettings.mic_gain);
       setRecordBufferValue(advancedSettings.record_buffer ?? defaultAdvancedSettings.record_buffer);
       setStreamTimeoutValue(
         advancedSettings.stream_timeout ?? defaultAdvancedSettings.stream_timeout
@@ -301,6 +347,51 @@ function AdvancedSettings() {
       setLoading(false);
     }
   }, [advancedSettings, defaultAdvancedSettings]);
+
+  // Handler to reset field values to defaults
+  const handleResetForm = () => {
+    setAecValue(defaultAdvancedSettings?.aec);
+    setBssValue(defaultAdvancedSettings?.bss);
+    setWasModeValue(defaultAdvancedSettings?.was_mode);
+    setMultiwakeValue(defaultAdvancedSettings?.multiwake);
+    setShowPrereleasesValue(defaultAdvancedSettings?.show_prereleases);
+    setAudioCodecValue(defaultAdvancedSettings?.audio_codec as keyof typeof AUDIO_CODECS);
+    setVadModeValue(defaultAdvancedSettings?.vad_mode as keyof typeof VAD_MODES);
+    setWakeModeValue(defaultAdvancedSettings?.wake_mode as keyof typeof WAKE_MODES);
+    setMicGainValue(defaultAdvancedSettings?.mic_gain);
+    setRecordBufferValue(defaultAdvancedSettings?.record_buffer);
+    setStreamTimeoutValue(defaultAdvancedSettings?.stream_timeout);
+    setVadTimeoutValue(defaultAdvancedSettings?.vad_timeout);
+    setChangesMade(true);
+  };
+
+  // Handler to undo changes
+  const handleUndoChanges = () => {
+    setAecValue(advancedSettings?.aec ?? defaultAdvancedSettings?.aec);
+    setBssValue(advancedSettings?.bss ?? defaultAdvancedSettings?.bss);
+    setWasModeValue(advancedSettings?.was_mode ?? defaultAdvancedSettings?.was_mode);
+    setMultiwakeValue(advancedSettings?.multiwake ?? defaultAdvancedSettings?.multiwake);
+    setShowPrereleasesValue(
+      advancedSettings?.show_prereleases ?? defaultAdvancedSettings?.show_prereleases
+    );
+    setAudioCodecValue(
+      (advancedSettings?.audio_codec ??
+        defaultAdvancedSettings?.audio_codec) as keyof typeof AUDIO_CODECS
+    );
+    setVadModeValue(
+      (advancedSettings?.vad_mode ?? defaultAdvancedSettings?.vad_mode) as keyof typeof VAD_MODES
+    );
+    setWakeModeValue(
+      (advancedSettings?.wake_mode ?? defaultAdvancedSettings?.wake_mode) as keyof typeof WAKE_MODES
+    );
+    setMicGainValue(advancedSettings?.mic_gain ?? defaultAdvancedSettings?.mic_gain);
+    setRecordBufferValue(advancedSettings?.record_buffer ?? defaultAdvancedSettings?.record_buffer);
+    setStreamTimeoutValue(
+      advancedSettings?.stream_timeout ?? defaultAdvancedSettings?.stream_timeout
+    );
+    setVadTimeoutValue(advancedSettings?.vad_timeout ?? defaultAdvancedSettings?.vad_timeout);
+    setChangesMade(false);
+  };
 
   return loading || !(advancedSettings && defaultAdvancedSettings && tzDictionary) ? (
     <LoadingSpinner />
@@ -312,7 +403,11 @@ function AdvancedSettings() {
             control={
               <Checkbox
                 name="aec"
-                defaultChecked={advancedSettings.aec ?? defaultAdvancedSettings.aec}
+                checked={aecValue}
+                onChange={(event) => {
+                  setAecValue(event.target.checked);
+                  setChangesMade(true);
+                }}
               />
             }
             label="Acoustic Echo Cancellation"
@@ -328,7 +423,11 @@ function AdvancedSettings() {
             control={
               <Checkbox
                 name="bss"
-                defaultChecked={advancedSettings.bss ?? defaultAdvancedSettings.bss}
+                checked={bssValue}
+                onChange={(event) => {
+                  setBssValue(event.target.checked);
+                  setChangesMade(true);
+                }}
               />
             }
             label="Blind Source Separation"
@@ -344,7 +443,11 @@ function AdvancedSettings() {
             control={
               <Checkbox
                 name="was_mode"
-                defaultChecked={advancedSettings.was_mode ?? defaultAdvancedSettings.was_mode}
+                checked={wasModeValue}
+                onChange={(event) => {
+                  setWasModeValue(event.target.checked);
+                  setChangesMade(true);
+                }}
               />
             }
             label="WAS Command Endpoint (EXPERIMENTAL)"
@@ -358,7 +461,11 @@ function AdvancedSettings() {
             control={
               <Checkbox
                 name="multiwake"
-                defaultChecked={advancedSettings.multiwake ?? defaultAdvancedSettings.multiwake}
+                checked={multiwakeValue}
+                onChange={(event) => {
+                  setMultiwakeValue(event.target.checked);
+                  setChangesMade(true);
+                }}
               />
             }
             label="Willow One Wake (EXPERIMENTAL)"
@@ -374,9 +481,11 @@ function AdvancedSettings() {
             control={
               <Checkbox
                 name="show_prereleases"
-                defaultChecked={
-                  advancedSettings.show_prereleases ?? defaultAdvancedSettings.show_prereleases
-                }
+                checked={showPrereleasesValue}
+                onChange={(event) => {
+                  setShowPrereleasesValue(event.target.checked);
+                  setChangesMade(true);
+                }}
               />
             }
             label="Show Prereleases"
@@ -386,7 +495,11 @@ function AdvancedSettings() {
       </FormControl>
       <EnumSelectHelper
         name="audio_codec"
-        defaultValue={advancedSettings.audio_codec ?? defaultAdvancedSettings.audio_codec}
+        value={audioCodecValue}
+        onChange={(event) => {
+          setAudioCodecValue(event.target.value as keyof typeof AUDIO_CODECS);
+          setChangesMade(true);
+        }}
         label="Audio Codec to use for streaming to WIS"
         options={AUDIO_CODECS}
         tooltip="PCM is more accurate but uses more WiFi bandwidth.
@@ -394,19 +507,25 @@ function AdvancedSettings() {
       />
       <EnumSelectHelper
         name="vad_mode"
-        defaultValue={
-          advancedSettings.vad_mode?.toString() ?? defaultAdvancedSettings.vad_mode?.toString()
-        }
+        value={vadModeValue.toString()}
         label="Voice Activity Detection Mode"
         options={VAD_MODES.map((v) => v.toString())}
+        onChange={(event) => {
+          setVadModeValue(event.target.value as keyof typeof VAD_MODES);
+          setChangesMade(true);
+        }}
         tooltip="If Willow thinks you stop talking too soon or too late you can change the aggressiveness of Voice Activity Mode (VAD).
         Higher values are more likely to end the voice session earlier."
       />
       <EnumSelectHelper
         name="wake_mode"
-        defaultValue={advancedSettings.wake_mode ?? defaultAdvancedSettings.wake_mode}
+        value={wakeModeValue.toString()}
         label="Wake Word Recognition Mode"
         options={WAKE_MODES}
+        onChange={(event) => {
+          setWakeModeValue(event.target.value as keyof typeof WAKE_MODES);
+          setChangesMade(true);
+        }}
         tooltip="Wake Word Recognition Mode generally configures the sensitivity of detecting the wake word.
         Higher values are more sensitive but can lead to Willow waking up when it shouldn't."
       />
@@ -530,11 +649,27 @@ function AdvancedSettings() {
           tooltip="Save your configuration to WAS.
           If you want to test your configuration you can go to the Clients page to save to individual clients."></HelpTooltip>
       </Stack>
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
+      <Stack direction="row" spacing={2} sx={{ mb: 1 }} justifyContent="flex-end">
         <Button id="saveAndApply" type="submit" variant="outlined">
           Save Settings & Apply Everywhere
         </Button>
         <HelpTooltip tooltip="Save your configuration to WAS and apply to all connected clients immediately."></HelpTooltip>
+      </Stack>
+      <Stack direction="row" spacing={2} sx={{ mb: 1 }} justifyContent="flex-end">
+        <Button id="resetFormToDefaults" type="button" variant="outlined" onClick={handleResetForm}>
+          Reset to Defaults
+        </Button>
+        <HelpTooltip tooltip="Set all values to their default. These will not be saved until you click Save or Save & Apply Everywhere."></HelpTooltip>
+      </Stack>
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{ display: changesMade ? undefined : 'none' }}
+        justifyContent="flex-end">
+        <Button id="undoChanges" type="button" variant="outlined" onClick={handleUndoChanges}>
+          Undo Changes
+        </Button>
+        <HelpTooltip tooltip="Undo any changes made to your configuration."></HelpTooltip>
       </Stack>
     </form>
   );
@@ -542,11 +677,6 @@ function AdvancedSettings() {
 
 function GeneralSettings() {
   const [loading, setLoading] = React.useState(true);
-  const [commandEndpoint, setCommandEndpoint] =
-    React.useState<keyof typeof COMMAND_ENDPOINT>('Home Assistant');
-
-  const [ntpConfig, setNtpConfig] = React.useState<keyof typeof NTP_CONFIG>('Host');
-  const [restAuthType, setRestAuthType] = React.useState<string>(REST_AUTH_TYPES[0]);
 
   const [showHaToken, setShowHaToken] = React.useState(false);
   const handleClickShowHaToken = () => setShowHaToken(!showHaToken);
@@ -567,6 +697,64 @@ function GeneralSettings() {
   const { data: tzDictionary, error: tzDictionaryError } =
     useSWR<TZDictionary>('/api/config?type=tz');
 
+  const [changesMade, setChangesMade] = React.useState(false);
+
+  // Field States
+  const [speechRecModeValue, setSpeechRecModeValue] = React.useState(
+    (generalSettings?.speech_rec_mode ??
+      defaultGeneralSettings?.speech_rec_mode) as keyof typeof SPEECH_REC_MODE
+  );
+  const [wisUrlValue, setWisUrlValue] = React.useState(
+    generalSettings?.wis_url ?? defaultGeneralSettings?.wis_url
+  );
+  const [audioResponseTypeValue, setAudioResponseTypeValue] = React.useState(
+    (generalSettings?.audio_response_type ??
+      defaultGeneralSettings?.audio_response_type) as keyof typeof AUDIO_RESPONSE_TYPE
+  );
+  const [wisTtsUrlValue, setWisTtsUrlValue] = React.useState(
+    generalSettings?.wis_tts_url ?? defaultGeneralSettings?.wis_tts_url
+  );
+  const [wakeWordValue, setWakeWordValue] = React.useState(
+    (generalSettings?.wake_word ?? defaultGeneralSettings?.wake_word) as keyof typeof WAKE_WORDS
+  );
+  const [commandEndpointValue, setCommandEndpointValue] = React.useState(
+    (generalSettings?.command_endpoint ??
+      defaultGeneralSettings?.command_endpoint) as keyof typeof COMMAND_ENDPOINT
+  );
+  const [hassHostValue, setHassHostValue] = React.useState(
+    generalSettings?.hass_host ?? defaultGeneralSettings?.hass_host
+  );
+  const [hassPortValue, setHassPortValue] = React.useState(
+    generalSettings?.hass_port ?? defaultGeneralSettings?.hass_port
+  );
+  const [hassTlsValue, setHassTlsValue] = React.useState(
+    generalSettings?.hass_tls ?? defaultGeneralSettings?.hass_tls
+  );
+  const [hassTokenValue, setHassTokenValue] = React.useState(
+    generalSettings?.hass_token ?? defaultGeneralSettings?.hass_token
+  );
+  const [openhabUrlValue, setOpenhabUrlValue] = React.useState(
+    generalSettings?.openhab_url ?? defaultGeneralSettings?.openhab_url
+  );
+  const [openhabTokenValue, setOpenhabTokenValue] = React.useState(
+    generalSettings?.openhab_token ?? defaultGeneralSettings?.openhab_token
+  );
+  const [restUrlValue, setRestUrlValue] = React.useState(
+    generalSettings?.rest_url ?? defaultGeneralSettings?.rest_url
+  );
+  const [restAuthTypeValue, setRestAuthTypeValue] = React.useState(
+    (generalSettings?.rest_auth_type ??
+      defaultGeneralSettings?.rest_auth_type) as keyof typeof REST_AUTH_TYPES
+  );
+  const [restAuthUserValue, setRestAuthUserValue] = React.useState(
+    generalSettings?.rest_auth_user ?? defaultGeneralSettings?.rest_auth_user
+  );
+  const [restAuthPassValue, setRestAuthPassValue] = React.useState(
+    generalSettings?.rest_auth_pass ?? defaultGeneralSettings?.rest_auth_pass
+  );
+  const [restAuthHeaderValue, setRestAuthHeaderValue] = React.useState(
+    generalSettings?.rest_auth_header ?? defaultGeneralSettings?.rest_auth_header
+  );
   const [speakerVolumeValue, setSpeakerVolumeValue] = React.useState(
     generalSettings?.speaker_volume ?? defaultGeneralSettings?.speaker_volume
   );
@@ -576,22 +764,28 @@ function GeneralSettings() {
   const [displayTimeoutValue, setDisplayTimeoutValue] = React.useState(
     generalSettings?.display_timeout ?? defaultGeneralSettings?.display_timeout
   );
-  const [timezone, setTimezone] = React.useState(
-    generalSettings &&
-      defaultGeneralSettings &&
-      (generalSettings.timezone || defaultGeneralSettings.timezone) &&
-      tzDictionary
-      ? tzDictionary[generalSettings.timezone ?? defaultGeneralSettings.timezone]
-      : ''
+  const [wakeConfirmationValue, setWakeConfirmationValue] = React.useState(
+    generalSettings?.wake_confirmation ?? defaultGeneralSettings?.wake_confirmation
+  );
+  const [timezoneValue, setTimezoneValue] = React.useState(
+    generalSettings?.timezone_name ?? defaultGeneralSettings?.timezone_name
+  );
+  const [ntpConfigValue, setNtpConfigValue] = React.useState(
+    (generalSettings?.ntp_config ?? defaultGeneralSettings?.ntp_config) as keyof typeof NTP_CONFIG
+  );
+  const [ntpHostValue, setNtpHostValue] = React.useState(
+    generalSettings?.ntp_host ?? defaultGeneralSettings?.ntp_host
   );
 
   // Handlers for Speaker Volume Slider and Input
   const handleSpeakerVolumeInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSpeakerVolumeValue(event.target.value === '' ? undefined : Number(event.target.value));
+    setChangesMade(true);
   };
 
   const handleSpeakerVolumeSliderChange = (event: Event, newValue: number | number[]) => {
     setSpeakerVolumeValue(newValue as number);
+    setChangesMade(true);
   };
 
   const handleSpeakerVolumeBlur = () => {
@@ -604,15 +798,18 @@ function GeneralSettings() {
         generalSettings?.speaker_volume ?? defaultGeneralSettings?.speaker_volume
       );
     }
+    setChangesMade(true);
   };
 
   // Handlers for LCD Brightness Slider and Input
   const handleLcdBrightnessInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLcdBrightnessValue(event.target.value === '' ? undefined : Number(event.target.value));
+    setChangesMade(true);
   };
 
   const handleLcdBrightnessSliderChange = (event: Event, newValue: number | number[]) => {
     setLcdBrightnessValue(newValue as number);
+    setChangesMade(true);
   };
 
   const handleLcdBrightnessBlur = () => {
@@ -625,15 +822,18 @@ function GeneralSettings() {
         generalSettings?.lcd_brightness ?? defaultGeneralSettings?.lcd_brightness
       );
     }
+    setChangesMade(true);
   };
 
   // Handlers for Display Timeout Slider and Input
   const handleDisplayTimeoutInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDisplayTimeoutValue(event.target.value === '' ? undefined : Number(event.target.value));
+    setChangesMade(true);
   };
 
   const handleDisplayTimeoutSliderChange = (event: Event, newValue: number | number[]) => {
     setDisplayTimeoutValue(newValue as number);
+    setChangesMade(true);
   };
 
   const handleDisplayTimeoutBlur = () => {
@@ -646,30 +846,159 @@ function GeneralSettings() {
         generalSettings?.display_timeout ?? defaultGeneralSettings?.display_timeout
       );
     }
+    setChangesMade(true);
   };
 
   React.useEffect(() => {
     if (generalSettings && defaultGeneralSettings && tzDictionary) {
-      setCommandEndpoint(
-        generalSettings.command_endpoint ?? defaultGeneralSettings.command_endpoint
+      setSpeechRecModeValue(
+        (generalSettings?.speech_rec_mode ??
+          defaultGeneralSettings?.speech_rec_mode) as keyof typeof SPEECH_REC_MODE
       );
-      setRestAuthType(generalSettings.rest_auth_type ?? defaultGeneralSettings.rest_auth_type);
-      setNtpConfig(generalSettings.ntp_config ?? defaultGeneralSettings.ntp_config);
-      setLcdBrightnessValue(
-        generalSettings.lcd_brightness ?? defaultGeneralSettings.lcd_brightness
+      setWisUrlValue(generalSettings?.wis_url ?? defaultGeneralSettings?.wis_url);
+      setAudioResponseTypeValue(
+        (generalSettings?.audio_response_type ??
+          defaultGeneralSettings?.audio_response_type) as keyof typeof AUDIO_RESPONSE_TYPE
+      );
+      setWisTtsUrlValue(generalSettings?.wis_tts_url ?? defaultGeneralSettings?.wis_tts_url);
+      setWakeWordValue(
+        (generalSettings?.wake_word ?? defaultGeneralSettings?.wake_word) as keyof typeof WAKE_WORDS
+      );
+      setCommandEndpointValue(
+        (generalSettings?.command_endpoint ??
+          defaultGeneralSettings?.command_endpoint) as keyof typeof COMMAND_ENDPOINT
+      );
+      setHassHostValue(generalSettings?.hass_host ?? defaultGeneralSettings?.hass_host);
+      setHassPortValue(generalSettings?.hass_port ?? defaultGeneralSettings?.hass_port);
+      setHassTlsValue(generalSettings?.hass_tls ?? defaultGeneralSettings?.hass_tls);
+      setHassTokenValue(generalSettings?.hass_token ?? defaultGeneralSettings?.hass_token);
+      setOpenhabUrlValue(generalSettings?.openhab_url ?? defaultGeneralSettings?.openhab_url);
+      setOpenhabTokenValue(generalSettings?.openhab_token ?? defaultGeneralSettings?.openhab_token);
+      setRestUrlValue(generalSettings?.rest_url ?? defaultGeneralSettings?.rest_url);
+      setRestAuthTypeValue(
+        (generalSettings?.rest_auth_type ??
+          defaultGeneralSettings?.rest_auth_type) as keyof typeof REST_AUTH_TYPES
+      );
+      setRestAuthUserValue(
+        generalSettings?.rest_auth_user ?? defaultGeneralSettings?.rest_auth_user
+      );
+      setRestAuthPassValue(
+        generalSettings?.rest_auth_pass ?? defaultGeneralSettings?.rest_auth_pass
+      );
+      setRestAuthHeaderValue(
+        generalSettings?.rest_auth_header ?? defaultGeneralSettings?.rest_auth_header
       );
       setSpeakerVolumeValue(
-        generalSettings.speaker_volume ?? defaultGeneralSettings.speaker_volume
+        generalSettings?.speaker_volume ?? defaultGeneralSettings?.speaker_volume
+      );
+      setLcdBrightnessValue(
+        generalSettings?.lcd_brightness ?? defaultGeneralSettings?.lcd_brightness
       );
       setDisplayTimeoutValue(
-        generalSettings.display_timeout ?? defaultGeneralSettings.display_timeout
+        generalSettings?.display_timeout ?? defaultGeneralSettings?.display_timeout
       );
-      setTimezone(generalSettings.timezone_name ?? defaultGeneralSettings.timezone_name);
+      setWakeConfirmationValue(
+        generalSettings?.wake_confirmation ?? defaultGeneralSettings?.wake_confirmation
+      );
+      setTimezoneValue(generalSettings?.timezone_name ?? defaultGeneralSettings?.timezone_name);
+      setNtpConfigValue(
+        (generalSettings?.ntp_config ??
+          defaultGeneralSettings?.ntp_config) as keyof typeof NTP_CONFIG
+      );
+      setNtpHostValue(generalSettings?.ntp_host ?? defaultGeneralSettings?.ntp_host);
       setLoading(false);
     }
   }, [generalSettings, defaultGeneralSettings, tzDictionary]);
 
   const onboardingState = React.useContext(OnboardingContext);
+
+  // Handler to reset field values to defaults
+  const handleResetForm = () => {
+    setSpeechRecModeValue(defaultGeneralSettings?.speech_rec_mode as keyof typeof SPEECH_REC_MODE);
+    setWisUrlValue(defaultGeneralSettings?.wis_url);
+    setAudioResponseTypeValue(
+      defaultGeneralSettings?.audio_response_type as keyof typeof AUDIO_RESPONSE_TYPE
+    );
+    setWisTtsUrlValue(defaultGeneralSettings?.wis_tts_url);
+    setWakeWordValue(defaultGeneralSettings?.wake_word as keyof typeof WAKE_WORDS);
+    setCommandEndpointValue(
+      defaultGeneralSettings?.command_endpoint as keyof typeof COMMAND_ENDPOINT
+    );
+    setHassHostValue(defaultGeneralSettings?.hass_host);
+    setHassPortValue(defaultGeneralSettings?.hass_port);
+    setHassTlsValue(defaultGeneralSettings?.hass_tls);
+    setHassTokenValue(defaultGeneralSettings?.hass_token);
+    setOpenhabUrlValue(defaultGeneralSettings?.openhab_url);
+    setOpenhabTokenValue(defaultGeneralSettings?.openhab_token);
+    setRestUrlValue(defaultGeneralSettings?.rest_url);
+    setRestAuthTypeValue(defaultGeneralSettings?.rest_auth_type as keyof typeof REST_AUTH_TYPES);
+    setRestAuthUserValue(defaultGeneralSettings?.rest_auth_user);
+    setRestAuthPassValue(defaultGeneralSettings?.rest_auth_pass);
+    setRestAuthHeaderValue(defaultGeneralSettings?.rest_auth_header);
+    setSpeakerVolumeValue(defaultGeneralSettings?.speaker_volume);
+    setLcdBrightnessValue(defaultGeneralSettings?.lcd_brightness);
+    setDisplayTimeoutValue(defaultGeneralSettings?.display_timeout);
+    setWakeConfirmationValue(defaultGeneralSettings?.wake_confirmation);
+    setTimezoneValue(defaultGeneralSettings?.timezone_name);
+    setNtpConfigValue(defaultGeneralSettings?.ntp_config as keyof typeof NTP_CONFIG);
+    setNtpHostValue(defaultGeneralSettings?.ntp_host);
+    setChangesMade(true);
+  };
+
+  // Handler to undo changes
+  const handleUndoChanges = () => {
+    setSpeechRecModeValue(
+      (generalSettings?.speech_rec_mode ??
+        defaultGeneralSettings?.speech_rec_mode) as keyof typeof SPEECH_REC_MODE
+    );
+    setWisUrlValue(generalSettings?.wis_url ?? defaultGeneralSettings?.wis_url);
+    setAudioResponseTypeValue(
+      (generalSettings?.audio_response_type ??
+        defaultGeneralSettings?.audio_response_type) as keyof typeof AUDIO_RESPONSE_TYPE
+    );
+    setWisTtsUrlValue(generalSettings?.wis_tts_url ?? defaultGeneralSettings?.wis_tts_url);
+    setWakeWordValue(
+      (generalSettings?.wake_word ?? defaultGeneralSettings?.wake_word) as keyof typeof WAKE_WORDS
+    );
+    setCommandEndpointValue(
+      (generalSettings?.command_endpoint ??
+        defaultGeneralSettings?.command_endpoint) as keyof typeof COMMAND_ENDPOINT
+    );
+    setHassHostValue(generalSettings?.hass_host ?? defaultGeneralSettings?.hass_host);
+    setHassPortValue(generalSettings?.hass_port ?? defaultGeneralSettings?.hass_port);
+    setHassTlsValue(generalSettings?.hass_tls ?? defaultGeneralSettings?.hass_tls);
+    setHassTokenValue(generalSettings?.hass_token ?? defaultGeneralSettings?.hass_token);
+    setOpenhabUrlValue(generalSettings?.openhab_url ?? defaultGeneralSettings?.openhab_url);
+    setOpenhabTokenValue(generalSettings?.openhab_token ?? defaultGeneralSettings?.openhab_token);
+    setRestUrlValue(generalSettings?.rest_url ?? defaultGeneralSettings?.rest_url);
+    setRestAuthTypeValue(
+      (generalSettings?.rest_auth_type ??
+        defaultGeneralSettings?.rest_auth_type) as keyof typeof REST_AUTH_TYPES
+    );
+    setRestAuthUserValue(generalSettings?.rest_auth_user ?? defaultGeneralSettings?.rest_auth_user);
+    setRestAuthPassValue(generalSettings?.rest_auth_pass ?? defaultGeneralSettings?.rest_auth_pass);
+    setRestAuthHeaderValue(
+      generalSettings?.rest_auth_header ?? defaultGeneralSettings?.rest_auth_header
+    );
+    setSpeakerVolumeValue(
+      generalSettings?.speaker_volume ?? defaultGeneralSettings?.speaker_volume
+    );
+    setLcdBrightnessValue(
+      generalSettings?.lcd_brightness ?? defaultGeneralSettings?.lcd_brightness
+    );
+    setDisplayTimeoutValue(
+      generalSettings?.display_timeout ?? defaultGeneralSettings?.display_timeout
+    );
+    setWakeConfirmationValue(
+      generalSettings?.wake_confirmation ?? defaultGeneralSettings?.wake_confirmation
+    );
+    setTimezoneValue(generalSettings?.timezone_name ?? defaultGeneralSettings?.timezone_name);
+    setNtpConfigValue(
+      (generalSettings?.ntp_config ?? defaultGeneralSettings?.ntp_config) as keyof typeof NTP_CONFIG
+    );
+    setNtpHostValue(generalSettings?.ntp_host ?? defaultGeneralSettings?.ntp_host);
+    setChangesMade(false);
+  };
 
   return loading || !(generalSettings && defaultGeneralSettings && tzDictionary) ? (
     <LoadingSpinner />
@@ -681,7 +1010,11 @@ function GeneralSettings() {
       }>
       <EnumSelectHelper
         name="speech_rec_mode"
-        defaultValue={generalSettings.speech_rec_mode ?? defaultGeneralSettings.speech_rec_mode}
+        value={speechRecModeValue}
+        onChange={(event) => {
+          setSpeechRecModeValue(event.target.value as keyof typeof SPEECH_REC_MODE);
+          setChangesMade(true);
+        }}
         label="Speech Recognition Mode"
         options={SPEECH_REC_MODE}
         tooltip=" Willow Inference Server mode uses the configured URL to stream your speech to a very high quality speech recognition implementation powered by WIS."
@@ -689,7 +1022,11 @@ function GeneralSettings() {
       <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} alignItems="center">
         <TextField
           name="wis_url"
-          defaultValue={generalSettings.wis_url ?? defaultGeneralSettings.wis_url}
+          value={wisUrlValue}
+          onChange={(event) => {
+            setWisUrlValue(event.target.value);
+            setChangesMade(true);
+          }}
           required
           label="Willow Inference Server Speech Recognition URL"
           margin="dense"
@@ -704,9 +1041,11 @@ function GeneralSettings() {
       </Stack>
       <EnumSelectHelper
         name="audio_response_type"
-        defaultValue={
-          generalSettings.audio_response_type ?? defaultGeneralSettings.audio_response_type
-        }
+        value={audioResponseTypeValue}
+        onChange={(event) => {
+          setAudioResponseTypeValue(event.target.value as keyof typeof AUDIO_RESPONSE_TYPE);
+          setChangesMade(true);
+        }}
         label="Willow Audio Response Type"
         options={AUDIO_RESPONSE_TYPE}
         tooltip="Text to Speech uses the configured Willow Inference Server (WIS) to speak the result of your command.
@@ -716,7 +1055,11 @@ function GeneralSettings() {
       <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} alignItems="center">
         <TextField
           name="wis_tts_url"
-          defaultValue={generalSettings.wis_tts_url ?? defaultGeneralSettings.wis_tts_url}
+          value={wisTtsUrlValue}
+          onChange={(event) => {
+            setWisTtsUrlValue(event.target.value);
+            setChangesMade(true);
+          }}
           required
           label="Willow Inference Server Text to Speech URL"
           margin="dense"
@@ -731,7 +1074,11 @@ function GeneralSettings() {
       </Stack>
       <EnumSelectHelper
         name="wake_word"
-        defaultValue={generalSettings.wake_word ?? defaultGeneralSettings.wake_word}
+        value={wakeWordValue}
+        onChange={(event) => {
+          setWakeWordValue(event.target.value as keyof typeof WAKE_WORDS);
+          setChangesMade(true);
+        }}
         label="Wake Word"
         options={WAKE_WORDS}
         tooltip="Alexa is pretty easy for everyone.
@@ -741,19 +1088,26 @@ function GeneralSettings() {
       />
       <EnumSelectHelper
         name="command_endpoint"
-        value={commandEndpoint}
-        onChange={(e) => setCommandEndpoint(e.target.value as any)}
+        value={commandEndpointValue}
+        onChange={(event) => {
+          setCommandEndpointValue(event.target.value as keyof typeof COMMAND_ENDPOINT);
+          setChangesMade(true);
+        }}
         label="Command Endpoint"
         options={COMMAND_ENDPOINT}
         tooltip="When Willow recognizes speech we need to send the transcript somewhere to execute your commands.
         Select your favorite platform here or use REST for your own!"
       />
-      {commandEndpoint == 'Home Assistant' && (
+      {commandEndpointValue == 'Home Assistant' && (
         <>
           <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
             <TextField
               name="hass_host"
-              defaultValue={generalSettings.hass_host}
+              value={hassHostValue}
+              onChange={(event) => {
+                setHassHostValue(event.target.value);
+                setChangesMade(true);
+              }}
               required
               label="Home Assistant Host"
               margin="dense"
@@ -766,7 +1120,11 @@ function GeneralSettings() {
           <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
             <TextField
               name="hass_port"
-              defaultValue={generalSettings.hass_port ?? defaultGeneralSettings.hass_port}
+              value={hassPortValue}
+              onChange={(event) => {
+                setHassHostValue(event.target.value);
+                setChangesMade(true);
+              }}
               type="number"
               required
               label="Home Assistant Port"
@@ -780,7 +1138,11 @@ function GeneralSettings() {
           <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
             <TextField
               name="hass_token"
-              defaultValue={generalSettings.hass_token}
+              value={hassTokenValue}
+              onChange={(event) => {
+                setHassTokenValue(event.target.value);
+                setChangesMade(true);
+              }}
               required
               label="Home Assistant Token"
               margin="dense"
@@ -808,7 +1170,11 @@ function GeneralSettings() {
               control={
                 <Checkbox
                   name="hass_tls"
-                  defaultChecked={generalSettings.hass_tls ?? defaultGeneralSettings.hass_tls}
+                  checked={hassTlsValue}
+                  onChange={(event) => {
+                    setHassTlsValue(event.target.checked);
+                    setChangesMade(true);
+                  }}
                 />
               }
               label="Use TLS with Home Assistant"
@@ -817,11 +1183,15 @@ function GeneralSettings() {
           </Stack>
         </>
       )}
-      {commandEndpoint == 'openHAB' && (
+      {commandEndpointValue == 'openHAB' && (
         <>
           <TextField
             name="openhab_url"
-            defaultValue={generalSettings.openhab_url}
+            value={openhabUrlValue}
+            onChange={(event) => {
+              setOpenhabUrlValue(event.target.value);
+              setChangesMade(true);
+            }}
             required
             label="openHAB URL"
             margin="dense"
@@ -831,7 +1201,11 @@ function GeneralSettings() {
           />
           <TextField
             name="openhab_token"
-            defaultValue={generalSettings.openhab_token}
+            value={openhabTokenValue}
+            onChange={(event) => {
+              setOpenhabTokenValue(event.target.value);
+              setChangesMade(true);
+            }}
             required
             label="openHAB Token"
             margin="dense"
@@ -854,11 +1228,15 @@ function GeneralSettings() {
           />
         </>
       )}
-      {commandEndpoint == 'REST' && (
+      {commandEndpointValue == 'REST' && (
         <>
           <TextField
             name="rest_url"
-            defaultValue={generalSettings.rest_url}
+            value={restUrlValue}
+            onChange={(event) => {
+              setRestUrlValue(event.target.value);
+              setChangesMade(true);
+            }}
             required
             label="REST URL"
             margin="dense"
@@ -868,16 +1246,23 @@ function GeneralSettings() {
           />
           <EnumSelectHelper
             name="rest_auth_type"
-            value={restAuthType}
-            onChange={(e) => setRestAuthType(e.target.value as any)}
+            value={restAuthTypeValue.toString()}
+            onChange={(event) => {
+              setRestAuthTypeValue(event.target.value as keyof typeof REST_AUTH_TYPES);
+              setChangesMade(true);
+            }}
             label="REST Authentication Method"
             options={REST_AUTH_TYPES}
           />
-          {restAuthType == 'Basic' && (
+          {restAuthTypeValue.toString() == 'Basic' && (
             <>
               <TextField
                 name="rest_auth_user"
-                defaultValue={generalSettings.rest_auth_user}
+                value={restAuthUserValue}
+                onChange={(event) => {
+                  setRestAuthUserValue(event.target.value);
+                  setChangesMade(true);
+                }}
                 required
                 label="REST Basic Username"
                 margin="dense"
@@ -887,7 +1272,11 @@ function GeneralSettings() {
               />
               <TextField
                 name="rest_auth_pass"
-                defaultValue={generalSettings.rest_auth_pass}
+                value={restAuthPassValue}
+                onChange={(event) => {
+                  setRestAuthPassValue(event.target.value);
+                  setChangesMade(true);
+                }}
                 required
                 label="REST Basic Password"
                 margin="dense"
@@ -910,11 +1299,15 @@ function GeneralSettings() {
               />
             </>
           )}
-          {restAuthType == 'Header' && (
+          {restAuthTypeValue.toString() == 'Header' && (
             <>
               <TextField
                 name="rest_auth_header"
-                defaultValue={generalSettings.rest_auth_header}
+                value={restAuthHeaderValue}
+                onChange={(event) => {
+                  setRestAuthHeaderValue(event.target.value);
+                  setChangesMade(true);
+                }}
                 required
                 label="REST Authentication Header"
                 margin="dense"
@@ -932,9 +1325,11 @@ function GeneralSettings() {
             control={
               <Checkbox
                 name="wake_confirmation"
-                defaultChecked={
-                  generalSettings.wake_confirmation ?? defaultGeneralSettings.wake_confirmation
-                }
+                checked={wakeConfirmationValue}
+                onChange={(event) => {
+                  setWakeConfirmationValue(event.target.checked);
+                  setChangesMade(true);
+                }}
               />
             }
             label="Wake Confirmation Tone"
@@ -1033,10 +1428,13 @@ function GeneralSettings() {
         <InputLabel id="timezone">Timezone</InputLabel>
         <Select
           name="timezone"
-          value={timezone}
+          value={timezoneValue}
           defaultValue=""
           label="Timezone Setting"
-          onChange={(e) => setTimezone(e.target.value as any)}
+          onChange={(event) => {
+            setTimezoneValue(event.target.value);
+            setChangesMade(true);
+          }}
           sx={{ flexGrow: '1' }}>
           {tzDictionary &&
             Object.entries(tzDictionary).map(([index, value]) => (
@@ -1048,18 +1446,25 @@ function GeneralSettings() {
       </FormControl>
       <EnumSelectHelper
         name="ntp_config"
-        value={ntpConfig}
-        onChange={(e) => setNtpConfig(e.target.value as any)}
+        value={ntpConfigValue}
+        onChange={(event) => {
+          setNtpConfigValue(event.target.value as keyof typeof NTP_CONFIG);
+          setChangesMade(true);
+        }}
         label="Automatic Time and Date (NTP)"
         options={NTP_CONFIG}
         tooltip="If your DHCP server provides an NTP server DHCP option you can select DHCP.
         If you don't know what this means use an NTP host."
       />
-      {ntpConfig == 'Host' && (
+      {ntpConfigValue == 'Host' && (
         <>
           <TextField
             name="ntp_host"
-            defaultValue={generalSettings.ntp_host ?? defaultGeneralSettings.ntp_host}
+            value={ntpHostValue}
+            onChange={(event) => {
+              setNtpHostValue(event.target.value);
+              setChangesMade(true);
+            }}
             required
             label="NTP Server"
             margin="dense"
@@ -1080,12 +1485,28 @@ function GeneralSettings() {
       <Stack
         direction="row"
         spacing={2}
-        sx={{ display: onboardingState.isOnboardingComplete ? undefined : 'none' }}
+        sx={{ mb: 1, display: onboardingState.isOnboardingComplete ? undefined : 'none' }}
         justifyContent="flex-end">
         <Button id="saveAndApply" type="submit" variant="outlined">
           Save Settings & Apply Everywhere
         </Button>
         <HelpTooltip tooltip="Save your configuration to WAS and apply to all connected clients immediately."></HelpTooltip>
+      </Stack>
+      <Stack direction="row" spacing={2} sx={{ mb: 1 }} justifyContent="flex-end">
+        <Button id="resetFormToDefaults" type="button" variant="outlined" onClick={handleResetForm}>
+          Reset to Defaults
+        </Button>
+        <HelpTooltip tooltip="Set all values to their default. These will not be saved until you click Save or Save & Apply Everywhere."></HelpTooltip>
+      </Stack>
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{ display: changesMade && onboardingState.isOnboardingComplete ? undefined : 'none' }}
+        justifyContent="flex-end">
+        <Button id="undoChanges" type="button" variant="outlined" onClick={handleUndoChanges}>
+          Undo Changes
+        </Button>
+        <HelpTooltip tooltip="Undo any changes made to your configuration."></HelpTooltip>
       </Stack>
     </form>
   );
