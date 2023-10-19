@@ -1122,7 +1122,7 @@ function GeneralSettings() {
               name="hass_port"
               value={hassPortValue}
               onChange={(event) => {
-                setHassHostValue(event.target.value);
+                setHassPortValue(parseIntOrUndef(event.target.value));
                 setChangesMade(true);
               }}
               type="number"
