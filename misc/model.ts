@@ -85,7 +85,6 @@ export interface GeneralSettings {
   rest_auth_user: string;
   rest_auth_pass: string;
   rest_auth_header: string;
-  timezone_continent_city: string;
   speaker_volume: number;
   lcd_brightness: number;
   display_timeout: number;
