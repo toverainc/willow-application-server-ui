@@ -53,7 +53,9 @@ export default function OtaDialog({
   }
 
   React.useEffect(() => {
-    if (releaseData && !selectedRelease?.was_url) {
+    if (selectedRelease?.was_url) {
+      setWasUrl(selectedRelease.was_url);
+    } else if (releaseData && !selectedRelease?.was_url) {
       for (const release of releaseData) {
         let was_url = release.assets.filter(
           (asset) =>

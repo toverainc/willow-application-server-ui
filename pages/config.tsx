@@ -1,4 +1,4 @@
-import { HourglassEmpty, HourglassFull } from '@mui/icons-material';
+import { HourglassEmpty, HourglassFull, TornadoSharp } from '@mui/icons-material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness5Icon from '@mui/icons-material/Brightness5';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -51,6 +51,20 @@ import {
   WAKE_WORDS,
 } from '../misc/model';
 import { OnboardingContext } from './_app';
+
+// Regex Patterns for Validation
+const PatternValidHostName =
+  '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9-]*[A-Za-z0-9])$';
+const PatternValidIpAddress =
+  '^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$';
+const PatternStartsWithWsWss = '^wss?://.*$';
+const PatternEndsWithWs = '^.*/ws$';
+const PatternValidWasHostnameUrl =
+  '^wss?://(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9-]*[A-Za-z0-9])/ws$';
+const PatternValidWasIpUrl =
+  '^wss?://(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9-]*[A-Za-z0-9])/ws$';
+const PatternValidWifiPsk = '^[ -~]+$';
+const PatternValidWifiSsid = '^[^?"$[\\]+]+$';
 
 function parseIntOrUndef(val: string | number | null | undefined) {
   if (!val) return undefined;
@@ -1519,14 +1533,97 @@ function ConnectionSettings() {
   const handleMouseDownPsk = () => setShowPsk(!showPsk);
   const { data, error } = useSWR<NvsSettings>('/api/config?type=nvs');
 
+  // field values
+  const [wasUrl, setWasUrl] = React.useState(data?.WAS?.URL ?? WAS_URL);
+  const [wasUrlError, setWasUrlError] = React.useState(false);
+  const [wasUrlHelperText, setWasUrlHelperText] = React.useState('');
+
+  const [wifiSSID, setWifiSSID] = React.useState(data?.WIFI?.SSID);
+  const [wifiSSIDError, setWifiSSIDError] = React.useState(false);
+  const [wifiSSIDHelperText, setWifiSSIDHelperText] = React.useState('');
+
+  const [wifiPass, setWifiPass] = React.useState(data?.WIFI?.PSK);
+  const [wifiPassError, setWifiPassError] = React.useState(false);
+  const [wifiPassHelperText, setWifiPassHelperText] = React.useState('');
+
+  // Handlers for fields with validation
+  const handleWasUrlChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const value = event.target.value;
+
+    if (!value.match(PatternStartsWithWsWss)) {
+      setWasUrlHelperText('URL must start with ws:// or wss://');
+      setWasUrlError(true);
+    } else if (!value.match(PatternEndsWithWs)) {
+      setWasUrlHelperText('URL must end with /ws');
+      setWasUrlError(true);
+    } else if (!value.match(PatternValidWasHostnameUrl) && !value.match(PatternValidWasIpUrl)) {
+      setWasUrlHelperText('URL contains an invalid hostname or ip address');
+      setWasUrlError(true);
+    } else {
+      setWasUrlHelperText('');
+      setWasUrlError(false);
+    }
+
+    setWasUrl(value);
+  };
+
+  const handleWifiPassChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = event.target.value;
+
+    if (value.length < 8 || value.length > 63) {
+      setWifiPassHelperText('WiFi WPA passphrase must be between 8 and 63 ASCII characters');
+      setWifiPassError(true);
+    } else if (!value.match(PatternValidWifiPsk)) {
+      setWifiPassHelperText('WiFi WPA passphrase must only contain ASCII characters');
+      setWifiPassError(true);
+    } else {
+      setWifiPassHelperText('');
+      setWifiPassError(false);
+    }
+
+    setWifiPass(value);
+  };
+
+  const handleWifiSsidChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = event.target.value;
+
+    if (!value.match(PatternValidWifiSsid)) {
+      setWifiSSIDHelperText('WiFi SSID contains invalid characters');
+      setWifiSSIDError(true);
+    } else if (value.length < 2 || value.length > 32) {
+      setWifiSSIDHelperText('WiFi SSID must be between 2 and 32 ASCII characters');
+      setWifiSSIDError(true);
+    } else {
+      setWifiSSIDHelperText('');
+      setWifiSSIDError(false);
+    }
+
+    setWifiSSID(value);
+  };
+
   React.useEffect(() => {
-    if (data) setLoading(false);
+    if (data) {
+      setWasUrl(data.WAS?.URL ?? WAS_URL);
+      setWifiSSID(data.WIFI?.SSID);
+      setWifiPass(data.WIFI?.PSK);
+      setLoading(false);
+    }
   }, [data]);
 
   const onboardingContext = React.useContext(OnboardingContext);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (wasUrlError || wifiPassError || wifiSSIDError) {
+      toast.error(`Please fix invalid values before saving!`);
+      return;
+    }
+
     const data = Object.fromEntries(new FormData(event.target as any).entries()) as Record<
       string,
       string
@@ -1558,7 +1655,10 @@ function ConnectionSettings() {
     <form onSubmit={handleSubmit}>
       <TextField
         name="url"
-        defaultValue={data.WAS?.URL ? data?.WAS?.URL : WAS_URL}
+        value={wasUrl}
+        onChange={handleWasUrlChange}
+        error={wasUrlError}
+        helperText={wasUrlHelperText}
         required
         label="Willow Application Server URL"
         margin="dense"
@@ -1568,7 +1668,10 @@ function ConnectionSettings() {
       />
       <TextField
         name="ssid"
-        defaultValue={data.WIFI?.SSID}
+        value={wifiSSID}
+        onChange={handleWifiSsidChange}
+        error={wifiSSIDError}
+        helperText={wifiSSIDHelperText}
         required
         label="WiFi Network Name"
         margin="dense"
@@ -1578,7 +1681,10 @@ function ConnectionSettings() {
       />
       <TextField
         name="psk"
-        defaultValue={data.WIFI?.PSK}
+        value={wifiPass}
+        onChange={handleWifiPassChange}
+        error={wifiPassError}
+        helperText={wifiPassHelperText}
         required
         label="WiFi Network Password"
         margin="dense"
