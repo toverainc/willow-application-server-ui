@@ -54,15 +54,15 @@ import { OnboardingContext } from './_app';
 
 // Regex Patterns for Validation
 const PatternValidHostName =
-  '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9-]*[A-Za-z0-9])$';
+  '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9-]*[A-Za-z0-9])((:6553[0-5])|(:655[0-2][0-9])|(:65[0-4][0-9]{2})|(:6[0-4][0-9]{3})|(:[1-5][0-9]{4})|(:[0-5]{1,5})|(:[0-9]{1,4}))?$';
 const PatternValidIpAddress =
-  '^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$';
+  '^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])((:6553[0-5])|(:655[0-2][0-9])|(:65[0-4][0-9]{2})|(:6[0-4][0-9]{3})|(:[1-5][0-9]{4})|(:[0-5]{1,5})|(:[0-9]{1,4}))?$';
 const PatternStartsWithWsWss = '^wss?://.*$';
 const PatternEndsWithWs = '^.*/ws$';
 const PatternValidWasHostnameUrl =
-  '^wss?://(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9-]*[A-Za-z0-9])/ws$';
+  '^wss?://(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9-]*[A-Za-z0-9])((:6553[0-5])|(:655[0-2][0-9])|(:65[0-4][0-9]{2})|(:6[0-4][0-9]{3})|(:[1-5][0-9]{4})|(:[0-5]{1,5})|(:[0-9]{1,4}))?/ws$';
 const PatternValidWasIpUrl =
-  '^wss?://(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9-]*[A-Za-z0-9])/ws$';
+  '^wss?://(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])((:6553[0-5])|(:655[0-2][0-9])|(:65[0-4][0-9]{2})|(:6[0-4][0-9]{3})|(:[1-5][0-9]{4})|(:[0-5]{1,5})|(:[0-9]{1,4}))?/ws$';
 const PatternValidWifiPsk = '^[ -~]+$';
 const PatternValidWifiSsid = '^[^?"$[\\]+]+$';
 
@@ -124,9 +124,15 @@ function EnumSelectHelper(params: {
 async function handleSubmit(
   event: React.FormEvent<HTMLFormElement>,
   tzDictionary: TZDictionary,
+  formHasErrors: boolean,
   shouldScrollToTop: boolean = false
 ) {
   event.preventDefault();
+  if (formHasErrors) {
+    toast.error('Please correct invalid values before saving!');
+    return;
+  }
+
   const advancedSettingsForm = Object.fromEntries(
     new FormData(document.querySelector('form[name="advanced-settings-form"]') as any).entries()
   ) as Record<string, string>;
@@ -410,7 +416,9 @@ function AdvancedSettings() {
   return loading || !(advancedSettings && defaultAdvancedSettings && tzDictionary) ? (
     <LoadingSpinner />
   ) : (
-    <form name="advanced-settings-form" onSubmit={(event) => handleSubmit(event, tzDictionary)}>
+    <form
+      name="advanced-settings-form"
+      onSubmit={(event) => handleSubmit(event, tzDictionary, false)}>
       <FormControl fullWidth>
         <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
           <FormControlLabel
@@ -1020,7 +1028,7 @@ function GeneralSettings() {
     <form
       name="general-settings-form"
       onSubmit={(event) =>
-        handleSubmit(event, tzDictionary, !onboardingState.isOnboardingComplete)
+        handleSubmit(event, tzDictionary, false, !onboardingState.isOnboardingComplete)
       }>
       <EnumSelectHelper
         name="speech_rec_mode"
@@ -1620,7 +1628,7 @@ function ConnectionSettings() {
     event.preventDefault();
 
     if (wasUrlError || wifiPassError || wifiSSIDError) {
-      toast.error(`Please fix invalid values before saving!`);
+      toast.error('Please correct invalid values before saving!');
       return;
     }
 
