@@ -43,10 +43,24 @@ export const theme = createTheme({
   },
 });
 
-export const OnboardingContext = React.createContext({
+export interface OnboardingState {
+  isNvsComplete: boolean;
+  isGeneralConfigComplete: boolean;
+  isOnboardingComplete: boolean;
+}
+
+export const OnboardingContext = React.createContext<OnboardingState>({
   isNvsComplete: false,
   isGeneralConfigComplete: false,
   isOnboardingComplete: false,
+});
+
+export interface FormErrorState {
+  generalSettingsFormHasErrors: boolean;
+}
+
+export const FormErrorContext = React.createContext<FormErrorState>({
+  generalSettingsFormHasErrors: false,
 });
 
 export class HttpError extends Error {
@@ -73,6 +87,9 @@ export default function App({ Component, pageProps }: AppProps) {
   onboardingContext.isNvsComplete = nvsData ? Object.keys(nvsData).length > 0 : false;
   onboardingContext.isOnboardingComplete =
     onboardingContext.isGeneralConfigComplete && onboardingContext.isNvsComplete;
+
+  const formErrorContext = useContext(FormErrorContext);
+  formErrorContext.generalSettingsFormHasErrors = false;
 
   //XXX: write a real fetcher
   return nvsIsLoading || configIsLoading ? (
@@ -103,7 +120,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <CssBaseline />
         <SWRConfig value={{ fetcher }}>
           <OnboardingContext.Provider value={onboardingContext}>
-            <Component {...pageProps} />
+            <FormErrorContext.Provider value={formErrorContext}>
+              <Component {...pageProps} />
+            </FormErrorContext.Provider>
           </OnboardingContext.Provider>
         </SWRConfig>
       </ThemeProvider>
