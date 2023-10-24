@@ -4,6 +4,9 @@ set -e
 TAG="willow-application-server-ui:latest"
 NEXT_DEV_PORT="3000"
 
+# Always disable Next telemetry
+export NEXT_TELEMETRY_DISABLED=1
+
 NAME="wasui"
 
 if [ -r .env ]; then
@@ -36,7 +39,7 @@ case $1 in
 build)
     # Hack to not include our environment in build
     user_env disable
-    docker run --rm -it -v "$PWD":/was-ui --name "$NAME" "$TAG" npm run build
+    docker run --rm -it -v "$PWD":/was-ui -e NEXT_TELEMETRY_DISABLED --name "$NAME" "$TAG" npm run build
     user_env enable
     if [ "$WAS_DIR" ]; then
         for i in $WAS_DIR; do
