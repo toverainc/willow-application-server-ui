@@ -308,11 +308,11 @@ export default function GeneralSettingsSection() {
           defaultGeneralSettings?.ntp_config) as keyof typeof NTP_CONFIG
       );
       setNtpHostValue(generalSettings?.ntp_host ?? defaultGeneralSettings?.ntp_host);
-
       setLoading(false);
     }
   }, [generalSettings, defaultGeneralSettings, tzDictionary]);
 
+  // Ensure changes to error states are reflected in the FormErrorContext
   React.useEffect(() => {
     formErrorContext.generalSettingsFormHasErrors = wisTtsUrlError || wisUrlError;
   }, [wisTtsUrlError, wisUrlError]);

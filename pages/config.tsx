@@ -15,9 +15,11 @@ import { AdvancedSettings, GeneralSettings, NvsSettings } from '../misc/model';
 import AdvancedSettingsSection from '../pagecomponents/AdvancedSettingsSection';
 import ConnectionSettingsSection from '../pagecomponents/ConnectionSettingsSection';
 import GeneralSettingsSection from '../pagecomponents/GeneralSettingsSection';
-import { OnboardingContext } from './_app';
+import { FormErrorContext, OnboardingContext } from './_app';
+import { toast } from 'react-toastify';
 
 function SettingsAccordions() {
+  const formErrorContext = React.useContext(FormErrorContext);
   const onboardingState = React.useContext(OnboardingContext);
   const initialAccordion = onboardingState.isNvsComplete ? 'General' : 'Connectivity';
   const [expanded, setExpanded] = React.useState<string | false>(initialAccordion);
@@ -25,7 +27,12 @@ function SettingsAccordions() {
 
   const handleChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
     setOverrideOnboarding(true);
-    setExpanded(isExpanded ? panel : false);
+    if (formErrorContext.generalSettingsFormHasErrors) {
+      setExpanded('General');
+      toast.error('Please correct form errors before changing to a different section!');
+    } else {
+      setExpanded(isExpanded ? panel : false);
+    }
   };
 
   return (
