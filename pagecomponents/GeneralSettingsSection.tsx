@@ -21,7 +21,6 @@ import TextField from '@mui/material/TextField';
 import * as React from 'react';
 import useSWR from 'swr';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { FormErrorContext, OnboardingContext } from '../pages/_app';
 import {
   EnumSelectHelper,
   HelpTooltip,
@@ -42,11 +41,18 @@ import {
   PatternEndsWithTtsApi,
   PatternEndsWithWillowApi,
   PatternStartsWithUrlScheme,
+  PatternValidHostNameWithPort,
+  PatternValidHostNameWithoutPort,
+  PatternValidHostnameUrl,
+  PatternValidIpAddressUrl,
+  PatternValidIpAddressWithPort,
+  PatternValidIpAddressWithoutPort,
   PatternValidWisHostnameUrl,
   PatternValidWisIpUrl,
   PatternValidWisTtsHostnameUrl,
   PatternValidWisTtsIpUrl,
 } from '../misc/validations';
+import { FormErrorContext, OnboardingContext } from '../pages/_app';
 
 export default function GeneralSettingsSection() {
   const onboardingState = React.useContext(OnboardingContext);
@@ -109,10 +115,14 @@ export default function GeneralSettingsSection() {
   const [hassHostValue, setHassHostValue] = React.useState(
     generalSettings?.hass_host ?? defaultGeneralSettings?.hass_host
   );
+  const [hassHostError, setHassHostError] = React.useState(false);
+  const [hassHostHelperText, setHassHostHelperText] = React.useState('');
 
   const [hassPortValue, setHassPortValue] = React.useState(
     generalSettings?.hass_port ?? defaultGeneralSettings?.hass_port
   );
+  const [hassPortError, setHassPortError] = React.useState(false);
+  const [hassPortHelperText, setHassPortHelperText] = React.useState('');
 
   const [hassTlsValue, setHassTlsValue] = React.useState(
     generalSettings?.hass_tls ?? defaultGeneralSettings?.hass_tls
@@ -125,6 +135,8 @@ export default function GeneralSettingsSection() {
   const [openhabUrlValue, setOpenhabUrlValue] = React.useState(
     generalSettings?.openhab_url ?? defaultGeneralSettings?.openhab_url
   );
+  const [openhabUrlError, setOpenhabUrlError] = React.useState(false);
+  const [openhabUrlHelperText, setOpenhabUrlHelperText] = React.useState('');
 
   const [openhabTokenValue, setOpenhabTokenValue] = React.useState(
     generalSettings?.openhab_token ?? defaultGeneralSettings?.openhab_token
@@ -133,6 +145,8 @@ export default function GeneralSettingsSection() {
   const [restUrlValue, setRestUrlValue] = React.useState(
     generalSettings?.rest_url ?? defaultGeneralSettings?.rest_url
   );
+  const [restUrlError, setRestUrlError] = React.useState(false);
+  const [restUrlHelperText, setRestUrlHelperText] = React.useState('');
 
   const [restAuthTypeValue, setRestAuthTypeValue] = React.useState(
     (generalSettings?.rest_auth_type ??
@@ -314,8 +328,37 @@ export default function GeneralSettingsSection() {
 
   // Ensure changes to error states are reflected in the FormErrorContext
   React.useEffect(() => {
-    formErrorContext.generalSettingsFormHasErrors = wisTtsUrlError || wisUrlError;
-  }, [wisTtsUrlError, wisUrlError]);
+    formErrorContext.generalSettingsFormHasErrors =
+      wisTtsUrlError ||
+      wisUrlError ||
+      hassHostError ||
+      hassPortError ||
+      openhabUrlError ||
+      restUrlError;
+  }, [wisTtsUrlError, wisUrlError, hassHostError, hassPortError, openhabUrlError, restUrlError]);
+
+  // Function to reset the form error states
+  const resetFormErrorState = () => {
+    setWisUrlHelperText('');
+    setWisUrlError(false);
+
+    setWisTtsUrlHelperText('');
+    setWisTtsUrlError(false);
+
+    setHassHostHelperText('');
+    setHassHostError(false);
+
+    setHassPortHelperText('');
+    setHassPortError(false);
+
+    setOpenhabUrlHelperText('');
+    setOpenhabUrlError(false);
+
+    setRestUrlHelperText('');
+    setRestUrlError(false);
+
+    formErrorContext.generalSettingsFormHasErrors = false;
+  };
 
   // Handler to reset field values to defaults
   const handleResetForm = () => {
@@ -347,11 +390,7 @@ export default function GeneralSettingsSection() {
     setTimezoneValue(defaultGeneralSettings?.timezone_name);
     setNtpConfigValue(defaultGeneralSettings?.ntp_config as keyof typeof NTP_CONFIG);
     setNtpHostValue(defaultGeneralSettings?.ntp_host);
-    setWisUrlHelperText('');
-    setWisUrlError(false);
-    setWisTtsUrlHelperText('');
-    setWisTtsUrlError(false);
-    formErrorContext.generalSettingsFormHasErrors = false;
+    resetFormErrorState();
     setChangesMade(true);
   };
 
@@ -407,11 +446,7 @@ export default function GeneralSettingsSection() {
       (generalSettings?.ntp_config ?? defaultGeneralSettings?.ntp_config) as keyof typeof NTP_CONFIG
     );
     setNtpHostValue(generalSettings?.ntp_host ?? defaultGeneralSettings?.ntp_host);
-    setWisUrlHelperText('');
-    setWisUrlError(false);
-    setWisTtsUrlHelperText('');
-    setWisTtsUrlError(false);
-    formErrorContext.generalSettingsFormHasErrors = false;
+    resetFormErrorState();
     setChangesMade(false);
   };
 
@@ -426,7 +461,7 @@ export default function GeneralSettingsSection() {
       setWisUrlHelperText('URL must end with /api/willow');
       setWisUrlError(true);
     } else if (!value.match(PatternValidWisHostnameUrl) && !value.match(PatternValidWisIpUrl)) {
-      setWisUrlHelperText('URL contains an invalid hostname or ip address');
+      setWisUrlHelperText('URL contains an invalid Hostname or IP Address');
       setWisUrlError(true);
     } else {
       setWisUrlHelperText('');
@@ -452,7 +487,7 @@ export default function GeneralSettingsSection() {
       !value.match(PatternValidWisTtsHostnameUrl) &&
       !value.match(PatternValidWisTtsIpUrl)
     ) {
-      setWisTtsUrlHelperText('URL contains an invalid hostname or ip address');
+      setWisTtsUrlHelperText('URL contains an invalid Hostname or IP Address');
       setWisTtsUrlError(true);
     } else {
       setWisTtsUrlHelperText('');
@@ -460,6 +495,86 @@ export default function GeneralSettingsSection() {
     }
 
     setWisTtsUrlValue(value);
+    setChangesMade(true);
+  };
+
+  const handleHassHostChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = event.target.value;
+
+    if (value.match(PatternValidHostNameWithPort) || value.match(PatternValidIpAddressWithPort)) {
+      setHassHostHelperText('Hostname or IP Address must not include port');
+      setHassHostError(true);
+    } else if (
+      !value.match(PatternValidHostNameWithoutPort) &&
+      !value.match(PatternValidIpAddressWithoutPort)
+    ) {
+      setHassHostHelperText('URL contains an invalid Hostname or IP Address');
+      setHassHostError(true);
+    } else {
+      setHassHostHelperText('');
+      setHassHostError(false);
+    }
+
+    setHassHostValue(value);
+    setChangesMade(true);
+  };
+
+  const handleHassPortChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = parseIntOrUndef(event.target.value) ?? -1;
+
+    if (value < 0 || value > 65535) {
+      setHassPortHelperText('Port must be a value between 0 and 65535');
+      setHassPortError(true);
+    } else {
+      setHassPortHelperText('');
+      setHassPortError(false);
+    }
+
+    setHassPortValue(value);
+    setChangesMade(true);
+  };
+
+  const handleOpenhabUrlChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = event.target.value;
+
+    if (!value.match(PatternStartsWithUrlScheme)) {
+      setOpenhabUrlHelperText('URL must begin with http:// or https://');
+      setOpenhabUrlError(true);
+    } else if (!value.match(PatternValidHostnameUrl) && !value.match(PatternValidIpAddressUrl)) {
+      setOpenhabUrlHelperText('Url contains an invalid Hostname or IP Address');
+      setOpenhabUrlError(true);
+    } else {
+      setOpenhabUrlHelperText('');
+      setOpenhabUrlError(false);
+    }
+
+    setOpenhabUrlValue(value);
+    setChangesMade(true);
+  };
+
+  const handleRestUrlChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = event.target.value;
+
+    if (!value.match(PatternStartsWithUrlScheme)) {
+      setRestUrlHelperText('URL must begin with http:// or https://');
+      setRestUrlError(true);
+    } else if (!value.match(PatternValidHostnameUrl) && !value.match(PatternValidIpAddressUrl)) {
+      setRestUrlHelperText('URL contains an invalid Hostname or IP Address');
+      setRestUrlError(true);
+    } else {
+      setRestUrlHelperText('');
+      setRestUrlError(false);
+    }
+
+    setRestUrlValue(value);
     setChangesMade(true);
   };
 
@@ -565,10 +680,9 @@ export default function GeneralSettingsSection() {
             <TextField
               name="hass_host"
               value={hassHostValue}
-              onChange={(event) => {
-                setHassHostValue(event.target.value);
-                setChangesMade(true);
-              }}
+              error={hassHostError}
+              helperText={hassHostHelperText}
+              onChange={handleHassHostChange}
               required
               label="Home Assistant Host"
               margin="dense"
@@ -582,10 +696,9 @@ export default function GeneralSettingsSection() {
             <TextField
               name="hass_port"
               value={hassPortValue}
-              onChange={(event) => {
-                setHassPortValue(parseIntOrUndef(event.target.value));
-                setChangesMade(true);
-              }}
+              error={hassPortError}
+              helperText={hassPortHelperText}
+              onChange={handleHassPortChange}
               type="number"
               required
               label="Home Assistant Port"
@@ -649,10 +762,9 @@ export default function GeneralSettingsSection() {
           <TextField
             name="openhab_url"
             value={openhabUrlValue}
-            onChange={(event) => {
-              setOpenhabUrlValue(event.target.value);
-              setChangesMade(true);
-            }}
+            error={openhabUrlError}
+            helperText={openhabUrlHelperText}
+            onChange={handleOpenhabUrlChange}
             required
             label="openHAB URL"
             margin="dense"
@@ -694,10 +806,9 @@ export default function GeneralSettingsSection() {
           <TextField
             name="rest_url"
             value={restUrlValue}
-            onChange={(event) => {
-              setRestUrlValue(event.target.value);
-              setChangesMade(true);
-            }}
+            error={restUrlError}
+            helperText={restUrlHelperText}
+            onChange={handleRestUrlChange}
             required
             label="REST URL"
             margin="dense"
