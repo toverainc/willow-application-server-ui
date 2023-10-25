@@ -7,14 +7,7 @@ import useSWR, { mutate } from 'swr';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { WAS_URL, post } from '../misc/fetchers';
 import { NvsSettings } from '../misc/model';
-import {
-  PatternEndsWithWs,
-  PatternStartsWithWsWss,
-  PatternValidWasHostnameUrl,
-  PatternValidWasIpUrl,
-  PatternValidWifiPsk,
-  PatternValidWifiSsid,
-} from '../misc/validations';
+import { ValidateWasUrl, ValidateWifiPsk, ValidateWifiSSID } from '../misc/validations';
 import { OnboardingContext } from '../pages/_app';
 
 export default function ConnectionSettingsSection() {
@@ -40,15 +33,10 @@ export default function ConnectionSettingsSection() {
   // Handlers for fields with validation
   const handleWasUrlChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = event.target.value;
+    const validationResult = ValidateWasUrl(value);
 
-    if (!value.match(PatternStartsWithWsWss)) {
-      setWasUrlHelperText('URL must start with ws:// or wss://');
-      setWasUrlError(true);
-    } else if (!value.match(PatternEndsWithWs)) {
-      setWasUrlHelperText('URL must end with /ws');
-      setWasUrlError(true);
-    } else if (!value.match(PatternValidWasHostnameUrl) && !value.match(PatternValidWasIpUrl)) {
-      setWasUrlHelperText('URL contains an invalid hostname or ip address');
+    if (validationResult) {
+      setWasUrlHelperText(validationResult);
       setWasUrlError(true);
     } else {
       setWasUrlHelperText('');
@@ -62,12 +50,10 @@ export default function ConnectionSettingsSection() {
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const value = event.target.value;
+    const validationResult = ValidateWifiPsk(value);
 
-    if (value.length < 8 || value.length > 63) {
-      setWifiPassHelperText('WiFi WPA passphrase must be between 8 and 63 ASCII characters');
-      setWifiPassError(true);
-    } else if (!value.match(PatternValidWifiPsk)) {
-      setWifiPassHelperText('WiFi WPA passphrase must only contain ASCII characters');
+    if (validationResult) {
+      setWifiPassHelperText(validationResult);
       setWifiPassError(true);
     } else {
       setWifiPassHelperText('');
@@ -81,12 +67,10 @@ export default function ConnectionSettingsSection() {
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const value = event.target.value;
+    const validationResult = ValidateWifiSSID(value);
 
-    if (!value.match(PatternValidWifiSsid)) {
-      setWifiSSIDHelperText('WiFi SSID contains invalid characters');
-      setWifiSSIDError(true);
-    } else if (value.length < 2 || value.length > 32) {
-      setWifiSSIDHelperText('WiFi SSID must be between 2 and 32 ASCII characters');
+    if (validationResult) {
+      setWifiSSIDHelperText(validationResult);
       setWifiSSIDError(true);
     } else {
       setWifiSSIDHelperText('');

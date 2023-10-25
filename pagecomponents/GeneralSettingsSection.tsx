@@ -38,19 +38,10 @@ import {
   WAKE_WORDS,
 } from '../misc/model';
 import {
-  PatternEndsWithTtsApi,
-  PatternEndsWithWillowApi,
-  PatternStartsWithUrlScheme,
-  PatternValidHostNameWithPort,
-  PatternValidHostNameWithoutPort,
-  PatternValidHostnameUrl,
-  PatternValidIpAddressUrl,
-  PatternValidIpAddressWithPort,
-  PatternValidIpAddressWithoutPort,
-  PatternValidWisHostnameUrl,
-  PatternValidWisIpUrl,
-  PatternValidWisTtsHostnameUrl,
-  PatternValidWisTtsIpUrl,
+  ValidateHassHost,
+  ValidateUrl,
+  ValidateWisTtsUrl,
+  ValidateWisUrl,
 } from '../misc/validations';
 import { FormErrorContext, OnboardingContext } from '../pages/_app';
 
@@ -453,15 +444,10 @@ export default function GeneralSettingsSection() {
   // Handlers for fields with validations
   const handleWisUrlChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = event.target.value;
+    const validationResult = ValidateWisUrl(value);
 
-    if (!value.match(PatternStartsWithUrlScheme)) {
-      setWisUrlHelperText('URL must begin with http:// or https://');
-      setWisUrlError(true);
-    } else if (!value.match(PatternEndsWithWillowApi)) {
-      setWisUrlHelperText('URL must end with /api/willow');
-      setWisUrlError(true);
-    } else if (!value.match(PatternValidWisHostnameUrl) && !value.match(PatternValidWisIpUrl)) {
-      setWisUrlHelperText('URL contains an invalid Hostname or IP Address');
+    if (validationResult) {
+      setWisUrlHelperText(validationResult);
       setWisUrlError(true);
     } else {
       setWisUrlHelperText('');
@@ -476,18 +462,10 @@ export default function GeneralSettingsSection() {
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const value = event.target.value;
+    const validationResult = ValidateWisTtsUrl(value);
 
-    if (!value.match(PatternStartsWithUrlScheme)) {
-      setWisTtsUrlHelperText('URL must begin with http:// or https://');
-      setWisTtsUrlError(true);
-    } else if (!value.match(PatternEndsWithTtsApi)) {
-      setWisTtsUrlHelperText('URL must end with /api/tts');
-      setWisTtsUrlError(true);
-    } else if (
-      !value.match(PatternValidWisTtsHostnameUrl) &&
-      !value.match(PatternValidWisTtsIpUrl)
-    ) {
-      setWisTtsUrlHelperText('URL contains an invalid Hostname or IP Address');
+    if (validationResult) {
+      setWisTtsUrlHelperText(validationResult);
       setWisTtsUrlError(true);
     } else {
       setWisTtsUrlHelperText('');
@@ -502,15 +480,10 @@ export default function GeneralSettingsSection() {
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const value = event.target.value;
+    const validationResult = ValidateHassHost(value);
 
-    if (value.match(PatternValidHostNameWithPort) || value.match(PatternValidIpAddressWithPort)) {
-      setHassHostHelperText('Hostname or IP Address must not include port');
-      setHassHostError(true);
-    } else if (
-      !value.match(PatternValidHostNameWithoutPort) &&
-      !value.match(PatternValidIpAddressWithoutPort)
-    ) {
-      setHassHostHelperText('URL contains an invalid Hostname or IP Address');
+    if (validationResult) {
+      setHassHostHelperText(validationResult);
       setHassHostError(true);
     } else {
       setHassHostHelperText('');
@@ -542,12 +515,10 @@ export default function GeneralSettingsSection() {
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const value = event.target.value;
+    const validationResult = ValidateUrl(value);
 
-    if (!value.match(PatternStartsWithUrlScheme)) {
-      setOpenhabUrlHelperText('URL must begin with http:// or https://');
-      setOpenhabUrlError(true);
-    } else if (!value.match(PatternValidHostnameUrl) && !value.match(PatternValidIpAddressUrl)) {
-      setOpenhabUrlHelperText('Url contains an invalid Hostname or IP Address');
+    if (validationResult) {
+      setOpenhabUrlHelperText(validationResult);
       setOpenhabUrlError(true);
     } else {
       setOpenhabUrlHelperText('');
@@ -562,12 +533,10 @@ export default function GeneralSettingsSection() {
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const value = event.target.value;
+    const validationResult = ValidateUrl(value);
 
-    if (!value.match(PatternStartsWithUrlScheme)) {
-      setRestUrlHelperText('URL must begin with http:// or https://');
-      setRestUrlError(true);
-    } else if (!value.match(PatternValidHostnameUrl) && !value.match(PatternValidIpAddressUrl)) {
-      setRestUrlHelperText('URL contains an invalid Hostname or IP Address');
+    if (validationResult) {
+      setRestUrlHelperText(validationResult);
       setRestUrlError(true);
     } else {
       setRestUrlHelperText('');
