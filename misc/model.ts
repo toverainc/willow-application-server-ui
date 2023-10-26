@@ -103,3 +103,17 @@ export interface NvsSettings {
 export interface TZDictionary {
   [index: string]: string;
 }
+
+// Model to track Form Error States
+export interface FormErrorState {
+  Error: boolean;
+  HelperText: string;
+}
+export interface FormErrorStates {
+  WisUrlError: FormErrorState;
+  WisTtsUrlError: FormErrorState;
+  HassHostError: FormErrorState;
+  HassPortError: FormErrorState;
+  OpenhabUrlError: FormErrorState;
+  RestUrlError: FormErrorState;
+}

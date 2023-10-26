@@ -1,17 +1,13 @@
 import { HourglassEmpty, HourglassFull } from '@mui/icons-material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness5Icon from '@mui/icons-material/Brightness5';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VolumeDown from '@mui/icons-material/VolumeDown';
 import VolumeUp from '@mui/icons-material/VolumeUp';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import IconButton from '@mui/material/IconButton';
 import Input from '@mui/material/Input';
-import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -21,12 +17,7 @@ import TextField from '@mui/material/TextField';
 import * as React from 'react';
 import useSWR from 'swr';
 import LoadingSpinner from '../components/LoadingSpinner';
-import {
-  EnumSelectHelper,
-  HelpTooltip,
-  handleSubmit,
-  parseIntOrUndef,
-} from '../misc/helperfunctions';
+import { EnumSelectHelper, HelpTooltip, handleSubmit } from '../misc/helperfunctions';
 import {
   AUDIO_RESPONSE_TYPE,
   COMMAND_ENDPOINT,
@@ -37,30 +28,16 @@ import {
   TZDictionary,
   WAKE_WORDS,
 } from '../misc/model';
-import {
-  ValidateHassHost,
-  ValidateUrl,
-  ValidateWisTtsUrl,
-  ValidateWisUrl,
-} from '../misc/validations';
+import { ValidateWisTtsUrl, ValidateWisUrl } from '../misc/validations';
 import { FormErrorContext, OnboardingContext } from '../pages/_app';
+import HassCommandEndpoint from './HassCommandEndpoint';
+import OpenHabCommandEndpoint from './OpenHabCommandEndpoint';
+import RestCommandEndpoint from './RestCommandEndpoint';
 
 export default function GeneralSettingsSection() {
   const onboardingState = React.useContext(OnboardingContext);
   const formErrorContext = React.useContext(FormErrorContext);
   const [loading, setLoading] = React.useState(true);
-
-  const [showHaToken, setShowHaToken] = React.useState(false);
-  const handleClickShowHaToken = () => setShowHaToken(!showHaToken);
-  const handleMouseDownHaToken = () => setShowHaToken(!showHaToken);
-
-  const [showOhToken, setShowOhToken] = React.useState(false);
-  const handleClickShowOhToken = () => setShowOhToken(!showOhToken);
-  const handleMouseDownOhToken = () => setShowOhToken(!showOhToken);
-
-  const [showRestPassword, setShowRestPassword] = React.useState(false);
-  const handleClickShowRestPassword = () => setShowRestPassword(!showRestPassword);
-  const handleMouseDownRestPassword = () => setShowRestPassword(!showRestPassword);
 
   const { data: generalSettings, error: generalSettingsError } =
     useSWR<GeneralSettings>('/api/config?type=config');
@@ -72,48 +49,20 @@ export default function GeneralSettingsSection() {
   const [changesMade, setChangesMade] = React.useState(false);
 
   // Field States
-  const [speechRecModeValue, setSpeechRecModeValue] = React.useState(
-    (generalSettings?.speech_rec_mode ??
-      defaultGeneralSettings?.speech_rec_mode) as keyof typeof SPEECH_REC_MODE
-  );
-
-  const [wisUrlValue, setWisUrlValue] = React.useState(
-    generalSettings?.wis_url ?? defaultGeneralSettings?.wis_url
-  );
-  const [wisUrlError, setWisUrlError] = React.useState(false);
-  const [wisUrlHelperText, setWisUrlHelperText] = React.useState('');
-
-  const [audioResponseTypeValue, setAudioResponseTypeValue] = React.useState(
-    (generalSettings?.audio_response_type ??
-      defaultGeneralSettings?.audio_response_type) as keyof typeof AUDIO_RESPONSE_TYPE
-  );
-
-  const [wisTtsUrlValue, setWisTtsUrlValue] = React.useState(
-    generalSettings?.wis_tts_url ?? defaultGeneralSettings?.wis_tts_url
-  );
-  const [wisTtsUrlError, setWisTtsUrlError] = React.useState(false);
-  const [wisTtsUrlHelperText, setWisTtsUrlHelperText] = React.useState('');
-
-  const [wakeWordValue, setWakeWordValue] = React.useState(
-    (generalSettings?.wake_word ?? defaultGeneralSettings?.wake_word) as keyof typeof WAKE_WORDS
-  );
-
+  // Command Endpoint Selection
   const [commandEndpointValue, setCommandEndpointValue] = React.useState(
     (generalSettings?.command_endpoint ??
       defaultGeneralSettings?.command_endpoint) as keyof typeof COMMAND_ENDPOINT
   );
 
+  // Hass Command Endpoint Fields
   const [hassHostValue, setHassHostValue] = React.useState(
     generalSettings?.hass_host ?? defaultGeneralSettings?.hass_host
   );
-  const [hassHostError, setHassHostError] = React.useState(false);
-  const [hassHostHelperText, setHassHostHelperText] = React.useState('');
 
   const [hassPortValue, setHassPortValue] = React.useState(
     generalSettings?.hass_port ?? defaultGeneralSettings?.hass_port
   );
-  const [hassPortError, setHassPortError] = React.useState(false);
-  const [hassPortHelperText, setHassPortHelperText] = React.useState('');
 
   const [hassTlsValue, setHassTlsValue] = React.useState(
     generalSettings?.hass_tls ?? defaultGeneralSettings?.hass_tls
@@ -123,21 +72,19 @@ export default function GeneralSettingsSection() {
     generalSettings?.hass_token ?? defaultGeneralSettings?.hass_token
   );
 
+  // Openhab Command Endpoint Fields
   const [openhabUrlValue, setOpenhabUrlValue] = React.useState(
     generalSettings?.openhab_url ?? defaultGeneralSettings?.openhab_url
   );
-  const [openhabUrlError, setOpenhabUrlError] = React.useState(false);
-  const [openhabUrlHelperText, setOpenhabUrlHelperText] = React.useState('');
 
   const [openhabTokenValue, setOpenhabTokenValue] = React.useState(
     generalSettings?.openhab_token ?? defaultGeneralSettings?.openhab_token
   );
 
+  // Rest Command Endpoint Fields
   const [restUrlValue, setRestUrlValue] = React.useState(
     generalSettings?.rest_url ?? defaultGeneralSettings?.rest_url
   );
-  const [restUrlError, setRestUrlError] = React.useState(false);
-  const [restUrlHelperText, setRestUrlHelperText] = React.useState('');
 
   const [restAuthTypeValue, setRestAuthTypeValue] = React.useState(
     (generalSettings?.rest_auth_type ??
@@ -156,6 +103,28 @@ export default function GeneralSettingsSection() {
     generalSettings?.rest_auth_header ?? defaultGeneralSettings?.rest_auth_header
   );
 
+  // General Settings
+  const [speechRecModeValue, setSpeechRecModeValue] = React.useState(
+    (generalSettings?.speech_rec_mode ??
+      defaultGeneralSettings?.speech_rec_mode) as keyof typeof SPEECH_REC_MODE
+  );
+
+  const [wisUrlValue, setWisUrlValue] = React.useState(
+    generalSettings?.wis_url ?? defaultGeneralSettings?.wis_url
+  );
+
+  const [audioResponseTypeValue, setAudioResponseTypeValue] = React.useState(
+    (generalSettings?.audio_response_type ??
+      defaultGeneralSettings?.audio_response_type) as keyof typeof AUDIO_RESPONSE_TYPE
+  );
+
+  const [wisTtsUrlValue, setWisTtsUrlValue] = React.useState(
+    generalSettings?.wis_tts_url ?? defaultGeneralSettings?.wis_tts_url
+  );
+
+  const [wakeWordValue, setWakeWordValue] = React.useState(
+    (generalSettings?.wake_word ?? defaultGeneralSettings?.wake_word) as keyof typeof WAKE_WORDS
+  );
   const [speakerVolumeValue, setSpeakerVolumeValue] = React.useState(
     generalSettings?.speaker_volume ?? defaultGeneralSettings?.speaker_volume
   );
@@ -317,38 +286,14 @@ export default function GeneralSettingsSection() {
     }
   }, [generalSettings, defaultGeneralSettings, tzDictionary]);
 
-  // Ensure changes to error states are reflected in the FormErrorContext
-  React.useEffect(() => {
-    formErrorContext.generalSettingsFormHasErrors =
-      wisTtsUrlError ||
-      wisUrlError ||
-      hassHostError ||
-      hassPortError ||
-      openhabUrlError ||
-      restUrlError;
-  }, [wisTtsUrlError, wisUrlError, hassHostError, hassPortError, openhabUrlError, restUrlError]);
-
   // Function to reset the form error states
   const resetFormErrorState = () => {
-    setWisUrlHelperText('');
-    setWisUrlError(false);
-
-    setWisTtsUrlHelperText('');
-    setWisTtsUrlError(false);
-
-    setHassHostHelperText('');
-    setHassHostError(false);
-
-    setHassPortHelperText('');
-    setHassPortError(false);
-
-    setOpenhabUrlHelperText('');
-    setOpenhabUrlError(false);
-
-    setRestUrlHelperText('');
-    setRestUrlError(false);
-
-    formErrorContext.generalSettingsFormHasErrors = false;
+    formErrorContext.HassHostError = { Error: false, HelperText: '' };
+    formErrorContext.HassPortError = { Error: false, HelperText: '' };
+    formErrorContext.OpenhabUrlError = { Error: false, HelperText: '' };
+    formErrorContext.RestUrlError = { Error: false, HelperText: '' };
+    formErrorContext.WisTtsUrlError = { Error: false, HelperText: '' };
+    formErrorContext.WisUrlError = { Error: false, HelperText: '' };
   };
 
   // Handler to reset field values to defaults
@@ -447,11 +392,9 @@ export default function GeneralSettingsSection() {
     const validationResult = ValidateWisUrl(value);
 
     if (validationResult) {
-      setWisUrlHelperText(validationResult);
-      setWisUrlError(true);
+      formErrorContext.WisUrlError = { Error: true, HelperText: validationResult };
     } else {
-      setWisUrlHelperText('');
-      setWisUrlError(false);
+      formErrorContext.WisUrlError = { Error: false, HelperText: '' };
     }
 
     setWisUrlValue(value);
@@ -465,85 +408,12 @@ export default function GeneralSettingsSection() {
     const validationResult = ValidateWisTtsUrl(value);
 
     if (validationResult) {
-      setWisTtsUrlHelperText(validationResult);
-      setWisTtsUrlError(true);
+      formErrorContext.WisTtsUrlError = { Error: true, HelperText: validationResult };
     } else {
-      setWisTtsUrlHelperText('');
-      setWisTtsUrlError(false);
+      formErrorContext.WisTtsUrlError = { Error: false, HelperText: '' };
     }
 
     setWisTtsUrlValue(value);
-    setChangesMade(true);
-  };
-
-  const handleHassHostChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const value = event.target.value;
-    const validationResult = ValidateHassHost(value);
-
-    if (validationResult) {
-      setHassHostHelperText(validationResult);
-      setHassHostError(true);
-    } else {
-      setHassHostHelperText('');
-      setHassHostError(false);
-    }
-
-    setHassHostValue(value);
-    setChangesMade(true);
-  };
-
-  const handleHassPortChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const value = parseIntOrUndef(event.target.value) ?? -1;
-
-    if (value < 0 || value > 65535) {
-      setHassPortHelperText('Port must be a value between 0 and 65535');
-      setHassPortError(true);
-    } else {
-      setHassPortHelperText('');
-      setHassPortError(false);
-    }
-
-    setHassPortValue(value);
-    setChangesMade(true);
-  };
-
-  const handleOpenhabUrlChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const value = event.target.value;
-    const validationResult = ValidateUrl(value);
-
-    if (validationResult) {
-      setOpenhabUrlHelperText(validationResult);
-      setOpenhabUrlError(true);
-    } else {
-      setOpenhabUrlHelperText('');
-      setOpenhabUrlError(false);
-    }
-
-    setOpenhabUrlValue(value);
-    setChangesMade(true);
-  };
-
-  const handleRestUrlChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const value = event.target.value;
-    const validationResult = ValidateUrl(value);
-
-    if (validationResult) {
-      setRestUrlHelperText(validationResult);
-      setRestUrlError(true);
-    } else {
-      setRestUrlHelperText('');
-      setRestUrlError(false);
-    }
-
-    setRestUrlValue(value);
     setChangesMade(true);
   };
 
@@ -570,8 +440,8 @@ export default function GeneralSettingsSection() {
         <TextField
           name="wis_url"
           value={wisUrlValue}
-          error={wisUrlError}
-          helperText={wisUrlHelperText}
+          error={formErrorContext.WisUrlError.Error}
+          helperText={formErrorContext.WisUrlError.HelperText}
           onChange={handleWisUrlChange}
           required
           label="Willow Inference Server Speech Recognition URL"
@@ -603,8 +473,8 @@ export default function GeneralSettingsSection() {
           name="wis_tts_url"
           value={wisTtsUrlValue}
           onChange={handleWisTtsUrlChange}
-          error={wisTtsUrlError}
-          helperText={wisTtsUrlHelperText}
+          error={formErrorContext.WisTtsUrlError.Error}
+          helperText={formErrorContext.WisTtsUrlError.HelperText}
           required
           label="Willow Inference Server Text to Speech URL"
           margin="dense"
@@ -644,221 +514,41 @@ export default function GeneralSettingsSection() {
           Select your favorite platform here or use REST for your own!"
       />
       {commandEndpointValue == 'Home Assistant' && (
-        <>
-          <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
-            <TextField
-              name="hass_host"
-              value={hassHostValue}
-              error={hassHostError}
-              helperText={hassHostHelperText}
-              onChange={handleHassHostChange}
-              required
-              label="Home Assistant Host"
-              margin="dense"
-              variant="outlined"
-              size="small"
-              fullWidth
-            />
-            <HelpTooltip tooltip="The IP address or Hostname of your Home Assistant server." />
-          </Stack>
-          <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
-            <TextField
-              name="hass_port"
-              value={hassPortValue}
-              error={hassPortError}
-              helperText={hassPortHelperText}
-              onChange={handleHassPortChange}
-              type="number"
-              required
-              label="Home Assistant Port"
-              margin="dense"
-              variant="outlined"
-              size="small"
-              fullWidth
-            />
-            <HelpTooltip tooltip="The port your Home Assistant server is listening on. On a default Home Assistant install this is 8123." />
-          </Stack>
-          <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
-            <TextField
-              name="hass_token"
-              value={hassTokenValue}
-              onChange={(event) => {
-                setHassTokenValue(event.target.value);
-                setChangesMade(true);
-              }}
-              required
-              label="Home Assistant Token"
-              margin="dense"
-              variant="outlined"
-              type={showHaToken ? 'text' : 'password'}
-              size="small"
-              fullWidth
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle ha token visibility"
-                      onClick={handleClickShowHaToken}
-                      onMouseDown={handleMouseDownHaToken}>
-                      {showHaToken ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <HelpTooltip tooltip="The Long-Lived Access Token generated in Home Assistant." />
-          </Stack>
-          <Stack spacing={2} direction="row" sx={{ mt: 1 }} justifyContent="space-between">
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="hass_tls"
-                  checked={hassTlsValue}
-                  onChange={(event) => {
-                    setHassTlsValue(event.target.checked);
-                    setChangesMade(true);
-                  }}
-                />
-              }
-              label="Use TLS with Home Assistant"
-            />
-            <HelpTooltip tooltip="Whether or not your Home Assistant server is using https." />
-          </Stack>
-        </>
+        <HassCommandEndpoint
+          hassHostValue={hassHostValue}
+          setHassHostValue={setHassHostValue}
+          hassPortValue={hassPortValue}
+          setHassPortValue={setHassPortValue}
+          hassTlsValue={hassTlsValue}
+          setHassTlsValue={setHassTlsValue}
+          hassTokenValue={hassTokenValue}
+          setHassTokenValue={setHassTokenValue}
+          setChangesMade={setChangesMade}
+        />
       )}
       {commandEndpointValue == 'openHAB' && (
-        <>
-          <TextField
-            name="openhab_url"
-            value={openhabUrlValue}
-            error={openhabUrlError}
-            helperText={openhabUrlHelperText}
-            onChange={handleOpenhabUrlChange}
-            required
-            label="openHAB URL"
-            margin="dense"
-            variant="outlined"
-            size="small"
-            fullWidth
-          />
-          <TextField
-            name="openhab_token"
-            value={openhabTokenValue}
-            onChange={(event) => {
-              setOpenhabTokenValue(event.target.value);
-              setChangesMade(true);
-            }}
-            required
-            label="openHAB Token"
-            margin="dense"
-            variant="outlined"
-            type={showOhToken ? 'text' : 'password'}
-            size="small"
-            fullWidth
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle oh token visibility"
-                    onClick={handleClickShowOhToken}
-                    onMouseDown={handleMouseDownOhToken}>
-                    {showOhToken ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-        </>
+        <OpenHabCommandEndpoint
+          openhabTokenValue={openhabTokenValue}
+          setOpenhabTokenValue={setOpenhabTokenValue}
+          openhabUrlValue={openhabUrlValue}
+          setOpenhabUrlValue={setOpenhabUrlValue}
+          setChangesMade={setChangesMade}
+        />
       )}
       {commandEndpointValue == 'REST' && (
-        <>
-          <TextField
-            name="rest_url"
-            value={restUrlValue}
-            error={restUrlError}
-            helperText={restUrlHelperText}
-            onChange={handleRestUrlChange}
-            required
-            label="REST URL"
-            margin="dense"
-            variant="outlined"
-            size="small"
-            fullWidth
-          />
-          <EnumSelectHelper
-            name="rest_auth_type"
-            value={restAuthTypeValue.toString()}
-            onChange={(event) => {
-              setRestAuthTypeValue(event.target.value as keyof typeof REST_AUTH_TYPES);
-              setChangesMade(true);
-            }}
-            label="REST Authentication Method"
-            options={REST_AUTH_TYPES}
-          />
-          {restAuthTypeValue.toString() == 'Basic' && (
-            <>
-              <TextField
-                name="rest_auth_user"
-                value={restAuthUserValue}
-                onChange={(event) => {
-                  setRestAuthUserValue(event.target.value);
-                  setChangesMade(true);
-                }}
-                required
-                label="REST Basic Username"
-                margin="dense"
-                variant="outlined"
-                size="small"
-                fullWidth
-              />
-              <TextField
-                name="rest_auth_pass"
-                value={restAuthPassValue}
-                onChange={(event) => {
-                  setRestAuthPassValue(event.target.value);
-                  setChangesMade(true);
-                }}
-                required
-                label="REST Basic Password"
-                margin="dense"
-                variant="outlined"
-                type={showRestPassword ? 'text' : 'password'}
-                size="small"
-                fullWidth
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle rest password visibility"
-                        onClick={handleClickShowRestPassword}
-                        onMouseDown={handleMouseDownRestPassword}>
-                        {showRestPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </>
-          )}
-          {restAuthTypeValue.toString() == 'Header' && (
-            <>
-              <TextField
-                name="rest_auth_header"
-                value={restAuthHeaderValue}
-                onChange={(event) => {
-                  setRestAuthHeaderValue(event.target.value);
-                  setChangesMade(true);
-                }}
-                required
-                label="REST Authentication Header"
-                margin="dense"
-                variant="outlined"
-                size="small"
-                fullWidth
-              />
-            </>
-          )}
-        </>
+        <RestCommandEndpoint
+          restAuthHeaderValue={restAuthHeaderValue}
+          setRestAuthHeaderValue={setRestAuthHeaderValue}
+          restAuthPassValue={restAuthPassValue}
+          setRestAuthPassValue={setRestAuthPassValue}
+          restAuthTypeValue={restAuthTypeValue}
+          setRestAuthTypeValue={setRestAuthTypeValue}
+          restAuthUserValue={restAuthUserValue}
+          setRestAuthUserValue={setRestAuthUserValue}
+          restUrlValue={restUrlValue}
+          setRestUrlValue={setRestUrlValue}
+          setChangesMade={setChangesMade}
+        />
       )}
       <FormControl fullWidth>
         <Stack spacing={2} direction="row" sx={{ mb: 1 }} justifyContent="space-between">

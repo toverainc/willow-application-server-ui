@@ -8,12 +8,11 @@ import {
   SelectChangeEvent,
   Tooltip,
 } from '@mui/material';
+import React from 'react';
 import { toast } from 'react-toastify';
 import { mutate } from 'swr';
 import { post } from './fetchers';
-import { AdvancedSettings, GeneralSettings, TZDictionary } from './model';
-import { FormErrorContext, FormErrorState } from '../pages/_app';
-import React, { useContext } from 'react';
+import { AdvancedSettings, FormErrorStates, GeneralSettings, TZDictionary } from './model';
 
 export function parseIntOrUndef(val: string | number | null | undefined) {
   if (!val) return undefined;
@@ -73,11 +72,11 @@ export function EnumSelectHelper(params: {
 export async function handleSubmit(
   event: React.FormEvent<HTMLFormElement>,
   tzDictionary: TZDictionary,
-  formErrorContext: FormErrorState,
+  formErrorContext: FormErrorStates,
   shouldScrollToTop: boolean = false
 ) {
   event.preventDefault();
-  if (formErrorContext.generalSettingsFormHasErrors) {
+  if (Object.values(formErrorContext).some((entry) => entry.Error == true)) {
     toast.error('Please correct invalid values before saving!');
     return;
   }

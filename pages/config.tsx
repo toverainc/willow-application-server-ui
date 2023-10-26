@@ -11,7 +11,7 @@ import InformationCard from '../components/InformationCard';
 import LeftMenu from '../components/LeftMenu';
 import LoadingSpinner from '../components/LoadingSpinner';
 import WebFlashCard from '../components/WebFlashCard';
-import { AdvancedSettings, GeneralSettings, NvsSettings } from '../misc/model';
+import { AdvancedSettings, FormErrorState, GeneralSettings, NvsSettings } from '../misc/model';
 import AdvancedSettingsSection from '../pagecomponents/AdvancedSettingsSection';
 import ConnectionSettingsSection from '../pagecomponents/ConnectionSettingsSection';
 import GeneralSettingsSection from '../pagecomponents/GeneralSettingsSection';
@@ -27,7 +27,7 @@ function SettingsAccordions() {
 
   const handleChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
     setOverrideOnboarding(true);
-    if (formErrorContext.generalSettingsFormHasErrors) {
+    if (Object.values(formErrorContext).some((entry) => entry.Error == true)) {
       setExpanded('General');
       toast.error('Please correct form errors before changing to a different section!');
     } else {
