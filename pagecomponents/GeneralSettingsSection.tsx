@@ -22,6 +22,7 @@ import {
   AUDIO_RESPONSE_TYPE,
   COMMAND_ENDPOINT,
   GeneralSettings,
+  MQTT_AUTH_TYPES,
   NTP_CONFIG,
   REST_AUTH_TYPES,
   SPEECH_REC_MODE,
@@ -33,6 +34,7 @@ import { FormErrorContext, OnboardingContext } from '../pages/_app';
 import HassCommandEndpoint from './HassCommandEndpoint';
 import OpenHabCommandEndpoint from './OpenHabCommandEndpoint';
 import RestCommandEndpoint from './RestCommandEndpoint';
+import MQTTCommandEndpoint from './MQTTCommandEndpoint';
 
 export default function GeneralSettingsSection() {
   const onboardingState = React.useContext(OnboardingContext);
@@ -101,6 +103,36 @@ export default function GeneralSettingsSection() {
 
   const [restAuthHeaderValue, setRestAuthHeaderValue] = React.useState(
     generalSettings?.rest_auth_header ?? defaultGeneralSettings?.rest_auth_header
+  );
+
+  // MQTT Command Endpoint Settings
+  const [mqttHostValue, setMqttHostValue] = React.useState(
+    generalSettings?.mqtt_host ?? defaultGeneralSettings?.mqtt_host
+  );
+
+  const [mqttPortValue, setMqttPortValue] = React.useState(
+    generalSettings?.mqtt_port ?? defaultGeneralSettings?.mqtt_port
+  );
+
+  const [mqttTopicValue, setMqttTopicValue] = React.useState(
+    generalSettings?.mqtt_topic ?? defaultGeneralSettings?.mqtt_topic
+  );
+
+  const [mqttTlsValue, setMqttTlsValue] = React.useState(
+    generalSettings?.mqtt_tls ?? defaultGeneralSettings?.mqtt_tls
+  );
+
+  const [mqttAuthTypeValue, setMqttAuthTypeValue] = React.useState(
+    (generalSettings?.mqtt_auth_type ??
+      defaultGeneralSettings?.mqtt_auth_type) as keyof typeof MQTT_AUTH_TYPES
+  );
+
+  const [mqttUsernameValue, setMqttUsernameValue] = React.useState(
+    generalSettings?.mqtt_username ?? defaultGeneralSettings?.mqtt_username
+  );
+
+  const [mqttPasswordValue, setMqttPasswordValue] = React.useState(
+    generalSettings?.mqtt_password ?? defaultGeneralSettings?.mqtt_password
   );
 
   // General Settings
@@ -264,6 +296,16 @@ export default function GeneralSettingsSection() {
       setRestAuthHeaderValue(
         generalSettings?.rest_auth_header ?? defaultGeneralSettings?.rest_auth_header
       );
+      setMqttHostValue(generalSettings?.mqtt_host ?? defaultGeneralSettings?.mqtt_host);
+      setMqttPortValue(generalSettings?.mqtt_port ?? defaultGeneralSettings?.mqtt_port);
+      setMqttTopicValue(generalSettings?.mqtt_topic ?? defaultGeneralSettings?.mqtt_topic);
+      setMqttTlsValue(generalSettings?.mqtt_tls ?? defaultGeneralSettings?.mqtt_tls);
+      setMqttAuthTypeValue(
+        (generalSettings?.mqtt_auth_type ??
+          defaultGeneralSettings?.mqtt_auth_type) as keyof typeof MQTT_AUTH_TYPES
+      );
+      setMqttUsernameValue(generalSettings?.mqtt_username ?? defaultGeneralSettings?.mqtt_username);
+      setMqttPasswordValue(generalSettings?.mqtt_password ?? defaultGeneralSettings?.mqtt_password);
       setSpeakerVolumeValue(
         generalSettings?.speaker_volume ?? defaultGeneralSettings?.speaker_volume
       );
@@ -294,6 +336,8 @@ export default function GeneralSettingsSection() {
     formErrorContext.RestUrlError = { Error: false, HelperText: '' };
     formErrorContext.WisTtsUrlError = { Error: false, HelperText: '' };
     formErrorContext.WisUrlError = { Error: false, HelperText: '' };
+    formErrorContext.MqttHostError = { Error: false, HelperText: '' };
+    formErrorContext.MqttPortError = { Error: false, HelperText: '' };
   };
 
   // Handler to reset field values to defaults
@@ -319,6 +363,13 @@ export default function GeneralSettingsSection() {
     setRestAuthUserValue(defaultGeneralSettings?.rest_auth_user);
     setRestAuthPassValue(defaultGeneralSettings?.rest_auth_pass);
     setRestAuthHeaderValue(defaultGeneralSettings?.rest_auth_header);
+    setMqttHostValue(defaultGeneralSettings?.mqtt_host);
+    setMqttPortValue(defaultGeneralSettings?.mqtt_port);
+    setMqttTopicValue(defaultGeneralSettings?.mqtt_topic);
+    setMqttTlsValue(defaultGeneralSettings?.mqtt_tls);
+    setMqttAuthTypeValue(defaultGeneralSettings?.mqtt_auth_type as keyof typeof MQTT_AUTH_TYPES);
+    setMqttUsernameValue(defaultGeneralSettings?.mqtt_username);
+    setMqttPasswordValue(defaultGeneralSettings?.mqtt_password);
     setSpeakerVolumeValue(defaultGeneralSettings?.speaker_volume);
     setLcdBrightnessValue(defaultGeneralSettings?.lcd_brightness);
     setDisplayTimeoutValue(defaultGeneralSettings?.display_timeout);
@@ -365,6 +416,16 @@ export default function GeneralSettingsSection() {
     setRestAuthHeaderValue(
       generalSettings?.rest_auth_header ?? defaultGeneralSettings?.rest_auth_header
     );
+    setMqttHostValue(generalSettings?.mqtt_host ?? defaultGeneralSettings?.mqtt_host);
+    setMqttPortValue(generalSettings?.mqtt_port ?? defaultGeneralSettings?.mqtt_port);
+    setMqttTopicValue(generalSettings?.mqtt_topic ?? defaultGeneralSettings?.mqtt_topic);
+    setMqttTlsValue(generalSettings?.mqtt_tls ?? defaultGeneralSettings?.mqtt_tls);
+    setMqttAuthTypeValue(
+      (generalSettings?.mqtt_auth_type ??
+        defaultGeneralSettings?.mqtt_auth_type) as keyof typeof MQTT_AUTH_TYPES
+    );
+    setMqttUsernameValue(generalSettings?.mqtt_username ?? defaultGeneralSettings?.mqtt_username);
+    setMqttPasswordValue(generalSettings?.mqtt_password ?? defaultGeneralSettings?.mqtt_password);
     setSpeakerVolumeValue(
       generalSettings?.speaker_volume ?? defaultGeneralSettings?.speaker_volume
     );
@@ -547,6 +608,25 @@ export default function GeneralSettingsSection() {
           setRestAuthUserValue={setRestAuthUserValue}
           restUrlValue={restUrlValue}
           setRestUrlValue={setRestUrlValue}
+          setChangesMade={setChangesMade}
+        />
+      )}
+      {commandEndpointValue == 'MQTT' && (
+        <MQTTCommandEndpoint
+          mqttHostValue={mqttHostValue}
+          setMqttHostValue={setMqttHostValue}
+          mqttPortValue={mqttPortValue}
+          setMqttPortValue={setMqttPortValue}
+          mqttTopicValue={mqttTopicValue}
+          setMqttTopicValue={setMqttTopicValue}
+          mqttTlsValue={mqttTlsValue}
+          setMqttTlsValue={setMqttTlsValue}
+          mqttAuthTypeValue={mqttAuthTypeValue}
+          setMqttAuthTypeValue={setMqttAuthTypeValue}
+          mqttUsernameValue={mqttUsernameValue}
+          setMqttUsernameValue={setMqttUsernameValue}
+          mqttPasswordValue={mqttPasswordValue}
+          setMqttPasswordValue={setMqttPasswordValue}
           setChangesMade={setChangesMade}
         />
       )}

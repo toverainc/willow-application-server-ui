@@ -41,12 +41,14 @@ export const COMMAND_ENDPOINT = {
   'Home Assistant': 'Home Assistant',
   openHAB: 'openHAB',
   REST: 'REST',
+  MQTT: 'MQTT',
 };
 export const NTP_CONFIG = {
   Host: 'Specify an NTP server host',
   DHCP: 'Use DHCP provided NTP Server',
 };
 export const REST_AUTH_TYPES = ['None', 'Basic', 'Header'];
+export const MQTT_AUTH_TYPES = ['none', 'userpw'];
 
 export const AUDIO_CODECS = { PCM: 'PCM', 'AMR-WB': 'AMR-WB' };
 export const VAD_MODES = [1, 2, 3, 4];
@@ -81,10 +83,17 @@ export interface GeneralSettings {
   openhab_url: string;
   openhab_token: string;
   rest_url: string;
-  rest_auth_type: string; //aka REST_AUTH_TYPE
+  rest_auth_type: keyof typeof REST_AUTH_TYPES;
   rest_auth_user: string;
   rest_auth_pass: string;
   rest_auth_header: string;
+  mqtt_auth_type: keyof typeof MQTT_AUTH_TYPES;
+  mqtt_host: string;
+  mqtt_password: string;
+  mqtt_port: number;
+  mqtt_tls: boolean;
+  mqtt_topic: string;
+  mqtt_username: string;
   speaker_volume: number;
   lcd_brightness: number;
   display_timeout: number;
@@ -116,4 +125,6 @@ export interface FormErrorStates {
   HassPortError: FormErrorState;
   OpenhabUrlError: FormErrorState;
   RestUrlError: FormErrorState;
+  MqttHostError: FormErrorState;
+  MqttPortError: FormErrorState;
 }

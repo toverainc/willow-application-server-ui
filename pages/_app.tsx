@@ -60,6 +60,8 @@ export const FormErrorContext = React.createContext<FormErrorStates>({
   HassPortError: { Error: false, HelperText: '' },
   OpenhabUrlError: { Error: false, HelperText: '' },
   RestUrlError: { Error: false, HelperText: '' },
+  MqttHostError: { Error: false, HelperText: '' },
+  MqttPortError: { Error: false, HelperText: '' },
 });
 
 export class HttpError extends Error {

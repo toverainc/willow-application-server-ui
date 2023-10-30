@@ -114,7 +114,7 @@ export default function RestCommandEndpoint({
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
-                    aria-label="toggle rest password visibility"
+                    aria-label="Toggle Rest password visibility"
                     onClick={handleClickShowRestPassword}
                     onMouseDown={handleMouseDownRestPassword}>
                     {showRestPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}

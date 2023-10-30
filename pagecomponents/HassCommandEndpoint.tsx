@@ -128,7 +128,7 @@ export default function HassCommandEndpoint({
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
-                  aria-label="toggle ha token visibility"
+                  aria-label="Toggle HA Token visibility"
                   onClick={handleClickShowHaToken}
                   onMouseDown={handleMouseDownHaToken}>
                   {showHaToken ? <VisibilityIcon /> : <VisibilityOffIcon />}
