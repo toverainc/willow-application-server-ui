@@ -5,7 +5,8 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import useSWR, { mutate } from 'swr';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { WAS_URL, post } from '../misc/fetchers';
+import { post } from '../misc/fetchers';
+import { setFieldStateHelperImpl } from '../misc/helperfunctions';
 import { NvsSettings } from '../misc/model';
 import { ValidateWasUrl, ValidateWifiPsk, ValidateWifiSSID } from '../misc/validations';
 import { OnboardingContext } from '../pages/_app';
@@ -15,18 +16,24 @@ export default function ConnectionSettingsSection() {
   const [showPsk, setShowPsk] = React.useState(false);
   const handleClickShowPsk = () => setShowPsk(!showPsk);
   const handleMouseDownPsk = () => setShowPsk(!showPsk);
-  const { data, error } = useSWR<NvsSettings>('/api/config?type=nvs');
+  const { data: nvsSettings, error } = useSWR<NvsSettings>('/api/config?type=nvs');
 
   // field values
-  const [wasUrl, setWasUrl] = React.useState(data?.WAS?.URL ?? WAS_URL);
+  const [fieldState, setFieldState] = React.useState(Object.assign({}, nvsSettings));
+  function setFieldStateHelper<KeyType extends keyof NvsSettings>(
+    key: KeyType,
+    value: NvsSettings[KeyType]
+  ) {
+    setFieldStateHelperImpl<NvsSettings>(key, value, setFieldState);
+  }
+
+  // Error States
   const [wasUrlError, setWasUrlError] = React.useState(false);
   const [wasUrlHelperText, setWasUrlHelperText] = React.useState('');
 
-  const [wifiSSID, setWifiSSID] = React.useState(data?.WIFI?.SSID);
   const [wifiSSIDError, setWifiSSIDError] = React.useState(false);
   const [wifiSSIDHelperText, setWifiSSIDHelperText] = React.useState('');
 
-  const [wifiPass, setWifiPass] = React.useState(data?.WIFI?.PSK);
   const [wifiPassError, setWifiPassError] = React.useState(false);
   const [wifiPassHelperText, setWifiPassHelperText] = React.useState('');
 
@@ -43,7 +50,7 @@ export default function ConnectionSettingsSection() {
       setWasUrlError(false);
     }
 
-    setWasUrl(value);
+    setFieldStateHelper('WAS', { URL: value });
   };
 
   const handleWifiPassChange = (
@@ -60,7 +67,7 @@ export default function ConnectionSettingsSection() {
       setWifiPassError(false);
     }
 
-    setWifiPass(value);
+    setFieldStateHelper('WIFI', Object.assign({}, fieldState.WIFI, { PSK: value }));
   };
 
   const handleWifiSsidChange = (
@@ -77,17 +84,16 @@ export default function ConnectionSettingsSection() {
       setWifiSSIDError(false);
     }
 
-    setWifiSSID(value);
+    setFieldStateHelper('WIFI', Object.assign({}, fieldState.WIFI, { SSID: value }));
   };
 
   React.useEffect(() => {
-    if (data) {
-      setWasUrl(data.WAS?.URL ?? WAS_URL);
-      setWifiSSID(data.WIFI?.SSID);
-      setWifiPass(data.WIFI?.PSK);
+    if (nvsSettings) {
+      setFieldStateHelper('WIFI', nvsSettings.WIFI);
+      setFieldStateHelper('WAS', nvsSettings.WAS);
       setLoading(false);
     }
-  }, [data]);
+  }, [nvsSettings]);
 
   const onboardingContext = React.useContext(OnboardingContext);
 
@@ -124,13 +130,13 @@ export default function ConnectionSettingsSection() {
     }
   }
 
-  return loading || !data ? (
+  return loading || !nvsSettings ? (
     <LoadingSpinner />
   ) : (
     <form onSubmit={handleSubmit}>
       <TextField
         name="url"
-        value={wasUrl}
+        value={fieldState.WAS.URL}
         onChange={handleWasUrlChange}
         error={wasUrlError}
         helperText={wasUrlHelperText}
@@ -143,7 +149,7 @@ export default function ConnectionSettingsSection() {
       />
       <TextField
         name="ssid"
-        value={wifiSSID}
+        value={fieldState.WIFI.SSID}
         onChange={handleWifiSsidChange}
         error={wifiSSIDError}
         helperText={wifiSSIDHelperText}
@@ -156,7 +162,7 @@ export default function ConnectionSettingsSection() {
       />
       <TextField
         name="psk"
-        value={wifiPass}
+        value={fieldState.WIFI.PSK}
         onChange={handleWifiPassChange}
         error={wifiPassError}
         helperText={wifiPassHelperText}

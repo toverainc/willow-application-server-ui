@@ -10,28 +10,20 @@ import {
 } from '@mui/material';
 import React, { useContext } from 'react';
 import { HelpTooltip, parseIntOrUndef } from '../misc/helperfunctions';
-import { FormErrorContext } from '../pages/_app';
+import { GeneralSettings } from '../misc/model';
 import { ValidateHassHost } from '../misc/validations';
+import { FormErrorContext } from '../pages/_app';
 
 export default function HassCommandEndpoint({
-  hassHostValue,
-  setHassHostValue,
-  hassPortValue,
-  setHassPortValue,
-  hassTokenValue,
-  setHassTokenValue,
-  hassTlsValue,
-  setHassTlsValue,
+  fieldState,
+  setFieldStateHelper,
   setChangesMade,
 }: {
-  hassHostValue: string | undefined;
-  setHassHostValue: React.Dispatch<React.SetStateAction<string | undefined>>;
-  hassPortValue: number | undefined;
-  setHassPortValue: React.Dispatch<React.SetStateAction<number | undefined>>;
-  hassTokenValue: string | undefined;
-  setHassTokenValue: React.Dispatch<React.SetStateAction<string | undefined>>;
-  hassTlsValue: boolean | undefined;
-  setHassTlsValue: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  fieldState: GeneralSettings;
+  setFieldStateHelper: (
+    key: keyof GeneralSettings,
+    value: GeneralSettings[keyof GeneralSettings]
+  ) => void;
   setChangesMade: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const formErrorContext = useContext(FormErrorContext);
@@ -52,7 +44,7 @@ export default function HassCommandEndpoint({
       formErrorContext.HassHostError = { Error: false, HelperText: '' };
     }
 
-    setHassHostValue(value);
+    setFieldStateHelper('hass_host', value);
     setChangesMade(true);
   };
 
@@ -70,7 +62,7 @@ export default function HassCommandEndpoint({
       formErrorContext.HassPortError = { Error: false, HelperText: '' };
     }
 
-    setHassPortValue(value);
+    setFieldStateHelper('hass_port', value);
     setChangesMade(true);
   };
 
@@ -79,7 +71,7 @@ export default function HassCommandEndpoint({
       <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
         <TextField
           name="hass_host"
-          value={hassHostValue}
+          value={fieldState.hass_host}
           error={formErrorContext.HassHostError.Error}
           helperText={formErrorContext.HassHostError.HelperText}
           onChange={handleHassHostChange}
@@ -95,7 +87,7 @@ export default function HassCommandEndpoint({
       <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
         <TextField
           name="hass_port"
-          value={hassPortValue}
+          value={fieldState.hass_port}
           error={formErrorContext.HassPortError.Error}
           helperText={formErrorContext.HassPortError.HelperText}
           onChange={handleHassPortChange}
@@ -112,9 +104,9 @@ export default function HassCommandEndpoint({
       <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} justifyContent="space-between">
         <TextField
           name="hass_token"
-          value={hassTokenValue}
+          value={fieldState.hass_token}
           onChange={(event) => {
-            setHassTokenValue(event.target.value);
+            setFieldStateHelper('hass_token', event.target.value);
             setChangesMade(true);
           }}
           required
@@ -144,9 +136,9 @@ export default function HassCommandEndpoint({
           control={
             <Checkbox
               name="hass_tls"
-              checked={hassTlsValue}
+              checked={fieldState.hass_tls}
               onChange={(event) => {
-                setHassTlsValue(event.target.checked);
+                setFieldStateHelper('hass_tls', event.target.checked);
                 setChangesMade(true);
               }}
             />

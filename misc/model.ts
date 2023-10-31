@@ -63,10 +63,10 @@ export interface AdvancedSettings {
   audio_codec: keyof typeof AUDIO_CODECS;
   vad_mode: number; //Voice Activity Detection Mode
   wake_mode: string; //aka WAKE_MODES
-  mic_gain: number;
-  record_buffer: number;
-  stream_timeout: number;
-  vad_timeout: number;
+  mic_gain: number | undefined;
+  record_buffer: number | undefined;
+  stream_timeout: number | undefined;
+  vad_timeout: number | undefined;
 }
 
 export interface GeneralSettings {
@@ -94,9 +94,9 @@ export interface GeneralSettings {
   mqtt_tls: boolean;
   mqtt_topic: string;
   mqtt_username: string;
-  speaker_volume: number;
-  lcd_brightness: number;
-  display_timeout: number;
+  speaker_volume: number | undefined;
+  lcd_brightness: number | undefined;
+  display_timeout: number | undefined;
   wake_confirmation: boolean; //Enables/Disables Wake Confirmation Chime
   timezone: string;
   timezone_name: string;

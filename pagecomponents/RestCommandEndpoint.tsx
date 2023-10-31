@@ -3,34 +3,21 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { useContext } from 'react';
 import { EnumSelectHelper } from '../misc/helperfunctions';
-import { REST_AUTH_TYPES } from '../misc/model';
+import { GeneralSettings, REST_AUTH_TYPES } from '../misc/model';
 import { ValidateUrl } from '../misc/validations';
 import { FormErrorContext } from '../pages/_app';
 import React from 'react';
 
 export default function RestCommandEndpoint({
-  restUrlValue,
-  setRestUrlValue,
-  restAuthTypeValue,
-  setRestAuthTypeValue,
-  restAuthUserValue,
-  setRestAuthUserValue,
-  restAuthPassValue,
-  setRestAuthPassValue,
-  restAuthHeaderValue,
-  setRestAuthHeaderValue,
+  fieldState,
+  setFieldStateHelper,
   setChangesMade,
 }: {
-  restUrlValue: string | undefined;
-  setRestUrlValue: React.Dispatch<React.SetStateAction<string | undefined>>;
-  restAuthTypeValue: keyof typeof REST_AUTH_TYPES;
-  setRestAuthTypeValue: React.Dispatch<React.SetStateAction<keyof typeof REST_AUTH_TYPES>>;
-  restAuthUserValue: string | undefined;
-  setRestAuthUserValue: React.Dispatch<React.SetStateAction<string | undefined>>;
-  restAuthPassValue: string | undefined;
-  setRestAuthPassValue: React.Dispatch<React.SetStateAction<string | undefined>>;
-  restAuthHeaderValue: string | undefined;
-  setRestAuthHeaderValue: React.Dispatch<React.SetStateAction<string | undefined>>;
+  fieldState: GeneralSettings;
+  setFieldStateHelper: (
+    key: keyof GeneralSettings,
+    value: GeneralSettings[keyof GeneralSettings]
+  ) => void;
   setChangesMade: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const formErrorContext = useContext(FormErrorContext);
@@ -51,7 +38,7 @@ export default function RestCommandEndpoint({
       formErrorContext.RestUrlError = { Error: false, HelperText: '' };
     }
 
-    setRestUrlValue(value);
+    setFieldStateHelper('rest_url', value);
     setChangesMade(true);
   };
 
@@ -59,7 +46,7 @@ export default function RestCommandEndpoint({
     <>
       <TextField
         name="rest_url"
-        value={restUrlValue}
+        value={fieldState.rest_url}
         error={formErrorContext.RestUrlError.Error}
         helperText={formErrorContext.RestUrlError.HelperText}
         onChange={handleRestUrlChange}
@@ -72,21 +59,21 @@ export default function RestCommandEndpoint({
       />
       <EnumSelectHelper
         name="rest_auth_type"
-        value={restAuthTypeValue.toString()}
+        value={fieldState.rest_auth_type.toString()}
         onChange={(event) => {
-          setRestAuthTypeValue(event.target.value as keyof typeof REST_AUTH_TYPES);
+          setFieldStateHelper('rest_auth_type', event.target.value as keyof typeof REST_AUTH_TYPES);
           setChangesMade(true);
         }}
         label="REST Authentication Method"
         options={REST_AUTH_TYPES}
       />
-      {restAuthTypeValue.toString() == 'Basic' && (
+      {fieldState.rest_auth_type.toString() == 'Basic' && (
         <>
           <TextField
             name="rest_auth_user"
-            value={restAuthUserValue}
+            value={fieldState.rest_auth_user}
             onChange={(event) => {
-              setRestAuthUserValue(event.target.value);
+              setFieldStateHelper('rest_auth_user', event.target.value);
               setChangesMade(true);
             }}
             required
@@ -98,9 +85,9 @@ export default function RestCommandEndpoint({
           />
           <TextField
             name="rest_auth_pass"
-            value={restAuthPassValue}
+            value={fieldState.rest_auth_pass}
             onChange={(event) => {
-              setRestAuthPassValue(event.target.value);
+              setFieldStateHelper('rest_auth_pass', event.target.value);
               setChangesMade(true);
             }}
             required
@@ -125,13 +112,13 @@ export default function RestCommandEndpoint({
           />
         </>
       )}
-      {restAuthTypeValue.toString() == 'Header' && (
+      {fieldState.rest_auth_type.toString() == 'Header' && (
         <>
           <TextField
             name="rest_auth_header"
-            value={restAuthHeaderValue}
+            value={fieldState.rest_auth_header}
             onChange={(event) => {
-              setRestAuthHeaderValue(event.target.value);
+              setFieldStateHelper('rest_auth_header', event.target.value);
               setChangesMade(true);
             }}
             required

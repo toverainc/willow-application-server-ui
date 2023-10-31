@@ -9,7 +9,13 @@ import Stack from '@mui/material/Stack';
 import * as React from 'react';
 import useSWR from 'swr';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { EnumSelectHelper, HelpTooltip, handleSubmit } from '../misc/helperfunctions';
+import {
+  EnumSelectHelper,
+  HelpTooltip,
+  handleSubmit,
+  parseIntOrUndef,
+  setFieldStateHelperImpl,
+} from '../misc/helperfunctions';
 import { AUDIO_CODECS, AdvancedSettings, TZDictionary, VAD_MODES, WAKE_MODES } from '../misc/model';
 import { FormErrorContext } from '../pages/_app';
 
@@ -26,84 +32,68 @@ export default function AdvancedSettingsSection() {
   const [changesMade, setChangesMade] = React.useState(false);
 
   // Field States
-  const [micGainValue, setMicGainValue] = React.useState(
-    advancedSettings?.mic_gain ?? defaultAdvancedSettings?.mic_gain
+  const [fieldState, setFieldState] = React.useState(
+    Object.assign({}, defaultAdvancedSettings, advancedSettings)
   );
-  const [recordBufferValue, setRecordBufferValue] = React.useState(
-    advancedSettings?.record_buffer ?? defaultAdvancedSettings?.record_buffer
-  );
-  const [streamTimeoutValue, setStreamTimeoutValue] = React.useState(
-    advancedSettings?.stream_timeout ?? defaultAdvancedSettings?.stream_timeout
-  );
-  const [vadTimeoutValue, setVadTimeoutValue] = React.useState(
-    advancedSettings?.vad_timeout ?? defaultAdvancedSettings?.vad_timeout
-  );
-  const [aecValue, setAecValue] = React.useState(
-    advancedSettings?.aec ?? defaultAdvancedSettings?.aec
-  );
-  const [bssValue, setBssValue] = React.useState(
-    advancedSettings?.bss ?? defaultAdvancedSettings?.bss
-  );
-  const [wasModeValue, setWasModeValue] = React.useState(
-    advancedSettings?.was_mode ?? defaultAdvancedSettings?.was_mode
-  );
-  const [multiwakeValue, setMultiwakeValue] = React.useState(
-    advancedSettings?.multiwake ?? defaultAdvancedSettings?.multiwake
-  );
-  const [showPrereleasesValue, setShowPrereleasesValue] = React.useState(
-    advancedSettings?.show_prereleases ?? defaultAdvancedSettings?.show_prereleases
-  );
-  const [audioCodecValue, setAudioCodecValue] = React.useState(
-    (advancedSettings?.audio_codec ??
-      defaultAdvancedSettings?.audio_codec) as keyof typeof AUDIO_CODECS
-  );
-  const [vadModeValue, setVadModeValue] = React.useState(
-    (advancedSettings?.vad_mode ?? defaultAdvancedSettings?.vad_mode) as keyof typeof VAD_MODES
-  );
-  const [wakeModeValue, setWakeModeValue] = React.useState(
-    (advancedSettings?.wake_mode ?? defaultAdvancedSettings?.wake_mode) as keyof typeof WAKE_MODES
-  );
+  function setFieldStateHelper<KeyType extends keyof AdvancedSettings>(
+    key: KeyType,
+    value: AdvancedSettings[KeyType]
+  ) {
+    setFieldStateHelperImpl<AdvancedSettings>(key, value, setFieldState);
+  }
 
   // Handlers for Mic Gain Slider and Input
   const handleMicGainInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setMicGainValue(event.target.value === '' ? undefined : Number(event.target.value));
+    setFieldStateHelper(
+      'mic_gain',
+      event.target.value === '' ? undefined : Number(event.target.value)
+    );
     setChangesMade(true);
   };
 
   const handleMicGainSliderChange = (event: Event, newValue: number | number[]) => {
-    setMicGainValue(newValue as number);
+    setFieldStateHelper('mic_gain', newValue as number);
     setChangesMade(true);
   };
 
   const handleMicGainBlur = () => {
+    const micGainValue = fieldState.mic_gain;
     if (micGainValue && micGainValue < 0) {
-      setMicGainValue(0);
+      setFieldStateHelper('mic_gain', 0);
     } else if (micGainValue && micGainValue > 14) {
-      setMicGainValue(14);
+      setFieldStateHelper('mic_gain', 14);
     } else if (!micGainValue) {
-      setMicGainValue(advancedSettings?.mic_gain ?? defaultAdvancedSettings?.mic_gain ?? 0);
+      setFieldStateHelper(
+        'mic_gain',
+        advancedSettings?.mic_gain ?? defaultAdvancedSettings?.mic_gain ?? 0
+      );
     }
     setChangesMade(true);
   };
 
   // Handlers for Record Buffer Slider and Input
   const handleRecordBufferInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRecordBufferValue(event.target.value === '' ? undefined : Number(event.target.value));
+    setFieldStateHelper(
+      'record_buffer',
+      event.target.value === '' ? undefined : Number(event.target.value)
+    );
     setChangesMade(true);
   };
 
   const handleRecordBufferSliderChange = (event: Event, newValue: number | number[]) => {
-    setRecordBufferValue(newValue as number);
+    setFieldStateHelper('record_buffer', newValue as number);
     setChangesMade(true);
   };
 
   const handleRecordBufferBlur = () => {
+    const recordBufferValue = fieldState.record_buffer;
     if (recordBufferValue && recordBufferValue < 0) {
-      setRecordBufferValue(0);
+      setFieldStateHelper('record_buffer', 0);
     } else if (recordBufferValue && recordBufferValue > 16) {
-      setRecordBufferValue(16);
+      setFieldStateHelper('record_buffer', 16);
     } else if (!recordBufferValue) {
-      setRecordBufferValue(
+      setFieldStateHelper(
+        'record_buffer',
         advancedSettings?.record_buffer ?? defaultAdvancedSettings?.record_buffer ?? 0
       );
     }
@@ -112,22 +102,27 @@ export default function AdvancedSettingsSection() {
 
   // Handlers for Stream Timeout Slider and Input
   const handleStreamTimeoutInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setStreamTimeoutValue(event.target.value === '' ? undefined : Number(event.target.value));
+    setFieldStateHelper(
+      'stream_timeout',
+      event.target.value === '' ? undefined : Number(event.target.value)
+    );
     setChangesMade(true);
   };
 
   const handleStreamTimeoutSliderChange = (event: Event, newValue: number | number[]) => {
-    setStreamTimeoutValue(newValue as number);
+    setFieldStateHelper('stream_timeout', newValue as number);
     setChangesMade(true);
   };
 
   const handleStreamTimeoutBlur = () => {
+    const streamTimeoutValue = fieldState.stream_timeout;
     if (streamTimeoutValue && streamTimeoutValue < 1) {
-      setStreamTimeoutValue(1);
+      setFieldStateHelper('stream_timeout', 1);
     } else if (streamTimeoutValue && streamTimeoutValue > 30) {
-      setStreamTimeoutValue(30);
+      setFieldStateHelper('stream_timeout', 30);
     } else if (!streamTimeoutValue) {
-      setStreamTimeoutValue(
+      setFieldStateHelper(
+        'stream_timeout',
         advancedSettings?.stream_timeout ?? defaultAdvancedSettings?.stream_timeout ?? 1
       );
     }
@@ -136,22 +131,27 @@ export default function AdvancedSettingsSection() {
 
   // Handlers for VAD Timeout Slider and Input
   const handleVADTimeoueInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setVadTimeoutValue(event.target.value === '' ? undefined : Number(event.target.value));
+    setFieldStateHelper(
+      'vad_timeout',
+      event.target.value === '' ? undefined : Number(event.target.value)
+    );
     setChangesMade(true);
   };
 
   const handleVADTimeoutSliderChange = (event: Event, newValue: number | number[]) => {
-    setVadTimeoutValue(newValue as number);
+    setFieldStateHelper('vad_timeout', newValue as number);
     setChangesMade(true);
   };
 
   const handleVADTimeoutBlur = () => {
+    const vadTimeoutValue = fieldState.vad_timeout;
     if (vadTimeoutValue && vadTimeoutValue < 0) {
-      setVadTimeoutValue(0);
+      setFieldStateHelper('vad_timeout', 0);
     } else if (vadTimeoutValue && vadTimeoutValue > 1000) {
-      setVadTimeoutValue(1000);
+      setFieldStateHelper('vad_timeout', 1000);
     } else if (!vadTimeoutValue) {
-      setVadTimeoutValue(
+      setFieldStateHelper(
+        'vad_timeout',
         advancedSettings?.vad_timeout ?? defaultAdvancedSettings?.vad_timeout ?? 0
       );
     }
@@ -161,76 +161,20 @@ export default function AdvancedSettingsSection() {
   // Set initial states or refresh states on config changes
   React.useEffect(() => {
     if (advancedSettings && defaultAdvancedSettings) {
-      setAecValue(advancedSettings.aec ?? defaultAdvancedSettings.aec);
-      setBssValue(advancedSettings.bss ?? defaultAdvancedSettings.bss);
-      setWasModeValue(advancedSettings.was_mode ?? defaultAdvancedSettings.was_mode);
-      setMultiwakeValue(advancedSettings.multiwake ?? defaultAdvancedSettings.multiwake);
-      setShowPrereleasesValue(
-        advancedSettings.show_prereleases ?? defaultAdvancedSettings.show_prereleases
-      );
-      setAudioCodecValue(
-        (advancedSettings.audio_codec ??
-          defaultAdvancedSettings.audio_codec) as keyof typeof AUDIO_CODECS
-      );
-      setVadModeValue(
-        (advancedSettings?.vad_mode ?? defaultAdvancedSettings?.vad_mode) as keyof typeof VAD_MODES
-      );
-      setWakeModeValue(
-        (advancedSettings?.wake_mode ??
-          defaultAdvancedSettings?.wake_mode) as keyof typeof WAKE_MODES
-      );
-      setMicGainValue(advancedSettings.mic_gain ?? defaultAdvancedSettings.mic_gain);
-      setRecordBufferValue(advancedSettings.record_buffer ?? defaultAdvancedSettings.record_buffer);
-      setStreamTimeoutValue(
-        advancedSettings.stream_timeout ?? defaultAdvancedSettings.stream_timeout
-      );
-      setVadTimeoutValue(advancedSettings.vad_timeout ?? defaultAdvancedSettings.vad_timeout);
+      setFieldState(Object.assign({}, defaultAdvancedSettings, advancedSettings));
       setLoading(false);
     }
   }, [advancedSettings, defaultAdvancedSettings]);
 
   // Handler to reset field values to defaults
   const handleResetForm = () => {
-    setAecValue(defaultAdvancedSettings?.aec);
-    setBssValue(defaultAdvancedSettings?.bss);
-    setWasModeValue(defaultAdvancedSettings?.was_mode);
-    setMultiwakeValue(defaultAdvancedSettings?.multiwake);
-    setShowPrereleasesValue(defaultAdvancedSettings?.show_prereleases);
-    setAudioCodecValue(defaultAdvancedSettings?.audio_codec as keyof typeof AUDIO_CODECS);
-    setVadModeValue(defaultAdvancedSettings?.vad_mode as keyof typeof VAD_MODES);
-    setWakeModeValue(defaultAdvancedSettings?.wake_mode as keyof typeof WAKE_MODES);
-    setMicGainValue(defaultAdvancedSettings?.mic_gain);
-    setRecordBufferValue(defaultAdvancedSettings?.record_buffer);
-    setStreamTimeoutValue(defaultAdvancedSettings?.stream_timeout);
-    setVadTimeoutValue(defaultAdvancedSettings?.vad_timeout);
+    setFieldState(Object.assign({}, defaultAdvancedSettings));
     setChangesMade(true);
   };
 
   // Handler to undo changes
   const handleUndoChanges = () => {
-    setAecValue(advancedSettings?.aec ?? defaultAdvancedSettings?.aec);
-    setBssValue(advancedSettings?.bss ?? defaultAdvancedSettings?.bss);
-    setWasModeValue(advancedSettings?.was_mode ?? defaultAdvancedSettings?.was_mode);
-    setMultiwakeValue(advancedSettings?.multiwake ?? defaultAdvancedSettings?.multiwake);
-    setShowPrereleasesValue(
-      advancedSettings?.show_prereleases ?? defaultAdvancedSettings?.show_prereleases
-    );
-    setAudioCodecValue(
-      (advancedSettings?.audio_codec ??
-        defaultAdvancedSettings?.audio_codec) as keyof typeof AUDIO_CODECS
-    );
-    setVadModeValue(
-      (advancedSettings?.vad_mode ?? defaultAdvancedSettings?.vad_mode) as keyof typeof VAD_MODES
-    );
-    setWakeModeValue(
-      (advancedSettings?.wake_mode ?? defaultAdvancedSettings?.wake_mode) as keyof typeof WAKE_MODES
-    );
-    setMicGainValue(advancedSettings?.mic_gain ?? defaultAdvancedSettings?.mic_gain);
-    setRecordBufferValue(advancedSettings?.record_buffer ?? defaultAdvancedSettings?.record_buffer);
-    setStreamTimeoutValue(
-      advancedSettings?.stream_timeout ?? defaultAdvancedSettings?.stream_timeout
-    );
-    setVadTimeoutValue(advancedSettings?.vad_timeout ?? defaultAdvancedSettings?.vad_timeout);
+    setFieldState(Object.assign({}, defaultAdvancedSettings, advancedSettings));
     setChangesMade(false);
   };
 
@@ -246,9 +190,9 @@ export default function AdvancedSettingsSection() {
             control={
               <Checkbox
                 name="aec"
-                checked={aecValue}
+                checked={fieldState.aec}
                 onChange={(event) => {
-                  setAecValue(event.target.checked);
+                  setFieldStateHelper('aec', event.target.checked);
                   setChangesMade(true);
                 }}
               />
@@ -266,9 +210,9 @@ export default function AdvancedSettingsSection() {
             control={
               <Checkbox
                 name="bss"
-                checked={bssValue}
+                checked={fieldState.bss}
                 onChange={(event) => {
-                  setBssValue(event.target.checked);
+                  setFieldStateHelper('bss', event.target.checked);
                   setChangesMade(true);
                 }}
               />
@@ -286,9 +230,9 @@ export default function AdvancedSettingsSection() {
             control={
               <Checkbox
                 name="was_mode"
-                checked={wasModeValue}
+                checked={fieldState.was_mode}
                 onChange={(event) => {
-                  setWasModeValue(event.target.checked);
+                  setFieldStateHelper('was_mode', event.target.checked);
                   setChangesMade(true);
                 }}
               />
@@ -304,9 +248,9 @@ export default function AdvancedSettingsSection() {
             control={
               <Checkbox
                 name="multiwake"
-                checked={multiwakeValue}
+                checked={fieldState.multiwake}
                 onChange={(event) => {
-                  setMultiwakeValue(event.target.checked);
+                  setFieldStateHelper('multiwake', event.target.checked);
                   setChangesMade(true);
                 }}
               />
@@ -324,9 +268,9 @@ export default function AdvancedSettingsSection() {
             control={
               <Checkbox
                 name="show_prereleases"
-                checked={showPrereleasesValue}
+                checked={fieldState.show_prereleases}
                 onChange={(event) => {
-                  setShowPrereleasesValue(event.target.checked);
+                  setFieldStateHelper('show_prereleases', event.target.checked);
                   setChangesMade(true);
                 }}
               />
@@ -338,9 +282,9 @@ export default function AdvancedSettingsSection() {
       </FormControl>
       <EnumSelectHelper
         name="audio_codec"
-        value={audioCodecValue}
+        value={fieldState.audio_codec}
         onChange={(event) => {
-          setAudioCodecValue(event.target.value as keyof typeof AUDIO_CODECS);
+          setFieldStateHelper('audio_codec', event.target.value as keyof typeof AUDIO_CODECS);
           setChangesMade(true);
         }}
         label="Audio Codec to use for streaming to WIS"
@@ -350,11 +294,11 @@ export default function AdvancedSettingsSection() {
       />
       <EnumSelectHelper
         name="vad_mode"
-        value={vadModeValue.toString()}
+        value={fieldState.vad_mode.toString()}
         label="Voice Activity Detection Mode"
         options={VAD_MODES.map((v) => v.toString())}
         onChange={(event) => {
-          setVadModeValue(event.target.value as keyof typeof VAD_MODES);
+          setFieldStateHelper('vad_mode', parseIntOrUndef(event.target.value) ?? 1);
           setChangesMade(true);
         }}
         tooltip="If Willow thinks you stop talking too soon or too late you can change the aggressiveness of Voice Activity Mode (VAD).
@@ -362,11 +306,11 @@ export default function AdvancedSettingsSection() {
       />
       <EnumSelectHelper
         name="wake_mode"
-        value={wakeModeValue.toString()}
+        value={fieldState.wake_mode.toString()}
         label="Wake Word Recognition Mode"
         options={WAKE_MODES}
         onChange={(event) => {
-          setWakeModeValue(event.target.value as keyof typeof WAKE_MODES);
+          setFieldStateHelper('wake_mode', event.target.value);
           setChangesMade(true);
         }}
         tooltip="Wake Word Recognition Mode generally configures the sensitivity of detecting the wake word.
@@ -376,7 +320,7 @@ export default function AdvancedSettingsSection() {
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
         <Slider
           name="mic_gain"
-          value={micGainValue}
+          value={fieldState.mic_gain}
           min={0}
           max={14}
           size="small"
@@ -384,7 +328,7 @@ export default function AdvancedSettingsSection() {
           valueLabelDisplay="auto"
         />
         <Input
-          value={micGainValue}
+          value={fieldState.mic_gain}
           size="small"
           onChange={handleMicGainInputChange}
           onBlur={handleMicGainBlur}
@@ -405,7 +349,7 @@ export default function AdvancedSettingsSection() {
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
         <Slider
           name="record_buffer"
-          value={recordBufferValue}
+          value={fieldState.record_buffer}
           onChange={handleRecordBufferSliderChange}
           min={0}
           max={16}
@@ -413,7 +357,7 @@ export default function AdvancedSettingsSection() {
           valueLabelDisplay="auto"
         />
         <Input
-          value={recordBufferValue}
+          value={fieldState.record_buffer}
           size="small"
           onChange={handleRecordBufferInputChange}
           onBlur={handleRecordBufferBlur}
@@ -433,7 +377,7 @@ export default function AdvancedSettingsSection() {
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
         <Slider
           name="stream_timeout"
-          value={streamTimeoutValue}
+          value={fieldState.stream_timeout}
           onChange={handleStreamTimeoutSliderChange}
           min={1}
           max={30}
@@ -441,7 +385,7 @@ export default function AdvancedSettingsSection() {
           valueLabelDisplay="auto"
         />
         <Input
-          value={streamTimeoutValue}
+          value={fieldState.stream_timeout}
           size="small"
           onChange={handleStreamTimeoutInputChange}
           onBlur={handleStreamTimeoutBlur}
@@ -459,7 +403,7 @@ export default function AdvancedSettingsSection() {
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
         <Slider
           name="vad_timeout"
-          value={vadTimeoutValue}
+          value={fieldState.vad_timeout}
           onChange={handleVADTimeoutSliderChange}
           min={0}
           max={1000}
@@ -467,7 +411,7 @@ export default function AdvancedSettingsSection() {
           valueLabelDisplay="auto"
         />
         <Input
-          value={vadTimeoutValue}
+          value={fieldState.vad_timeout}
           size="small"
           onChange={handleVADTimeoueInputChange}
           onBlur={handleVADTimeoutBlur}

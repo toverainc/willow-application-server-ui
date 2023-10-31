@@ -140,3 +140,16 @@ export async function handleSubmit(
     toast.success('Configuration settings saved!');
   }
 }
+
+// Helper for setting field states
+export function setFieldStateHelperImpl<T>(
+  key: keyof T,
+  value: T[keyof T],
+  setter: React.Dispatch<React.SetStateAction<T>>
+) {
+  setter((prevState) => {
+    let state: T = Object.assign({}, prevState);
+    state[key] = value;
+    return state;
+  });
+}

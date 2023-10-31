@@ -10,41 +10,20 @@ import {
 } from '@mui/material';
 import React, { useContext } from 'react';
 import { EnumSelectHelper, parseIntOrUndef } from '../misc/helperfunctions';
-import { MQTT_AUTH_TYPES } from '../misc/model';
+import { GeneralSettings, MQTT_AUTH_TYPES } from '../misc/model';
 import { ValidateIpOrHostname } from '../misc/validations';
 import { FormErrorContext } from '../pages/_app';
 
 export default function MQTTCommandEndpoint({
-  mqttHostValue,
-  setMqttHostValue,
-  mqttPortValue,
-  setMqttPortValue,
-  mqttTopicValue,
-  setMqttTopicValue,
-  mqttTlsValue,
-  setMqttTlsValue,
-  mqttAuthTypeValue,
-  setMqttAuthTypeValue,
-  mqttUsernameValue,
-  setMqttUsernameValue,
-  mqttPasswordValue,
-  setMqttPasswordValue,
+  fieldState,
+  setFieldStateHelper,
   setChangesMade,
 }: {
-  mqttHostValue: string | undefined;
-  setMqttHostValue: React.Dispatch<React.SetStateAction<string | undefined>>;
-  mqttPortValue: number | undefined;
-  setMqttPortValue: React.Dispatch<React.SetStateAction<number | undefined>>;
-  mqttTopicValue: string | undefined;
-  setMqttTopicValue: React.Dispatch<React.SetStateAction<string | undefined>>;
-  mqttTlsValue: boolean | undefined;
-  setMqttTlsValue: React.Dispatch<React.SetStateAction<boolean | undefined>>;
-  mqttAuthTypeValue: keyof typeof MQTT_AUTH_TYPES;
-  setMqttAuthTypeValue: React.Dispatch<React.SetStateAction<keyof typeof MQTT_AUTH_TYPES>>;
-  mqttUsernameValue: string | undefined;
-  setMqttUsernameValue: React.Dispatch<React.SetStateAction<string | undefined>>;
-  mqttPasswordValue: string | undefined;
-  setMqttPasswordValue: React.Dispatch<React.SetStateAction<string | undefined>>;
+  fieldState: GeneralSettings;
+  setFieldStateHelper: (
+    key: keyof GeneralSettings,
+    value: GeneralSettings[keyof GeneralSettings]
+  ) => void;
   setChangesMade: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const formErrorContext = useContext(FormErrorContext);
@@ -65,7 +44,7 @@ export default function MQTTCommandEndpoint({
       formErrorContext.MqttHostError = { Error: false, HelperText: '' };
     }
 
-    setMqttHostValue(value);
+    setFieldStateHelper('mqtt_host', value);
     setChangesMade(true);
   };
 
@@ -83,7 +62,7 @@ export default function MQTTCommandEndpoint({
       formErrorContext.MqttPortError = { Error: false, HelperText: '' };
     }
 
-    setMqttPortValue(value);
+    setFieldStateHelper('mqtt_port', value);
     setChangesMade(true);
   };
 
@@ -91,7 +70,7 @@ export default function MQTTCommandEndpoint({
     <>
       <TextField
         name="mqtt_host"
-        value={mqttHostValue}
+        value={fieldState.mqtt_host}
         error={formErrorContext.MqttHostError.Error}
         helperText={formErrorContext.MqttHostError.HelperText}
         onChange={handleMqttHostChange}
@@ -104,7 +83,7 @@ export default function MQTTCommandEndpoint({
       />
       <TextField
         name="mqtt_port"
-        value={mqttPortValue}
+        value={fieldState.mqtt_port}
         error={formErrorContext.MqttPortError.Error}
         helperText={formErrorContext.MqttPortError.HelperText}
         onChange={handleMqttPortChange}
@@ -118,9 +97,9 @@ export default function MQTTCommandEndpoint({
       />
       <TextField
         name="mqtt_topic"
-        value={mqttTopicValue}
+        value={fieldState.mqtt_topic}
         onChange={(event) => {
-          setMqttTopicValue(event.target.value);
+          setFieldStateHelper('mqtt_topic', event.target.value);
           setChangesMade(true);
         }}
         required
@@ -132,21 +111,21 @@ export default function MQTTCommandEndpoint({
       />
       <EnumSelectHelper
         name="mqtt_auth_type"
-        value={mqttAuthTypeValue.toString()}
+        value={fieldState.mqtt_auth_type.toString()}
         onChange={(event) => {
-          setMqttAuthTypeValue(event.target.value as keyof typeof MQTT_AUTH_TYPES);
+          setFieldStateHelper('mqtt_auth_type', event.target.value as keyof typeof MQTT_AUTH_TYPES);
           setChangesMade(true);
         }}
         label="MQTT Authentication Method"
         options={MQTT_AUTH_TYPES}
       />
-      {mqttAuthTypeValue.toString().toUpperCase() == 'USERPW' && (
+      {fieldState.mqtt_auth_type.toString().toUpperCase() == 'USERPW' && (
         <>
           <TextField
             name="mqtt_username"
-            value={mqttUsernameValue}
+            value={fieldState.mqtt_username}
             onChange={(event) => {
-              setMqttUsernameValue(event.target.value);
+              setFieldStateHelper('mqtt_username', event.target.value);
               setChangesMade(true);
             }}
             required
@@ -158,9 +137,9 @@ export default function MQTTCommandEndpoint({
           />
           <TextField
             name="mqtt_password"
-            value={mqttPasswordValue}
+            value={fieldState.mqtt_password}
             onChange={(event) => {
-              setMqttPasswordValue(event.target.value);
+              setFieldStateHelper('mqtt_password', event.target.value);
               setChangesMade(true);
             }}
             required
@@ -190,9 +169,9 @@ export default function MQTTCommandEndpoint({
           control={
             <Checkbox
               name="mqtt_tls"
-              checked={mqttTlsValue}
+              checked={fieldState.mqtt_tls}
               onChange={(event) => {
-                setMqttTlsValue(event.target.checked);
+                setFieldStateHelper('mqtt_tls', event.target.checked);
                 setChangesMade(true);
               }}
             />

@@ -17,14 +17,17 @@ import TextField from '@mui/material/TextField';
 import * as React from 'react';
 import useSWR from 'swr';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { EnumSelectHelper, HelpTooltip, handleSubmit } from '../misc/helperfunctions';
+import {
+  EnumSelectHelper,
+  HelpTooltip,
+  handleSubmit,
+  setFieldStateHelperImpl,
+} from '../misc/helperfunctions';
 import {
   AUDIO_RESPONSE_TYPE,
   COMMAND_ENDPOINT,
   GeneralSettings,
-  MQTT_AUTH_TYPES,
   NTP_CONFIG,
-  REST_AUTH_TYPES,
   SPEECH_REC_MODE,
   TZDictionary,
   WAKE_WORDS,
@@ -32,9 +35,9 @@ import {
 import { ValidateWisTtsUrl, ValidateWisUrl } from '../misc/validations';
 import { FormErrorContext, OnboardingContext } from '../pages/_app';
 import HassCommandEndpoint from './HassCommandEndpoint';
+import MQTTCommandEndpoint from './MQTTCommandEndpoint';
 import OpenHabCommandEndpoint from './OpenHabCommandEndpoint';
 import RestCommandEndpoint from './RestCommandEndpoint';
-import MQTTCommandEndpoint from './MQTTCommandEndpoint';
 
 export default function GeneralSettingsSection() {
   const onboardingState = React.useContext(OnboardingContext);
@@ -51,158 +54,39 @@ export default function GeneralSettingsSection() {
   const [changesMade, setChangesMade] = React.useState(false);
 
   // Field States
-  // Command Endpoint Selection
-  const [commandEndpointValue, setCommandEndpointValue] = React.useState(
-    (generalSettings?.command_endpoint ??
-      defaultGeneralSettings?.command_endpoint) as keyof typeof COMMAND_ENDPOINT
+  const [fieldState, setFieldState] = React.useState(
+    Object.assign({}, defaultGeneralSettings, generalSettings)
   );
-
-  // Hass Command Endpoint Fields
-  const [hassHostValue, setHassHostValue] = React.useState(
-    generalSettings?.hass_host ?? defaultGeneralSettings?.hass_host
-  );
-
-  const [hassPortValue, setHassPortValue] = React.useState(
-    generalSettings?.hass_port ?? defaultGeneralSettings?.hass_port
-  );
-
-  const [hassTlsValue, setHassTlsValue] = React.useState(
-    generalSettings?.hass_tls ?? defaultGeneralSettings?.hass_tls
-  );
-
-  const [hassTokenValue, setHassTokenValue] = React.useState(
-    generalSettings?.hass_token ?? defaultGeneralSettings?.hass_token
-  );
-
-  // Openhab Command Endpoint Fields
-  const [openhabUrlValue, setOpenhabUrlValue] = React.useState(
-    generalSettings?.openhab_url ?? defaultGeneralSettings?.openhab_url
-  );
-
-  const [openhabTokenValue, setOpenhabTokenValue] = React.useState(
-    generalSettings?.openhab_token ?? defaultGeneralSettings?.openhab_token
-  );
-
-  // Rest Command Endpoint Fields
-  const [restUrlValue, setRestUrlValue] = React.useState(
-    generalSettings?.rest_url ?? defaultGeneralSettings?.rest_url
-  );
-
-  const [restAuthTypeValue, setRestAuthTypeValue] = React.useState(
-    (generalSettings?.rest_auth_type ??
-      defaultGeneralSettings?.rest_auth_type) as keyof typeof REST_AUTH_TYPES
-  );
-
-  const [restAuthUserValue, setRestAuthUserValue] = React.useState(
-    generalSettings?.rest_auth_user ?? defaultGeneralSettings?.rest_auth_user
-  );
-
-  const [restAuthPassValue, setRestAuthPassValue] = React.useState(
-    generalSettings?.rest_auth_pass ?? defaultGeneralSettings?.rest_auth_pass
-  );
-
-  const [restAuthHeaderValue, setRestAuthHeaderValue] = React.useState(
-    generalSettings?.rest_auth_header ?? defaultGeneralSettings?.rest_auth_header
-  );
-
-  // MQTT Command Endpoint Settings
-  const [mqttHostValue, setMqttHostValue] = React.useState(
-    generalSettings?.mqtt_host ?? defaultGeneralSettings?.mqtt_host
-  );
-
-  const [mqttPortValue, setMqttPortValue] = React.useState(
-    generalSettings?.mqtt_port ?? defaultGeneralSettings?.mqtt_port
-  );
-
-  const [mqttTopicValue, setMqttTopicValue] = React.useState(
-    generalSettings?.mqtt_topic ?? defaultGeneralSettings?.mqtt_topic
-  );
-
-  const [mqttTlsValue, setMqttTlsValue] = React.useState(
-    generalSettings?.mqtt_tls ?? defaultGeneralSettings?.mqtt_tls
-  );
-
-  const [mqttAuthTypeValue, setMqttAuthTypeValue] = React.useState(
-    (generalSettings?.mqtt_auth_type ??
-      defaultGeneralSettings?.mqtt_auth_type) as keyof typeof MQTT_AUTH_TYPES
-  );
-
-  const [mqttUsernameValue, setMqttUsernameValue] = React.useState(
-    generalSettings?.mqtt_username ?? defaultGeneralSettings?.mqtt_username
-  );
-
-  const [mqttPasswordValue, setMqttPasswordValue] = React.useState(
-    generalSettings?.mqtt_password ?? defaultGeneralSettings?.mqtt_password
-  );
-
-  // General Settings
-  const [speechRecModeValue, setSpeechRecModeValue] = React.useState(
-    (generalSettings?.speech_rec_mode ??
-      defaultGeneralSettings?.speech_rec_mode) as keyof typeof SPEECH_REC_MODE
-  );
-
-  const [wisUrlValue, setWisUrlValue] = React.useState(
-    generalSettings?.wis_url ?? defaultGeneralSettings?.wis_url
-  );
-
-  const [audioResponseTypeValue, setAudioResponseTypeValue] = React.useState(
-    (generalSettings?.audio_response_type ??
-      defaultGeneralSettings?.audio_response_type) as keyof typeof AUDIO_RESPONSE_TYPE
-  );
-
-  const [wisTtsUrlValue, setWisTtsUrlValue] = React.useState(
-    generalSettings?.wis_tts_url ?? defaultGeneralSettings?.wis_tts_url
-  );
-
-  const [wakeWordValue, setWakeWordValue] = React.useState(
-    (generalSettings?.wake_word ?? defaultGeneralSettings?.wake_word) as keyof typeof WAKE_WORDS
-  );
-  const [speakerVolumeValue, setSpeakerVolumeValue] = React.useState(
-    generalSettings?.speaker_volume ?? defaultGeneralSettings?.speaker_volume
-  );
-
-  const [lcdBrightnessValue, setLcdBrightnessValue] = React.useState(
-    generalSettings?.lcd_brightness ?? defaultGeneralSettings?.lcd_brightness
-  );
-
-  const [displayTimeoutValue, setDisplayTimeoutValue] = React.useState(
-    generalSettings?.display_timeout ?? defaultGeneralSettings?.display_timeout
-  );
-
-  const [wakeConfirmationValue, setWakeConfirmationValue] = React.useState(
-    generalSettings?.wake_confirmation ?? defaultGeneralSettings?.wake_confirmation
-  );
-
-  const [timezoneValue, setTimezoneValue] = React.useState(
-    generalSettings?.timezone_name ?? defaultGeneralSettings?.timezone_name
-  );
-
-  const [ntpConfigValue, setNtpConfigValue] = React.useState(
-    (generalSettings?.ntp_config ?? defaultGeneralSettings?.ntp_config) as keyof typeof NTP_CONFIG
-  );
-
-  const [ntpHostValue, setNtpHostValue] = React.useState(
-    generalSettings?.ntp_host ?? defaultGeneralSettings?.ntp_host
-  );
+  function setFieldStateHelper<KeyType extends keyof GeneralSettings>(
+    key: KeyType,
+    value: GeneralSettings[KeyType]
+  ) {
+    setFieldStateHelperImpl<GeneralSettings>(key, value, setFieldState);
+  }
 
   // Handlers for Speaker Volume Slider and Input
   const handleSpeakerVolumeInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSpeakerVolumeValue(event.target.value === '' ? undefined : Number(event.target.value));
+    setFieldStateHelper(
+      'speaker_volume',
+      event.target.value === '' ? undefined : Number(event.target.value)
+    );
     setChangesMade(true);
   };
 
   const handleSpeakerVolumeSliderChange = (event: Event, newValue: number | number[]) => {
-    setSpeakerVolumeValue(newValue as number);
+    setFieldStateHelper('speaker_volume', newValue as number);
     setChangesMade(true);
   };
 
   const handleSpeakerVolumeBlur = () => {
+    const speakerVolumeValue = fieldState.speaker_volume;
     if (speakerVolumeValue && speakerVolumeValue < 0) {
-      setSpeakerVolumeValue(0);
+      setFieldStateHelper('speaker_volume', 0);
     } else if (speakerVolumeValue && speakerVolumeValue > 100) {
-      setSpeakerVolumeValue(100);
+      setFieldStateHelper('speaker_volume', 100);
     } else if (!speakerVolumeValue) {
-      setSpeakerVolumeValue(
+      setFieldStateHelper(
+        'speaker_volume',
         generalSettings?.speaker_volume ?? defaultGeneralSettings?.speaker_volume
       );
     }
@@ -211,22 +95,27 @@ export default function GeneralSettingsSection() {
 
   // Handlers for LCD Brightness Slider and Input
   const handleLcdBrightnessInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLcdBrightnessValue(event.target.value === '' ? undefined : Number(event.target.value));
+    setFieldStateHelper(
+      'lcd_brightness',
+      event.target.value === '' ? undefined : Number(event.target.value)
+    );
     setChangesMade(true);
   };
 
   const handleLcdBrightnessSliderChange = (event: Event, newValue: number | number[]) => {
-    setLcdBrightnessValue(newValue as number);
+    setFieldStateHelper('lcd_brightness', newValue as number);
     setChangesMade(true);
   };
 
   const handleLcdBrightnessBlur = () => {
+    const lcdBrightnessValue = fieldState.lcd_brightness;
     if (lcdBrightnessValue && lcdBrightnessValue < 0) {
-      setLcdBrightnessValue(0);
+      setFieldStateHelper('lcd_brightness', 0);
     } else if (lcdBrightnessValue && lcdBrightnessValue > 1023) {
-      setLcdBrightnessValue(1023);
+      setFieldStateHelper('lcd_brightness', 1023);
     } else if (!lcdBrightnessValue) {
-      setLcdBrightnessValue(
+      setFieldStateHelper(
+        'lcd_brightness',
         generalSettings?.lcd_brightness ?? defaultGeneralSettings?.lcd_brightness
       );
     }
@@ -235,22 +124,27 @@ export default function GeneralSettingsSection() {
 
   // Handlers for Display Timeout Slider and Input
   const handleDisplayTimeoutInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDisplayTimeoutValue(event.target.value === '' ? undefined : Number(event.target.value));
+    setFieldStateHelper(
+      'display_timeout',
+      event.target.value === '' ? undefined : Number(event.target.value)
+    );
     setChangesMade(true);
   };
 
   const handleDisplayTimeoutSliderChange = (event: Event, newValue: number | number[]) => {
-    setDisplayTimeoutValue(newValue as number);
+    setFieldStateHelper('display_timeout', newValue as number);
     setChangesMade(true);
   };
 
   const handleDisplayTimeoutBlur = () => {
+    const displayTimeoutValue = fieldState.display_timeout;
     if (displayTimeoutValue && displayTimeoutValue < 1) {
-      setDisplayTimeoutValue(1);
+      setFieldStateHelper('display_timeout', 1);
     } else if (displayTimeoutValue && displayTimeoutValue > 60) {
-      setDisplayTimeoutValue(60);
+      setFieldStateHelper('display_timeout', 60);
     } else if (!displayTimeoutValue) {
-      setDisplayTimeoutValue(
+      setFieldStateHelper(
+        'display_timeout',
         generalSettings?.display_timeout ?? defaultGeneralSettings?.display_timeout
       );
     }
@@ -259,71 +153,7 @@ export default function GeneralSettingsSection() {
 
   React.useEffect(() => {
     if (generalSettings && defaultGeneralSettings && tzDictionary) {
-      setSpeechRecModeValue(
-        (generalSettings?.speech_rec_mode ??
-          defaultGeneralSettings?.speech_rec_mode) as keyof typeof SPEECH_REC_MODE
-      );
-      setWisUrlValue(generalSettings?.wis_url ?? defaultGeneralSettings?.wis_url);
-      setAudioResponseTypeValue(
-        (generalSettings?.audio_response_type ??
-          defaultGeneralSettings?.audio_response_type) as keyof typeof AUDIO_RESPONSE_TYPE
-      );
-      setWisTtsUrlValue(generalSettings?.wis_tts_url ?? defaultGeneralSettings?.wis_tts_url);
-      setWakeWordValue(
-        (generalSettings?.wake_word ?? defaultGeneralSettings?.wake_word) as keyof typeof WAKE_WORDS
-      );
-      setCommandEndpointValue(
-        (generalSettings?.command_endpoint ??
-          defaultGeneralSettings?.command_endpoint) as keyof typeof COMMAND_ENDPOINT
-      );
-      setHassHostValue(generalSettings?.hass_host ?? defaultGeneralSettings?.hass_host);
-      setHassPortValue(generalSettings?.hass_port ?? defaultGeneralSettings?.hass_port);
-      setHassTlsValue(generalSettings?.hass_tls ?? defaultGeneralSettings?.hass_tls);
-      setHassTokenValue(generalSettings?.hass_token ?? defaultGeneralSettings?.hass_token);
-      setOpenhabUrlValue(generalSettings?.openhab_url ?? defaultGeneralSettings?.openhab_url);
-      setOpenhabTokenValue(generalSettings?.openhab_token ?? defaultGeneralSettings?.openhab_token);
-      setRestUrlValue(generalSettings?.rest_url ?? defaultGeneralSettings?.rest_url);
-      setRestAuthTypeValue(
-        (generalSettings?.rest_auth_type ??
-          defaultGeneralSettings?.rest_auth_type) as keyof typeof REST_AUTH_TYPES
-      );
-      setRestAuthUserValue(
-        generalSettings?.rest_auth_user ?? defaultGeneralSettings?.rest_auth_user
-      );
-      setRestAuthPassValue(
-        generalSettings?.rest_auth_pass ?? defaultGeneralSettings?.rest_auth_pass
-      );
-      setRestAuthHeaderValue(
-        generalSettings?.rest_auth_header ?? defaultGeneralSettings?.rest_auth_header
-      );
-      setMqttHostValue(generalSettings?.mqtt_host ?? defaultGeneralSettings?.mqtt_host);
-      setMqttPortValue(generalSettings?.mqtt_port ?? defaultGeneralSettings?.mqtt_port);
-      setMqttTopicValue(generalSettings?.mqtt_topic ?? defaultGeneralSettings?.mqtt_topic);
-      setMqttTlsValue(generalSettings?.mqtt_tls ?? defaultGeneralSettings?.mqtt_tls);
-      setMqttAuthTypeValue(
-        (generalSettings?.mqtt_auth_type ??
-          defaultGeneralSettings?.mqtt_auth_type) as keyof typeof MQTT_AUTH_TYPES
-      );
-      setMqttUsernameValue(generalSettings?.mqtt_username ?? defaultGeneralSettings?.mqtt_username);
-      setMqttPasswordValue(generalSettings?.mqtt_password ?? defaultGeneralSettings?.mqtt_password);
-      setSpeakerVolumeValue(
-        generalSettings?.speaker_volume ?? defaultGeneralSettings?.speaker_volume
-      );
-      setLcdBrightnessValue(
-        generalSettings?.lcd_brightness ?? defaultGeneralSettings?.lcd_brightness
-      );
-      setDisplayTimeoutValue(
-        generalSettings?.display_timeout ?? defaultGeneralSettings?.display_timeout
-      );
-      setWakeConfirmationValue(
-        generalSettings?.wake_confirmation ?? defaultGeneralSettings?.wake_confirmation
-      );
-      setTimezoneValue(generalSettings?.timezone_name ?? defaultGeneralSettings?.timezone_name);
-      setNtpConfigValue(
-        (generalSettings?.ntp_config ??
-          defaultGeneralSettings?.ntp_config) as keyof typeof NTP_CONFIG
-      );
-      setNtpHostValue(generalSettings?.ntp_host ?? defaultGeneralSettings?.ntp_host);
+      setFieldState(Object.assign({}, defaultGeneralSettings, generalSettings));
       setLoading(false);
     }
   }, [generalSettings, defaultGeneralSettings, tzDictionary]);
@@ -342,107 +172,14 @@ export default function GeneralSettingsSection() {
 
   // Handler to reset field values to defaults
   const handleResetForm = () => {
-    setSpeechRecModeValue(defaultGeneralSettings?.speech_rec_mode as keyof typeof SPEECH_REC_MODE);
-    setWisUrlValue(defaultGeneralSettings?.wis_url);
-    setAudioResponseTypeValue(
-      defaultGeneralSettings?.audio_response_type as keyof typeof AUDIO_RESPONSE_TYPE
-    );
-    setWisTtsUrlValue(defaultGeneralSettings?.wis_tts_url);
-    setWakeWordValue(defaultGeneralSettings?.wake_word as keyof typeof WAKE_WORDS);
-    setCommandEndpointValue(
-      defaultGeneralSettings?.command_endpoint as keyof typeof COMMAND_ENDPOINT
-    );
-    setHassHostValue(defaultGeneralSettings?.hass_host);
-    setHassPortValue(defaultGeneralSettings?.hass_port);
-    setHassTlsValue(defaultGeneralSettings?.hass_tls);
-    setHassTokenValue(defaultGeneralSettings?.hass_token);
-    setOpenhabUrlValue(defaultGeneralSettings?.openhab_url);
-    setOpenhabTokenValue(defaultGeneralSettings?.openhab_token);
-    setRestUrlValue(defaultGeneralSettings?.rest_url);
-    setRestAuthTypeValue(defaultGeneralSettings?.rest_auth_type as keyof typeof REST_AUTH_TYPES);
-    setRestAuthUserValue(defaultGeneralSettings?.rest_auth_user);
-    setRestAuthPassValue(defaultGeneralSettings?.rest_auth_pass);
-    setRestAuthHeaderValue(defaultGeneralSettings?.rest_auth_header);
-    setMqttHostValue(defaultGeneralSettings?.mqtt_host);
-    setMqttPortValue(defaultGeneralSettings?.mqtt_port);
-    setMqttTopicValue(defaultGeneralSettings?.mqtt_topic);
-    setMqttTlsValue(defaultGeneralSettings?.mqtt_tls);
-    setMqttAuthTypeValue(defaultGeneralSettings?.mqtt_auth_type as keyof typeof MQTT_AUTH_TYPES);
-    setMqttUsernameValue(defaultGeneralSettings?.mqtt_username);
-    setMqttPasswordValue(defaultGeneralSettings?.mqtt_password);
-    setSpeakerVolumeValue(defaultGeneralSettings?.speaker_volume);
-    setLcdBrightnessValue(defaultGeneralSettings?.lcd_brightness);
-    setDisplayTimeoutValue(defaultGeneralSettings?.display_timeout);
-    setWakeConfirmationValue(defaultGeneralSettings?.wake_confirmation);
-    setTimezoneValue(defaultGeneralSettings?.timezone_name);
-    setNtpConfigValue(defaultGeneralSettings?.ntp_config as keyof typeof NTP_CONFIG);
-    setNtpHostValue(defaultGeneralSettings?.ntp_host);
+    setFieldState(Object.assign({}, defaultGeneralSettings));
     resetFormErrorState();
     setChangesMade(true);
   };
 
   // Handler to undo changes
   const handleUndoChanges = () => {
-    setSpeechRecModeValue(
-      (generalSettings?.speech_rec_mode ??
-        defaultGeneralSettings?.speech_rec_mode) as keyof typeof SPEECH_REC_MODE
-    );
-    setWisUrlValue(generalSettings?.wis_url ?? defaultGeneralSettings?.wis_url);
-    setAudioResponseTypeValue(
-      (generalSettings?.audio_response_type ??
-        defaultGeneralSettings?.audio_response_type) as keyof typeof AUDIO_RESPONSE_TYPE
-    );
-    setWisTtsUrlValue(generalSettings?.wis_tts_url ?? defaultGeneralSettings?.wis_tts_url);
-    setWakeWordValue(
-      (generalSettings?.wake_word ?? defaultGeneralSettings?.wake_word) as keyof typeof WAKE_WORDS
-    );
-    setCommandEndpointValue(
-      (generalSettings?.command_endpoint ??
-        defaultGeneralSettings?.command_endpoint) as keyof typeof COMMAND_ENDPOINT
-    );
-    setHassHostValue(generalSettings?.hass_host ?? defaultGeneralSettings?.hass_host);
-    setHassPortValue(generalSettings?.hass_port ?? defaultGeneralSettings?.hass_port);
-    setHassTlsValue(generalSettings?.hass_tls ?? defaultGeneralSettings?.hass_tls);
-    setHassTokenValue(generalSettings?.hass_token ?? defaultGeneralSettings?.hass_token);
-    setOpenhabUrlValue(generalSettings?.openhab_url ?? defaultGeneralSettings?.openhab_url);
-    setOpenhabTokenValue(generalSettings?.openhab_token ?? defaultGeneralSettings?.openhab_token);
-    setRestUrlValue(generalSettings?.rest_url ?? defaultGeneralSettings?.rest_url);
-    setRestAuthTypeValue(
-      (generalSettings?.rest_auth_type ??
-        defaultGeneralSettings?.rest_auth_type) as keyof typeof REST_AUTH_TYPES
-    );
-    setRestAuthUserValue(generalSettings?.rest_auth_user ?? defaultGeneralSettings?.rest_auth_user);
-    setRestAuthPassValue(generalSettings?.rest_auth_pass ?? defaultGeneralSettings?.rest_auth_pass);
-    setRestAuthHeaderValue(
-      generalSettings?.rest_auth_header ?? defaultGeneralSettings?.rest_auth_header
-    );
-    setMqttHostValue(generalSettings?.mqtt_host ?? defaultGeneralSettings?.mqtt_host);
-    setMqttPortValue(generalSettings?.mqtt_port ?? defaultGeneralSettings?.mqtt_port);
-    setMqttTopicValue(generalSettings?.mqtt_topic ?? defaultGeneralSettings?.mqtt_topic);
-    setMqttTlsValue(generalSettings?.mqtt_tls ?? defaultGeneralSettings?.mqtt_tls);
-    setMqttAuthTypeValue(
-      (generalSettings?.mqtt_auth_type ??
-        defaultGeneralSettings?.mqtt_auth_type) as keyof typeof MQTT_AUTH_TYPES
-    );
-    setMqttUsernameValue(generalSettings?.mqtt_username ?? defaultGeneralSettings?.mqtt_username);
-    setMqttPasswordValue(generalSettings?.mqtt_password ?? defaultGeneralSettings?.mqtt_password);
-    setSpeakerVolumeValue(
-      generalSettings?.speaker_volume ?? defaultGeneralSettings?.speaker_volume
-    );
-    setLcdBrightnessValue(
-      generalSettings?.lcd_brightness ?? defaultGeneralSettings?.lcd_brightness
-    );
-    setDisplayTimeoutValue(
-      generalSettings?.display_timeout ?? defaultGeneralSettings?.display_timeout
-    );
-    setWakeConfirmationValue(
-      generalSettings?.wake_confirmation ?? defaultGeneralSettings?.wake_confirmation
-    );
-    setTimezoneValue(generalSettings?.timezone_name ?? defaultGeneralSettings?.timezone_name);
-    setNtpConfigValue(
-      (generalSettings?.ntp_config ?? defaultGeneralSettings?.ntp_config) as keyof typeof NTP_CONFIG
-    );
-    setNtpHostValue(generalSettings?.ntp_host ?? defaultGeneralSettings?.ntp_host);
+    setFieldState(Object.assign({}, defaultGeneralSettings, generalSettings));
     resetFormErrorState();
     setChangesMade(false);
   };
@@ -458,7 +195,7 @@ export default function GeneralSettingsSection() {
       formErrorContext.WisUrlError = { Error: false, HelperText: '' };
     }
 
-    setWisUrlValue(value);
+    setFieldStateHelper('wis_url', value);
     setChangesMade(true);
   };
 
@@ -474,7 +211,7 @@ export default function GeneralSettingsSection() {
       formErrorContext.WisTtsUrlError = { Error: false, HelperText: '' };
     }
 
-    setWisTtsUrlValue(value);
+    setFieldStateHelper('wis_tts_url', value);
     setChangesMade(true);
   };
 
@@ -488,9 +225,12 @@ export default function GeneralSettingsSection() {
       }>
       <EnumSelectHelper
         name="speech_rec_mode"
-        value={speechRecModeValue}
+        value={fieldState.speech_rec_mode}
         onChange={(event) => {
-          setSpeechRecModeValue(event.target.value as keyof typeof SPEECH_REC_MODE);
+          setFieldStateHelper(
+            'speech_rec_mode',
+            event.target.value as keyof typeof SPEECH_REC_MODE
+          );
           setChangesMade(true);
         }}
         label="Speech Recognition Mode"
@@ -500,7 +240,7 @@ export default function GeneralSettingsSection() {
       <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} alignItems="center">
         <TextField
           name="wis_url"
-          value={wisUrlValue}
+          value={fieldState.wis_url}
           error={formErrorContext.WisUrlError.Error}
           helperText={formErrorContext.WisUrlError.HelperText}
           onChange={handleWisUrlChange}
@@ -518,9 +258,12 @@ export default function GeneralSettingsSection() {
       </Stack>
       <EnumSelectHelper
         name="audio_response_type"
-        value={audioResponseTypeValue}
+        value={fieldState.audio_response_type}
         onChange={(event) => {
-          setAudioResponseTypeValue(event.target.value as keyof typeof AUDIO_RESPONSE_TYPE);
+          setFieldStateHelper(
+            'audio_response_type',
+            event.target.value as keyof typeof AUDIO_RESPONSE_TYPE
+          );
           setChangesMade(true);
         }}
         label="Willow Audio Response Type"
@@ -532,7 +275,7 @@ export default function GeneralSettingsSection() {
       <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} alignItems="center">
         <TextField
           name="wis_tts_url"
-          value={wisTtsUrlValue}
+          value={fieldState.wis_tts_url}
           onChange={handleWisTtsUrlChange}
           error={formErrorContext.WisTtsUrlError.Error}
           helperText={formErrorContext.WisTtsUrlError.HelperText}
@@ -550,9 +293,9 @@ export default function GeneralSettingsSection() {
       </Stack>
       <EnumSelectHelper
         name="wake_word"
-        value={wakeWordValue}
+        value={fieldState.wake_word}
         onChange={(event) => {
-          setWakeWordValue(event.target.value as keyof typeof WAKE_WORDS);
+          setFieldStateHelper('wake_word', event.target.value as keyof typeof WAKE_WORDS);
           setChangesMade(true);
         }}
         label="Wake Word"
@@ -564,9 +307,12 @@ export default function GeneralSettingsSection() {
       />
       <EnumSelectHelper
         name="command_endpoint"
-        value={commandEndpointValue}
+        value={fieldState.command_endpoint}
         onChange={(event) => {
-          setCommandEndpointValue(event.target.value as keyof typeof COMMAND_ENDPOINT);
+          setFieldStateHelper(
+            'command_endpoint',
+            event.target.value as keyof typeof COMMAND_ENDPOINT
+          );
           setChangesMade(true);
         }}
         label="Command Endpoint"
@@ -574,59 +320,31 @@ export default function GeneralSettingsSection() {
         tooltip="When Willow recognizes speech we need to send the transcript somewhere to execute your commands.
           Select your favorite platform here or use REST for your own!"
       />
-      {commandEndpointValue == 'Home Assistant' && (
+      {fieldState.command_endpoint == 'Home Assistant' && (
         <HassCommandEndpoint
-          hassHostValue={hassHostValue}
-          setHassHostValue={setHassHostValue}
-          hassPortValue={hassPortValue}
-          setHassPortValue={setHassPortValue}
-          hassTlsValue={hassTlsValue}
-          setHassTlsValue={setHassTlsValue}
-          hassTokenValue={hassTokenValue}
-          setHassTokenValue={setHassTokenValue}
+          fieldState={fieldState}
+          setFieldStateHelper={setFieldStateHelper}
           setChangesMade={setChangesMade}
         />
       )}
-      {commandEndpointValue == 'openHAB' && (
+      {fieldState.command_endpoint == 'openHAB' && (
         <OpenHabCommandEndpoint
-          openhabTokenValue={openhabTokenValue}
-          setOpenhabTokenValue={setOpenhabTokenValue}
-          openhabUrlValue={openhabUrlValue}
-          setOpenhabUrlValue={setOpenhabUrlValue}
+          fieldState={fieldState}
+          setFieldStateHelper={setFieldStateHelper}
           setChangesMade={setChangesMade}
         />
       )}
-      {commandEndpointValue == 'REST' && (
+      {fieldState.command_endpoint == 'REST' && (
         <RestCommandEndpoint
-          restAuthHeaderValue={restAuthHeaderValue}
-          setRestAuthHeaderValue={setRestAuthHeaderValue}
-          restAuthPassValue={restAuthPassValue}
-          setRestAuthPassValue={setRestAuthPassValue}
-          restAuthTypeValue={restAuthTypeValue}
-          setRestAuthTypeValue={setRestAuthTypeValue}
-          restAuthUserValue={restAuthUserValue}
-          setRestAuthUserValue={setRestAuthUserValue}
-          restUrlValue={restUrlValue}
-          setRestUrlValue={setRestUrlValue}
+          fieldState={fieldState}
+          setFieldStateHelper={setFieldStateHelper}
           setChangesMade={setChangesMade}
         />
       )}
-      {commandEndpointValue == 'MQTT' && (
+      {fieldState.command_endpoint == 'MQTT' && (
         <MQTTCommandEndpoint
-          mqttHostValue={mqttHostValue}
-          setMqttHostValue={setMqttHostValue}
-          mqttPortValue={mqttPortValue}
-          setMqttPortValue={setMqttPortValue}
-          mqttTopicValue={mqttTopicValue}
-          setMqttTopicValue={setMqttTopicValue}
-          mqttTlsValue={mqttTlsValue}
-          setMqttTlsValue={setMqttTlsValue}
-          mqttAuthTypeValue={mqttAuthTypeValue}
-          setMqttAuthTypeValue={setMqttAuthTypeValue}
-          mqttUsernameValue={mqttUsernameValue}
-          setMqttUsernameValue={setMqttUsernameValue}
-          mqttPasswordValue={mqttPasswordValue}
-          setMqttPasswordValue={setMqttPasswordValue}
+          fieldState={fieldState}
+          setFieldStateHelper={setFieldStateHelper}
           setChangesMade={setChangesMade}
         />
       )}
@@ -636,9 +354,9 @@ export default function GeneralSettingsSection() {
             control={
               <Checkbox
                 name="wake_confirmation"
-                checked={wakeConfirmationValue}
+                checked={fieldState.wake_confirmation}
                 onChange={(event) => {
-                  setWakeConfirmationValue(event.target.checked);
+                  setFieldStateHelper('wake_confirmation', event.target.checked);
                   setChangesMade(true);
                 }}
               />
@@ -653,7 +371,7 @@ export default function GeneralSettingsSection() {
         <VolumeDown />
         <Slider
           name="speaker_volume"
-          value={speakerVolumeValue}
+          value={fieldState.speaker_volume}
           onChange={handleSpeakerVolumeSliderChange}
           min={0}
           max={100}
@@ -662,7 +380,7 @@ export default function GeneralSettingsSection() {
         />
         <VolumeUp />
         <Input
-          value={speakerVolumeValue}
+          value={fieldState.speaker_volume}
           size="small"
           onChange={handleSpeakerVolumeInputChange}
           onBlur={handleSpeakerVolumeBlur}
@@ -680,7 +398,7 @@ export default function GeneralSettingsSection() {
         <Brightness4Icon />
         <Slider
           name="lcd_brightness"
-          value={lcdBrightnessValue}
+          value={fieldState.lcd_brightness}
           onChange={handleLcdBrightnessSliderChange}
           min={0}
           max={1023}
@@ -689,7 +407,7 @@ export default function GeneralSettingsSection() {
         />
         <Brightness5Icon />
         <Input
-          value={lcdBrightnessValue}
+          value={fieldState.lcd_brightness}
           size="small"
           onChange={handleLcdBrightnessInputChange}
           onBlur={handleLcdBrightnessBlur}
@@ -707,7 +425,7 @@ export default function GeneralSettingsSection() {
         <HourglassEmpty />
         <Slider
           name="display_timeout"
-          value={displayTimeoutValue}
+          value={fieldState.display_timeout}
           onChange={handleDisplayTimeoutSliderChange}
           min={1}
           max={60}
@@ -716,7 +434,7 @@ export default function GeneralSettingsSection() {
         />
         <HourglassFull />
         <Input
-          value={displayTimeoutValue}
+          value={fieldState.display_timeout}
           size="small"
           onChange={handleDisplayTimeoutInputChange}
           onBlur={handleDisplayTimeoutBlur}
@@ -739,11 +457,11 @@ export default function GeneralSettingsSection() {
         <InputLabel id="timezone">Timezone</InputLabel>
         <Select
           name="timezone"
-          value={timezoneValue}
+          value={fieldState.timezone_name}
           defaultValue=""
           label="Timezone Setting"
           onChange={(event) => {
-            setTimezoneValue(event.target.value);
+            setFieldStateHelper('timezone_name', event.target.value);
             setChangesMade(true);
           }}
           sx={{ flexGrow: '1' }}>
@@ -757,9 +475,9 @@ export default function GeneralSettingsSection() {
       </FormControl>
       <EnumSelectHelper
         name="ntp_config"
-        value={ntpConfigValue}
+        value={fieldState.ntp_config}
         onChange={(event) => {
-          setNtpConfigValue(event.target.value as keyof typeof NTP_CONFIG);
+          setFieldStateHelper('ntp_config', event.target.value as keyof typeof NTP_CONFIG);
           setChangesMade(true);
         }}
         label="Automatic Time and Date (NTP)"
@@ -767,13 +485,13 @@ export default function GeneralSettingsSection() {
         tooltip="If your DHCP server provides an NTP server DHCP option you can select DHCP.
           If you don't know what this means use an NTP host."
       />
-      {ntpConfigValue == 'Host' && (
+      {fieldState.ntp_config == 'Host' && (
         <>
           <TextField
             name="ntp_host"
-            value={ntpHostValue}
+            value={fieldState.ntp_host}
             onChange={(event) => {
-              setNtpHostValue(event.target.value);
+              setFieldStateHelper('ntp_host', event.target.value);
               setChangesMade(true);
             }}
             required

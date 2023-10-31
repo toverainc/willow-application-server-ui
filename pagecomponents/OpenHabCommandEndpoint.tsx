@@ -5,18 +5,18 @@ import { ValidateUrl } from '../misc/validations';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import React from 'react';
+import { GeneralSettings } from '../misc/model';
 
 export default function OpenHabCommandEndpoint({
-  openhabUrlValue,
-  setOpenhabUrlValue,
-  openhabTokenValue,
-  setOpenhabTokenValue,
+  fieldState,
+  setFieldStateHelper,
   setChangesMade,
 }: {
-  openhabUrlValue: string | undefined;
-  setOpenhabUrlValue: React.Dispatch<React.SetStateAction<string | undefined>>;
-  openhabTokenValue: string | undefined;
-  setOpenhabTokenValue: React.Dispatch<React.SetStateAction<string | undefined>>;
+  fieldState: GeneralSettings;
+  setFieldStateHelper: (
+    key: keyof GeneralSettings,
+    value: GeneralSettings[keyof GeneralSettings]
+  ) => void;
   setChangesMade: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const formErrorContext = useContext(FormErrorContext);
@@ -37,7 +37,7 @@ export default function OpenHabCommandEndpoint({
       formErrorContext.OpenhabUrlError = { Error: false, HelperText: '' };
     }
 
-    setOpenhabUrlValue(value);
+    setFieldStateHelper('openhab_url', value);
     setChangesMade(true);
   };
 
@@ -45,7 +45,7 @@ export default function OpenHabCommandEndpoint({
     <>
       <TextField
         name="openhab_url"
-        value={openhabUrlValue}
+        value={fieldState.openhab_url}
         error={formErrorContext.OpenhabUrlError.Error}
         helperText={formErrorContext.OpenhabUrlError.HelperText}
         onChange={handleOpenhabUrlChange}
@@ -58,9 +58,9 @@ export default function OpenHabCommandEndpoint({
       />
       <TextField
         name="openhab_token"
-        value={openhabTokenValue}
+        value={fieldState.openhab_token}
         onChange={(event) => {
-          setOpenhabTokenValue(event.target.value);
+          setFieldStateHelper('openhab_token', event.target.value);
           setChangesMade(true);
         }}
         required
