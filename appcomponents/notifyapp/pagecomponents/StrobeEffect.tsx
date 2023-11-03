@@ -62,14 +62,14 @@ export default function StrobeEffect({
             control={
               <Checkbox name="use_strobe" checked={useStrobe} onChange={handleUseStrobeChange} />
             }
-            label="Strobe Display"
+            label="Flash Display"
           />
-          <HelpTooltip tooltip="If checked, will strobe the display at the interval defined below"></HelpTooltip>
+          <HelpTooltip tooltip="Flash the display at the interval defined."></HelpTooltip>
         </Stack>
       </FormControl>
       {useStrobe && (
         <>
-          <InputLabel>Strobe Interval</InputLabel>
+          <InputLabel>Flash Interval (in milliseconds)</InputLabel>
           <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
             <Slider
               name="strobe_period_ms"
@@ -94,7 +94,7 @@ export default function StrobeEffect({
                 'aria-labelledby': 'input-slider',
               }}
             />
-            <HelpTooltip tooltip="The interval in miliseconds to strobe the display" />
+            <HelpTooltip tooltip="The interval in milliseconds to flash the display." />
           </Stack>
         </>
       )}

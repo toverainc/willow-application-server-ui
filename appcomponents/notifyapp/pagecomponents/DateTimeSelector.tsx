@@ -31,7 +31,7 @@ export default function DateTimeSelector({
             timeSteps={{ hours: 1, minutes: 1, seconds: 1 }}
           />
         </LocalizationProvider>
-        <HelpTooltip tooltip="The date and time you want the notification to happen" />
+        <HelpTooltip tooltip="The date and time you want the notification to happen." />
       </Stack>
     </>
   );

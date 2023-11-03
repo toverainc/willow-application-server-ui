@@ -10,7 +10,7 @@ const Apps: NextPage = () => {
       <Grid container spacing={2} sx={{ ml: 0, mt: 1 }}>
         <AppCard
           appTitle="Notify"
-          appDescription="Trigger notifications on your Willow devices"
+          appDescription="Trigger notifications on your Willow devices."
           pageKey="notify"
         />
       </Grid>

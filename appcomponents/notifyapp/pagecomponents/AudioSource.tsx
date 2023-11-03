@@ -93,7 +93,7 @@ export default function AudioSource({
         options={AUDIO_SOURCES}
         onChange={handleAudioSourceChange}
         value={audioSource}
-        tooltip="The source of audio to play for the Notification. Can either be a URL to an audio file, or a TTS string to speak"
+        tooltip="The source of the audio to play for the notification. Can be a URL to an audio file, text to speak, or 'None' for silence."
       />
       {audioSource == AUDIO_SOURCES.URL && (
         <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} alignItems="center">
@@ -110,7 +110,7 @@ export default function AudioSource({
             size="small"
             fullWidth
           />
-          <HelpTooltip tooltip="A URL for the audio to play" />
+          <HelpTooltip tooltip="The URL for the audio to play." />
         </Stack>
       )}
       {audioSource == AUDIO_SOURCES.TTS && (
@@ -120,13 +120,13 @@ export default function AudioSource({
             required
             value={ttsText}
             onChange={handleAudioTtsUrlChange}
-            label="TTS Text"
+            label="Text to Speak"
             margin="dense"
             variant="outlined"
             size="small"
             fullWidth
           />
-          <HelpTooltip tooltip="Text to speak on the client using your configured TTS Server from Configuration General Settings." />
+          <HelpTooltip tooltip="Text to speak on the client. Uses your configured TTS URL from Configuration General Settings." />
         </Stack>
       )}
       {audioSource != AUDIO_SOURCES.None && !notifyFormErrorStates.audio_url.Error && (
@@ -157,7 +157,7 @@ export default function AudioSource({
                 'aria-labelledby': 'input-slider',
               }}
             />
-            <HelpTooltip tooltip="If an audio source is defined, this sets the volume level for the audio. Defaults to your configured speaker volume in WAS general settings" />
+            <HelpTooltip tooltip="If an audio source is defined this sets the volume level for the speaker on the client. Defaults to your configured speaker volume from Configuration General Settings." />
           </Stack>
         </>
       )}

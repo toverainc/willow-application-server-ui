@@ -110,9 +110,9 @@ const NotifyApp: NextPage = () => {
           <div style={{ maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
             <h2 style={{ textAlign: 'center' }}>Notify</h2>
             <h4 style={{ textAlign: 'center' }}>
-              {
-                "Fill out the form below and click 'Send Notification' to trigger notifications on your Willow devices!"
-              }
+              {`Send notifications with Willow!
+                Notifications can be used for alarms, timers, calendar reminders, and more.
+                Here you can experiment with Willow notifications and learn how to call them from your own application.`}
             </h4>
             <FormControl
               fullWidth
@@ -142,7 +142,7 @@ const NotifyApp: NextPage = () => {
                     </MenuItem>
                   ))}
               </Select>
-              <HelpTooltip tooltip="The Client to send the notification to" />
+              <HelpTooltip tooltip="The client to send the notification. 'All Clients' sends the notification to all connected clients." />
             </FormControl>
             <DateTimeSelector setNotifyDataHelper={setNotifyDataHelper} />
             <AudioSource
@@ -163,7 +163,7 @@ const NotifyApp: NextPage = () => {
                   }
                   label="Display Text"
                 />
-                <HelpTooltip tooltip="If checked, the notification will display the text defined below on the client's display"></HelpTooltip>
+                <HelpTooltip tooltip="Display the defined text on the client display."></HelpTooltip>
               </Stack>
             </FormControl>
             {displayText && (
@@ -173,7 +173,7 @@ const NotifyApp: NextPage = () => {
                   required={displayText}
                   value={notifyData.text}
                   onChange={(event) => setNotifyDataHelper('text', event.target.value)}
-                  label="Display Text"
+                  label="Text for Display"
                   margin="dense"
                   variant="outlined"
                   size="small"
@@ -196,7 +196,7 @@ const NotifyApp: NextPage = () => {
                   }
                   label="Backlight"
                 />
-                <HelpTooltip tooltip="If checked, will turn on the display of the client"></HelpTooltip>
+                <HelpTooltip tooltip="Turn on the display backlight of the client."></HelpTooltip>
               </Stack>
             </FormControl>
             <FormControl fullWidth>
@@ -211,9 +211,9 @@ const NotifyApp: NextPage = () => {
                       }}
                     />
                   }
-                  label="Max Backlight"
+                  label="Maximum Backlight Brightness"
                 />
-                <HelpTooltip tooltip="If checked, the display of the client will be set to maximum brightness"></HelpTooltip>
+                <HelpTooltip tooltip="Set display backlight to maximum brightness."></HelpTooltip>
               </Stack>
             </FormControl>
             <StrobeEffect notifyData={notifyData} setNotifyDataHelper={setNotifyDataHelper} />
@@ -224,7 +224,7 @@ const NotifyApp: NextPage = () => {
                 value={notifyData.repeat}
                 onChange={handleRepeatInputChange}
                 onBlur={handleRepeatInputBlur}
-                label="Repeat"
+                label="Number of Times to Repeat Notification"
                 margin="dense"
                 variant="outlined"
                 size="small"
@@ -235,13 +235,13 @@ const NotifyApp: NextPage = () => {
                 }}
                 fullWidth
               />
-              <HelpTooltip tooltip="The number of times to repeat this notification. Default is to notify only once" />
+              <HelpTooltip tooltip="The number of times to repeat the notification. Default is to only notify once. Any client can stop a notification immediately by tapping 'Cancel' on the display." />
             </Stack>
             <Stack direction="row" spacing={2} sx={{ mb: 1 }} justifyContent="flex-end">
               <Button id="sendNotification" type="submit" variant="outlined">
                 Send Notification
               </Button>
-              <HelpTooltip tooltip="Send your notification to the specified client with the above arguments"></HelpTooltip>
+              <HelpTooltip tooltip="Send your notification to client(s)!"></HelpTooltip>
             </Stack>
           </div>
         </form>
