@@ -27,6 +27,7 @@ import { HelpTooltip, parseIntOrUndef, setFieldStateHelperImpl } from '../../mis
 import { Client } from '../../misc/model';
 import StrobeEffect from '../../appcomponents/notifyapp/pagecomponents/StrobeEffect';
 import DateTimeSelector from '../../appcomponents/notifyapp/pagecomponents/DateTimeSelector';
+import dayjs from 'dayjs';
 
 const NotifyApp: NextPage = () => {
   const { data: clients, isLoading } = useSWR<Client[]>('/api/client');
@@ -38,6 +39,7 @@ const NotifyApp: NextPage = () => {
     backlight_max: true,
     repeat: 1,
     volume: 50,
+    id: new Date().getTime() + 1000,
   });
   function setNotifyDataHelper<KeyType extends keyof NotifyData>(
     key: KeyType,
@@ -64,7 +66,9 @@ const NotifyApp: NextPage = () => {
       if (selectedClient != undefined) {
         notifyCommand.hostname = selectedClient.hostname;
       }
-      console.log(JSON.stringify(notifyCommand));
+      if (dayjs(notifyData.id) < dayjs()) {
+        setNotifyDataHelper('id', new Date().getTime() + 1000);
+      }
       await post('/api/client?action=notify', notifyCommand);
       toast.success(
         `Notification sent to ${
@@ -144,7 +148,7 @@ const NotifyApp: NextPage = () => {
               </Select>
               <HelpTooltip tooltip="The client to send the notification. 'All Clients' sends the notification to all connected clients." />
             </FormControl>
-            <DateTimeSelector setNotifyDataHelper={setNotifyDataHelper} />
+            <DateTimeSelector notifyData={notifyData} setNotifyDataHelper={setNotifyDataHelper} />
             <AudioSource
               notifyData={notifyData}
               setNotifyDataHelper={setNotifyDataHelper}
