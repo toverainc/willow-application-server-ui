@@ -5,7 +5,7 @@ export interface NotifyData {
   backlight: boolean;
   backlight_max: boolean;
   id?: number;
-  repeat: number;
+  repeat: number | undefined;
   strobe_period_ms?: number;
   text?: string;
   volume?: number;
@@ -20,3 +20,9 @@ export class NotifyCommand {
 export class NotifyFormErrorStates {
   audio_url: FormErrorState = { Error: false, HelperText: '' };
 }
+
+export const AUDIO_SOURCES = {
+  None: 'None',
+  URL: 'URL',
+  TTS: 'TTS',
+};

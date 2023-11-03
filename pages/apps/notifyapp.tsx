@@ -7,7 +7,6 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Slider,
   Stack,
   TextField,
 } from '@mui/material';
@@ -15,19 +14,23 @@ import { NextPage } from 'next';
 import React from 'react';
 import { toast } from 'react-toastify';
 import useSWR from 'swr';
-import { NotifyCommand, NotifyData, NotifyFormErrorStates } from '../../appmodels/notifyapp/models';
+import {
+  NotifyCommand,
+  NotifyData,
+  NotifyFormErrorStates,
+} from '../../appcomponents/notifyapp/models';
+import AudioSource from '../../appcomponents/notifyapp/pagecomponents/AudioSource';
 import LeftMenu from '../../components/LeftMenu';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { post } from '../../misc/fetchers';
-import { HelpTooltip, setFieldStateHelperImpl } from '../../misc/helperfunctions';
+import { HelpTooltip, parseIntOrUndef, setFieldStateHelperImpl } from '../../misc/helperfunctions';
 import { Client } from '../../misc/model';
-import { ValidateUrl } from '../../misc/validations';
-import { VolumeDown, VolumeUp } from '@mui/icons-material';
+import StrobeEffect from '../../appcomponents/notifyapp/pagecomponents/StrobeEffect';
+import DateTimePicker from '../../appcomponents/notifyapp/pagecomponents/DateTimePicker';
 
 const NotifyApp: NextPage = () => {
   const { data: clients, isLoading } = useSWR<Client[]>('/api/client');
-  const [client, setClient] = React.useState<string>('All Clients');
-  const [useAudio, setUseAudio] = React.useState(false);
+  const [selectedClient, setSelectedClient] = React.useState<Client | undefined>();
   const [displayText, setDisplayText] = React.useState(false);
 
   const [notifyData, setNotifyData] = React.useState<NotifyData>({
@@ -58,53 +61,24 @@ const NotifyApp: NextPage = () => {
     try {
       let notifyCommand = new NotifyCommand();
       notifyCommand.data = notifyData;
-      if (client != 'All Clients') {
-        notifyCommand.hostname = client;
+      if (selectedClient != undefined) {
+        notifyCommand.hostname = selectedClient.hostname;
       }
       console.log(JSON.stringify(notifyCommand));
       await post('/api/client?action=notify', notifyCommand);
-      toast.success(`Notification sent to ${client}!`);
+      toast.success(
+        `Notification sent to ${
+          selectedClient?.label ?? selectedClient?.hostname ?? 'all clients'
+        }!`
+      );
       /* Eventually add logic here to generate the CURL equivalent of the above request
          as well as the HA RESTful Command object documented at https://www.home-assistant.io/integrations/rest_command/
          NOTE: Do this in realtime instead, in case user just wants to see the code without actually sending the notification?
        */
     } catch (e) {
-      toast.error(`Notification failed to send to ${client}!`);
+      toast.error(`Notification failed to send to ${selectedClient}!`);
     }
   }
-
-  // Volume Handlers
-  const handleSpeakerVolumeInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNotifyDataHelper(
-      'volume',
-      event.target.value === '' ? undefined : Number(event.target.value)
-    );
-  };
-
-  const handleSpeakerVolumeSliderChange = (event: Event, newValue: number | number[]) => {
-    setNotifyDataHelper('volume', newValue as number);
-  };
-
-  const handleSpeakerVolumeBlur = () => {
-    const speakerVolumeValue = notifyData.volume;
-    if (speakerVolumeValue && speakerVolumeValue < 0) {
-      setNotifyDataHelper('volume', 0);
-    } else if (speakerVolumeValue && speakerVolumeValue > 100) {
-      setNotifyDataHelper('volume', 100);
-    } else if (!speakerVolumeValue) {
-      setNotifyDataHelper('volume', 50);
-    }
-  };
-
-  // Handler for Use Audio
-  const handleUseAudioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUseAudio(event.target.checked);
-    if (!event.target.checked) {
-      setNotifyDataHelper('audio_url', '');
-      setNotifyDataHelper('volume', 50);
-      setNotifyFormErrorStateHelper('audio_url', { Error: false, HelperText: '' });
-    }
-  };
 
   // Handler for Display Text
   const handleDisplayTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,18 +88,17 @@ const NotifyApp: NextPage = () => {
     }
   };
 
-  // Helpers for fields with validation
-  function handleAudioUrlChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    const value = event.target.value;
-    const validationResult = ValidateUrl(value);
+  // Handlers for fields
+  function handleRepeatInputChange(
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
+    setNotifyDataHelper('repeat', parseIntOrUndef(event.target.value) ?? undefined);
+  }
 
-    if (validationResult && value != '') {
-      setNotifyFormErrorStateHelper('audio_url', { Error: true, HelperText: validationResult });
-    } else {
-      setNotifyFormErrorStateHelper('audio_url', { Error: false, HelperText: '' });
+  function handleRepeatInputBlur() {
+    if ((notifyData.repeat ?? 0) < 1) {
+      setNotifyDataHelper('repeat', 1);
     }
-
-    setNotifyDataHelper('audio_url', value);
   }
 
   return (
@@ -149,85 +122,34 @@ const NotifyApp: NextPage = () => {
               <InputLabel id="client">Client</InputLabel>
               <Select
                 name="client"
-                value={client}
+                value={selectedClient?.label ?? selectedClient?.hostname ?? 'All Clients'}
                 label="client"
-                onChange={(event) => {
-                  setClient(event.target.value);
-                }}
                 sx={{ flexGrow: '1' }}>
-                <MenuItem key={'all_clients'} value={'All Clients'}>
+                <MenuItem
+                  key={'all_clients'}
+                  value={'All Clients'}
+                  onClick={(event) => setSelectedClient(undefined)}>
                   All Clients
                 </MenuItem>
                 {clients &&
                   clients.map((client) => (
-                    <MenuItem key={client.label ?? client.hostname} value={client.hostname}>
+                    <MenuItem
+                      key={client.label ?? client.hostname}
+                      onClick={(event) => setSelectedClient(client)}
+                      value={client.label ?? client.hostname}>
                       {client.label ?? client.hostname}
                     </MenuItem>
                   ))}
               </Select>
               <HelpTooltip tooltip="The Client to send the notification to" />
             </FormControl>
-            <FormControl fullWidth>
-              <Stack spacing={2} direction="row" sx={{ mb: 1 }} justifyContent="space-between">
-                <FormControlLabel
-                  control={
-                    <Checkbox name="use_audio" checked={useAudio} onChange={handleUseAudioChange} />
-                  }
-                  label="Use Audio"
-                />
-                <HelpTooltip tooltip="If checked, the notification will play audio from the source defined below"></HelpTooltip>
-              </Stack>
-            </FormControl>
-            {useAudio && (
-              <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} alignItems="center">
-                <TextField
-                  name="audio_url"
-                  required={useAudio}
-                  value={notifyData.audio_url}
-                  error={notifyFormErrorStates.audio_url.Error}
-                  helperText={notifyFormErrorStates.audio_url.HelperText}
-                  onChange={handleAudioUrlChange}
-                  label="Audio Source URL"
-                  margin="dense"
-                  variant="outlined"
-                  size="small"
-                  fullWidth
-                />
-                <HelpTooltip tooltip="A URL to an audio resource to play. This can be left blank if you do not want audio to play" />
-              </Stack>
-            )}
-            {useAudio && notifyData.audio_url && !notifyFormErrorStates.audio_url.Error && (
-              <>
-                <InputLabel>Volume</InputLabel>
-                <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
-                  <VolumeDown />
-                  <Slider
-                    name="volume"
-                    value={notifyData.volume}
-                    onChange={handleSpeakerVolumeSliderChange}
-                    min={0}
-                    max={100}
-                    size="small"
-                    valueLabelDisplay="auto"
-                  />
-                  <VolumeUp />
-                  <Input
-                    value={notifyData.volume}
-                    size="small"
-                    onChange={handleSpeakerVolumeInputChange}
-                    onBlur={handleSpeakerVolumeBlur}
-                    inputProps={{
-                      step: 1,
-                      min: 0,
-                      max: 100,
-                      type: 'number',
-                      'aria-labelledby': 'input-slider',
-                    }}
-                  />
-                  <HelpTooltip tooltip="If an audio source is defined, this sets the volume level for the audio" />
-                </Stack>
-              </>
-            )}
+            <DateTimePicker notifyData={notifyData} setNotifyDataHelper={setNotifyDataHelper} />
+            <AudioSource
+              notifyData={notifyData}
+              setNotifyDataHelper={setNotifyDataHelper}
+              notifyFormErrorStates={notifyFormErrorStates}
+              setNotifyFormErrorStateHelper={setNotifyFormErrorStateHelper}
+            />
             <FormControl fullWidth>
               <Stack spacing={2} direction="row" sx={{ mb: 1 }} justifyContent="space-between">
                 <FormControlLabel
@@ -293,6 +215,27 @@ const NotifyApp: NextPage = () => {
                 <HelpTooltip tooltip="If checked, the display of the client will be set to maximum brightness"></HelpTooltip>
               </Stack>
             </FormControl>
+            <StrobeEffect notifyData={notifyData} setNotifyDataHelper={setNotifyDataHelper} />
+            <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} alignItems="center">
+              <TextField
+                name="repeat"
+                required
+                value={notifyData.repeat}
+                onChange={handleRepeatInputChange}
+                onBlur={handleRepeatInputBlur}
+                label="Repeat"
+                margin="dense"
+                variant="outlined"
+                size="small"
+                inputProps={{
+                  step: 1,
+                  min: 1,
+                  type: 'number',
+                }}
+                fullWidth
+              />
+              <HelpTooltip tooltip="The number of times to repeat this notification. Default is to notify only once" />
+            </Stack>
             <Stack direction="row" spacing={2} sx={{ mb: 1 }} justifyContent="flex-end">
               <Button id="sendNotification" type="submit" variant="outlined">
                 Send Notification
