@@ -1,5 +1,5 @@
-import { Stack } from '@mui/material';
-import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { InputAdornment, MenuItem, Stack } from '@mui/material';
+import { CalendarIcon, DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import React from 'react';
@@ -29,7 +29,6 @@ export default function DateTimeSelector({
             value={notificationDateTime}
             onChange={handleDateTimeChange}
             timeSteps={{ hours: 1, minutes: 1, seconds: 1 }}
-            ampmInClock={true}
           />
         </LocalizationProvider>
         <HelpTooltip tooltip="The date and time you want the notification to happen" />
