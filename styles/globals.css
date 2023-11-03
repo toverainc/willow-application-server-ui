@@ -3,5 +3,5 @@
 }
 
 .MuiPickersToolbar-root {
-  background-color: transparent;
+  background-color: transparent !important;
 }
