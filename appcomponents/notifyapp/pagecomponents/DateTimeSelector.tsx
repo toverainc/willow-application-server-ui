@@ -1,17 +1,15 @@
 import { Stack } from '@mui/material';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import React from 'react';
 import 'react-datetime/css/react-datetime.css';
 import { HelpTooltip } from '../../../misc/helperfunctions';
 import { NotifyData } from '../models';
-import dayjs, { Dayjs } from 'dayjs';
 
 export default function DateTimeSelector({
-  notifyData,
   setNotifyDataHelper,
 }: {
-  notifyData: NotifyData;
   setNotifyDataHelper: (key: keyof NotifyData, value: NotifyData[keyof NotifyData]) => void;
 }) {
   const [notificationDateTime, setNotificationDateTime] = React.useState<Dayjs | null>(
