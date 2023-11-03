@@ -31,6 +31,7 @@ export default function DateTimeSelector({
             value={notificationDateTime}
             onChange={handleDateTimeChange}
             timeSteps={{ hours: 1, minutes: 1, seconds: 1 }}
+            ampmInClock={true}
           />
         </LocalizationProvider>
         <HelpTooltip tooltip="The date and time you want the notification to happen" />
