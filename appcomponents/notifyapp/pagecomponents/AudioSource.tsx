@@ -110,7 +110,7 @@ export default function AudioSource({
             size="small"
             fullWidth
           />
-          <HelpTooltip tooltip="A URL to an audio resource to play" />
+          <HelpTooltip tooltip="A URL for the audio to play" />
         </Stack>
       )}
       {audioSource == AUDIO_SOURCES.TTS && (
@@ -126,7 +126,7 @@ export default function AudioSource({
             size="small"
             fullWidth
           />
-          <HelpTooltip tooltip="Text to speak on the client, using your configured TTS Server from WAS general settings" />
+          <HelpTooltip tooltip="Text to speak on the client using your configured TTS Server from Configuration General Settings." />
         </Stack>
       )}
       {audioSource != AUDIO_SOURCES.None && !notifyFormErrorStates.audio_url.Error && (

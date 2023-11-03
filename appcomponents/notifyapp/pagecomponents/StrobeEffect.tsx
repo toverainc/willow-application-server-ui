@@ -26,7 +26,7 @@ export default function StrobeEffect({
     if (!event.target.checked) {
       setNotifyDataHelper('strobe_period_ms', undefined);
     } else if (!notifyData.strobe_period_ms) {
-      setNotifyDataHelper('strobe_period_ms', 20);
+      setNotifyDataHelper('strobe_period_ms', 100);
     }
   }
 

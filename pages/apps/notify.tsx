@@ -108,10 +108,10 @@ const NotifyApp: NextPage = () => {
       ) : (
         <form name="general-settings-form" onSubmit={handleSubmit}>
           <div style={{ maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
-            <h2 style={{ textAlign: 'center' }}>Notify App</h2>
+            <h2 style={{ textAlign: 'center' }}>Notify</h2>
             <h4 style={{ textAlign: 'center' }}>
               {
-                "Fill out the below form and click 'Send Notification' to trigger notifications on your willow devices!"
+                "Fill out the form below and click 'Send Notification' to trigger notifications on your Willow devices!"
               }
             </h4>
             <FormControl

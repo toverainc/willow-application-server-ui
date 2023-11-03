@@ -6,12 +6,12 @@ import AppCard from '../components/AppCard';
 const Apps: NextPage = () => {
   return (
     <LeftMenu>
-      <h2 style={{ textAlign: 'center' }}>Apps</h2>
+      <h2 style={{ textAlign: 'center' }}>Applications</h2>
       <Grid container spacing={2} sx={{ ml: 0, mt: 1 }}>
         <AppCard
           appTitle="Notify"
-          appDescription="Trigger notifications on your willow devices!"
-          pageKey="notifyapp"
+          appDescription="Trigger notifications on your Willow devices"
+          pageKey="notify"
         />
       </Grid>
     </LeftMenu>
