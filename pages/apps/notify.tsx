@@ -198,7 +198,7 @@ const NotifyApp: NextPage = () => {
                       }}
                     />
                   }
-                  label="Backlight"
+                  label="Turn on Display Backlight"
                 />
                 <HelpTooltip tooltip="Turn on the display backlight of the client."></HelpTooltip>
               </Stack>
@@ -215,7 +215,7 @@ const NotifyApp: NextPage = () => {
                       }}
                     />
                   }
-                  label="Maximum Backlight Brightness"
+                  label="Set Display Backlight Brightness to Maximum"
                 />
                 <HelpTooltip tooltip="Set display backlight to maximum brightness."></HelpTooltip>
               </Stack>
