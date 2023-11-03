@@ -45,12 +45,12 @@ export default function StrobeEffect({
 
   function handleStrobeIntervalBlur() {
     const value = notifyData.strobe_period_ms;
-    if (value && value < 20) {
-      setNotifyDataHelper('strobe_period_ms', 20);
+    if (value && value < 100) {
+      setNotifyDataHelper('strobe_period_ms', 100);
     } else if (value && value > 1000) {
       setNotifyDataHelper('strobe_period_ms', 1000);
     } else if (!value) {
-      setNotifyDataHelper('strobe_period_ms', 20);
+      setNotifyDataHelper('strobe_period_ms', 100);
     }
   }
 
@@ -75,7 +75,8 @@ export default function StrobeEffect({
               name="strobe_period_ms"
               value={notifyData.strobe_period_ms}
               onChange={handleStrobeIntervalSliderChange}
-              min={20}
+              min={100}
+              step={100}
               max={1000}
               size="small"
               valueLabelDisplay="auto"
@@ -87,7 +88,7 @@ export default function StrobeEffect({
               onBlur={handleStrobeIntervalBlur}
               inputProps={{
                 step: 1,
-                min: 20,
+                min: 100,
                 max: 1000,
                 type: 'number',
                 'aria-labelledby': 'input-slider',
