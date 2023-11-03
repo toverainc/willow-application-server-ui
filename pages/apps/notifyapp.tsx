@@ -110,8 +110,9 @@ const NotifyApp: NextPage = () => {
           <div style={{ maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
             <h2 style={{ textAlign: 'center' }}>Notify App</h2>
             <h4 style={{ textAlign: 'center' }}>
-              Fill out the below form and click 'Send Notification' to trigger notifications on your
-              willow devices!
+              {
+                "Fill out the below form and click 'Send Notification' to trigger notifications on your willow devices!"
+              }
             </h4>
             <FormControl
               fullWidth
