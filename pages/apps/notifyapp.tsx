@@ -26,7 +26,7 @@ import { post } from '../../misc/fetchers';
 import { HelpTooltip, parseIntOrUndef, setFieldStateHelperImpl } from '../../misc/helperfunctions';
 import { Client } from '../../misc/model';
 import StrobeEffect from '../../appcomponents/notifyapp/pagecomponents/StrobeEffect';
-import DateTimePicker from '../../appcomponents/notifyapp/pagecomponents/DateTimePicker';
+import DateTimeSelector from '../../appcomponents/notifyapp/pagecomponents/DateTimeSelector';
 
 const NotifyApp: NextPage = () => {
   const { data: clients, isLoading } = useSWR<Client[]>('/api/client');
@@ -143,7 +143,7 @@ const NotifyApp: NextPage = () => {
               </Select>
               <HelpTooltip tooltip="The Client to send the notification to" />
             </FormControl>
-            <DateTimePicker notifyData={notifyData} setNotifyDataHelper={setNotifyDataHelper} />
+            <DateTimeSelector notifyData={notifyData} setNotifyDataHelper={setNotifyDataHelper} />
             <AudioSource
               notifyData={notifyData}
               setNotifyDataHelper={setNotifyDataHelper}
