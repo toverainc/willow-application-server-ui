@@ -401,8 +401,9 @@ export default function GeneralSettingsSection() {
           value={fieldState.lcd_brightness}
           onChange={handleLcdBrightnessSliderChange}
           min={0}
-          max={1023}
+          max={1000}
           size="small"
+          step={100}
           valueLabelDisplay="auto"
         />
         <Brightness5Icon />
