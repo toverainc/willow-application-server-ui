@@ -2,6 +2,7 @@ import { Box, InputLabel, Tab, Tabs, Typography } from '@mui/material';
 import React from 'react';
 import { CopyBlock, nord } from 'react-code-blocks';
 import { CopyBlockProps } from 'react-code-blocks/dist/components/CopyBlock';
+import { useMediaQuery } from 'react-responsive';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -20,7 +21,7 @@ function CustomTabPanel(props: TabPanelProps) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}>
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -40,12 +41,16 @@ export default function CodePanels({ curlRequest }: { curlRequest: string }) {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
   };
+  const isDesktopOrLaptop = useMediaQuery({
+    query: '(min-width: 1224px)',
+  });
   const copyBlockProps = {
     text: curlRequest,
     language: 'shell',
     showLineNumbers: true,
     codeBlock: true,
     theme: nord,
+    customStyle: { maxWidth: isDesktopOrLaptop ? '800px' : '300px' },
   };
 
   return (
