@@ -22,17 +22,20 @@ import {
 import AudioSource from '../../appcomponents/notifyapp/pagecomponents/AudioSource';
 import LeftMenu from '../../components/LeftMenu';
 import LoadingSpinner from '../../components/LoadingSpinner';
-import { post } from '../../misc/fetchers';
+import { BASE_URL, post } from '../../misc/fetchers';
 import { HelpTooltip, parseIntOrUndef, setFieldStateHelperImpl } from '../../misc/helperfunctions';
 import { Client } from '../../misc/model';
 import StrobeEffect from '../../appcomponents/notifyapp/pagecomponents/StrobeEffect';
 import DateTimeSelector from '../../appcomponents/notifyapp/pagecomponents/DateTimeSelector';
 import dayjs from 'dayjs';
+import fetchToCurl from 'fetch-to-curl';
+import CodePanels from '../../appcomponents/notifyapp/pagecomponents/CodePanels';
 
 const NotifyApp: NextPage = () => {
   const { data: clients, isLoading } = useSWR<Client[]>('/api/client');
   const [selectedClient, setSelectedClient] = React.useState<Client | undefined>();
   const [displayText, setDisplayText] = React.useState(false);
+  const [curlRequest, setCurlRequest] = React.useState<string>('');
 
   const [notifyData, setNotifyData] = React.useState<NotifyData>({
     backlight: true,
@@ -48,6 +51,14 @@ const NotifyApp: NextPage = () => {
     setFieldStateHelperImpl<NotifyData>(key, value, setNotifyData);
   }
 
+  const [notifyCommand, setNotifyCommand] = React.useState<NotifyCommand>(new NotifyCommand());
+  function setNotifyCommandHelper<KeyType extends keyof NotifyCommand>(
+    key: KeyType,
+    value: NotifyCommand[KeyType]
+  ) {
+    setFieldStateHelperImpl<NotifyCommand>(key, value, setNotifyCommand);
+  }
+
   const [notifyFormErrorStates, setNotifyFormErrorStates] = React.useState<NotifyFormErrorStates>(
     new NotifyFormErrorStates()
   );
@@ -61,24 +72,19 @@ const NotifyApp: NextPage = () => {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     try {
-      let notifyCommand = new NotifyCommand();
-      notifyCommand.data = notifyData;
       if (selectedClient != undefined) {
         notifyCommand.hostname = selectedClient.hostname;
       }
       if (dayjs(notifyData.id) < dayjs()) {
         setNotifyDataHelper('id', new Date().getTime() + 1000);
       }
+      notifyCommand.data = notifyData;
       await post('/api/client?action=notify', notifyCommand);
       toast.success(
         `Notification sent to ${
           selectedClient?.label ?? selectedClient?.hostname ?? 'all clients'
         }!`
       );
-      /* Eventually add logic here to generate the CURL equivalent of the above request
-         as well as the HA RESTful Command object documented at https://www.home-assistant.io/integrations/rest_command/
-         NOTE: Do this in realtime instead, in case user just wants to see the code without actually sending the notification?
-       */
     } catch (e) {
       toast.error(`Notification failed to send to ${selectedClient}!`);
     }
@@ -104,6 +110,24 @@ const NotifyApp: NextPage = () => {
       setNotifyDataHelper('repeat', 1);
     }
   }
+
+  // Ensure NotifyCommand is always updated by changes to hostname or notifyData
+  React.useEffect(() => {
+    setNotifyCommandHelper('data', notifyData);
+    setNotifyCommandHelper('hostname', selectedClient?.hostname);
+  }, [notifyData, selectedClient]);
+
+  // Generate latest CURL request in realtime
+  React.useEffect(() => {
+    setCurlRequest(
+      fetchToCurl({
+        url: `${BASE_URL}/api/client?action=notify`,
+        body: notifyCommand,
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      })
+    );
+  }, [notifyCommand]);
 
   return (
     <LeftMenu>
@@ -247,6 +271,7 @@ const NotifyApp: NextPage = () => {
               </Button>
               <HelpTooltip tooltip="Send your notification to client(s)!"></HelpTooltip>
             </Stack>
+            <CodePanels curlRequest={curlRequest} />
           </div>
         </form>
       )}
