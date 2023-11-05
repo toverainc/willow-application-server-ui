@@ -46,11 +46,12 @@ export default function CodePanels({ curlRequest }: { curlRequest: string }) {
   });
   const copyBlockProps = {
     text: curlRequest,
-    language: 'shell',
-    showLineNumbers: true,
-    codeBlock: true,
+    language: 'bash',
+    showLineNumbers: false,
+    codeBlock: false,
     theme: nord,
-    customStyle: { maxWidth: isDesktopOrLaptop ? '800px' : '300px' },
+    wrapLongLines: true,
+    customStyle: { maxWidth: isDesktopOrLaptop ? '800px' : '345px', display: 'flex' },
   };
 
   return (
