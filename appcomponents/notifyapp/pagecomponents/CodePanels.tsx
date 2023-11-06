@@ -104,7 +104,7 @@ export default function CodePanels({ notifyCommand }: { notifyCommand: NotifyCom
         </h3>
         <CopyBlock {...haRestfulCommandCopyBlockProps} />
         <h3>
-          Call your new 'willow_notify' service in HA with the data below (refer to{' '}
+          Call your new 'willow_notify' service in Home Assistant with the data below (refer to{' '}
           <Link
             href={
               'https://www.home-assistant.io/integrations/rest_command/#how-to-test-your-new-rest-command'
