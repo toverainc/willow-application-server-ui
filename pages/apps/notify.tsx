@@ -9,7 +9,6 @@ import {
   Stack,
   TextField,
 } from '@mui/material';
-import dayjs from 'dayjs';
 import { NextPage } from 'next';
 import React from 'react';
 import { toast } from 'react-toastify';
@@ -18,11 +17,9 @@ import {
   NotifyCommand,
   NotifyData,
   NotifyFormErrorStates,
-  RestfulCommand,
 } from '../../appcomponents/notifyapp/models';
 import AudioSource from '../../appcomponents/notifyapp/pagecomponents/AudioSource';
 import CodePanels from '../../appcomponents/notifyapp/pagecomponents/CodePanels';
-import DateTimeSelector from '../../appcomponents/notifyapp/pagecomponents/DateTimeSelector';
 import StrobeEffect from '../../appcomponents/notifyapp/pagecomponents/StrobeEffect';
 import LeftMenu from '../../components/LeftMenu';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -40,7 +37,7 @@ const NotifyApp: NextPage = () => {
     backlight_max: true,
     repeat: 1,
     volume: 50,
-    id: new Date().getTime() + 1000,
+    //id: new Date().getTime() + 1000,
   });
   function setNotifyDataHelper<KeyType extends keyof NotifyData>(
     key: KeyType,
@@ -73,9 +70,9 @@ const NotifyApp: NextPage = () => {
       if (selectedClient != undefined) {
         notifyCommand.hostname = selectedClient.hostname;
       }
-      if (dayjs(notifyData.id) < dayjs()) {
+      /* if (dayjs(notifyData.id) < dayjs()) {
         setNotifyDataHelper('id', new Date().getTime() + 1000);
-      }
+      } */
       notifyCommand.data = notifyData;
       await post('/api/client?action=notify', notifyCommand);
       toast.success(
@@ -158,7 +155,7 @@ const NotifyApp: NextPage = () => {
               </Select>
               <HelpTooltip tooltip="The client to send the notification. 'All Clients' sends the notification to all connected clients." />
             </FormControl>
-            <DateTimeSelector notifyData={notifyData} setNotifyDataHelper={setNotifyDataHelper} />
+            {/*<DateTimeSelector notifyData={notifyData} setNotifyDataHelper={setNotifyDataHelper} /> */}
             <AudioSource
               notifyData={notifyData}
               setNotifyDataHelper={setNotifyDataHelper}
