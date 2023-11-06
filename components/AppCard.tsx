@@ -12,7 +12,7 @@ export default function AppCard({
 }) {
   return (
     <Link href={`/apps/${pageKey}`} style={{ textDecoration: 'none' }}>
-      <Card sx={{ maxWidth: 500, minHeight: 'max-content', boxShadow: 4 }}>
+      <Card sx={{ maxWidth: 500, minWidth: 'max-content', minHeight: 'max-content', boxShadow: 4 }}>
         <CardActionArea>
           <CardContent>
             <Typography gutterBottom variant="h5" component="div">

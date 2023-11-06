@@ -7,12 +7,14 @@ const Apps: NextPage = () => {
   return (
     <LeftMenu>
       <h2 style={{ textAlign: 'center' }}>Applications</h2>
-      <Grid container spacing={2} sx={{ ml: 0, mt: 1 }}>
-        <AppCard
-          appTitle="Notify"
-          appDescription="Trigger notifications on your Willow devices."
-          pageKey="notify"
-        />
+      <Grid container spacing={2}>
+        <Grid item md={4} sm={6} xs={12} lg={3}>
+          <AppCard
+            appTitle="Notify"
+            appDescription="Trigger notifications on your Willow devices."
+            pageKey="notify"
+          />
+        </Grid>
       </Grid>
     </LeftMenu>
   );
