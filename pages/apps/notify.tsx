@@ -3,13 +3,13 @@ import {
   Checkbox,
   FormControl,
   FormControlLabel,
-  Input,
   InputLabel,
   MenuItem,
   Select,
   Stack,
   TextField,
 } from '@mui/material';
+import dayjs from 'dayjs';
 import { NextPage } from 'next';
 import React from 'react';
 import { toast } from 'react-toastify';
@@ -18,24 +18,22 @@ import {
   NotifyCommand,
   NotifyData,
   NotifyFormErrorStates,
+  RestfulCommand,
 } from '../../appcomponents/notifyapp/models';
 import AudioSource from '../../appcomponents/notifyapp/pagecomponents/AudioSource';
+import CodePanels from '../../appcomponents/notifyapp/pagecomponents/CodePanels';
+import DateTimeSelector from '../../appcomponents/notifyapp/pagecomponents/DateTimeSelector';
+import StrobeEffect from '../../appcomponents/notifyapp/pagecomponents/StrobeEffect';
 import LeftMenu from '../../components/LeftMenu';
 import LoadingSpinner from '../../components/LoadingSpinner';
-import { BASE_URL, post } from '../../misc/fetchers';
+import { post } from '../../misc/fetchers';
 import { HelpTooltip, parseIntOrUndef, setFieldStateHelperImpl } from '../../misc/helperfunctions';
 import { Client } from '../../misc/model';
-import StrobeEffect from '../../appcomponents/notifyapp/pagecomponents/StrobeEffect';
-import DateTimeSelector from '../../appcomponents/notifyapp/pagecomponents/DateTimeSelector';
-import dayjs from 'dayjs';
-import fetchToCurl from 'fetch-to-curl';
-import CodePanels from '../../appcomponents/notifyapp/pagecomponents/CodePanels';
 
 const NotifyApp: NextPage = () => {
   const { data: clients, isLoading } = useSWR<Client[]>('/api/client');
   const [selectedClient, setSelectedClient] = React.useState<Client | undefined>();
   const [displayText, setDisplayText] = React.useState(false);
-  const [curlRequest, setCurlRequest] = React.useState<string>('');
 
   const [notifyData, setNotifyData] = React.useState<NotifyData>({
     backlight: true,
@@ -116,18 +114,6 @@ const NotifyApp: NextPage = () => {
     setNotifyCommandHelper('data', notifyData);
     setNotifyCommandHelper('hostname', selectedClient?.hostname);
   }, [notifyData, selectedClient]);
-
-  // Generate latest CURL request in realtime
-  React.useEffect(() => {
-    setCurlRequest(
-      fetchToCurl({
-        url: `${BASE_URL}/api/client?action=notify`,
-        body: notifyCommand,
-        headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
-      })
-    );
-  }, [notifyCommand]);
 
   return (
     <LeftMenu>
@@ -271,7 +257,7 @@ const NotifyApp: NextPage = () => {
               </Button>
               <HelpTooltip tooltip="Send your notification to client(s)!"></HelpTooltip>
             </Stack>
-            <CodePanels curlRequest={curlRequest} />
+            <CodePanels notifyCommand={notifyCommand} />
           </div>
         </form>
       )}

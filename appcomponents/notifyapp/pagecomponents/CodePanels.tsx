@@ -1,8 +1,12 @@
 import { Box, InputLabel, Tab, Tabs, Typography } from '@mui/material';
 import React from 'react';
 import { CopyBlock, nord } from 'react-code-blocks';
-import { CopyBlockProps } from 'react-code-blocks/dist/components/CopyBlock';
 import { useMediaQuery } from 'react-responsive';
+import YAML from 'yaml';
+import { HaNotifyDataTemplate, NotifyCommand, RestfulCommand } from '../models';
+import fetchToCurl from 'fetch-to-curl';
+import { BASE_URL } from '../../../misc/fetchers';
+import Link from 'next/link';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -36,7 +40,7 @@ function a11yProps(index: number) {
   };
 }
 
-export default function CodePanels({ curlRequest }: { curlRequest: string }) {
+export default function CodePanels({ notifyCommand }: { notifyCommand: NotifyCommand }) {
   const [selectedTab, setSelectedTab] = React.useState(0);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
@@ -44,14 +48,41 @@ export default function CodePanels({ curlRequest }: { curlRequest: string }) {
   const isDesktopOrLaptop = useMediaQuery({
     query: '(min-width: 1224px)',
   });
-  const copyBlockProps = {
-    text: curlRequest,
+  const curlCopyBlockProps = {
+    text: fetchToCurl({
+      url: `${BASE_URL}/api/client?action=notify`,
+      body: notifyCommand,
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+    }),
     language: 'bash',
     showLineNumbers: false,
     codeBlock: false,
     theme: nord,
     wrapLongLines: true,
     customStyle: { maxWidth: isDesktopOrLaptop ? '800px' : '345px', display: 'flex' },
+  };
+  const haRestfulCommandCopyBlockProps = {
+    text: YAML.stringify(new RestfulCommand(notifyCommand)),
+    language: 'yaml',
+    showLineNumbers: false,
+    codeBlock: false,
+    theme: nord,
+    wrapLongLines: true,
+    customStyle: { maxWidth: isDesktopOrLaptop ? '800px' : '345px', display: 'flex' },
+  };
+  const haRestfulCommandPayloadCopyBlockProps = {
+    text: JSON.stringify(new HaNotifyDataTemplate(notifyCommand)),
+    language: 'json',
+    showLineNumbers: false,
+    codeBlock: false,
+    theme: nord,
+    wrapLongLines: true,
+    customStyle: {
+      maxWidth: isDesktopOrLaptop ? '800px' : '345px',
+      minHeight: '50px',
+      display: 'flex',
+    },
   };
 
   return (
@@ -64,10 +95,27 @@ export default function CodePanels({ curlRequest }: { curlRequest: string }) {
         </Tabs>
       </Box>
       <CustomTabPanel value={selectedTab} index={0}>
-        <CopyBlock {...copyBlockProps} />
+        <CopyBlock {...curlCopyBlockProps} />
       </CustomTabPanel>
       <CustomTabPanel value={selectedTab} index={1}>
-        Home Assistant
+        <h3>
+          Place the yaml below into your configuration.yaml in Home Assistant, then restart Home
+          Assistant for the changes to take effect.
+        </h3>
+        <CopyBlock {...haRestfulCommandCopyBlockProps} />
+        <h3>
+          Call your new 'willow_notify' service in HA with the data below (refer to{' '}
+          <Link
+            href={
+              'https://www.home-assistant.io/integrations/rest_command/#how-to-test-your-new-rest-command'
+            }
+            target="_blank">
+            How to test your new REST command
+          </Link>{' '}
+          for more information). This service can be called in scripts and automations within Home
+          Assistant!
+        </h3>
+        <CopyBlock {...haRestfulCommandPayloadCopyBlockProps} />
       </CustomTabPanel>
     </Box>
   );
