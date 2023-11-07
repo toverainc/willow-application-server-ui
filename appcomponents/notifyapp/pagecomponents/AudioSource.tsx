@@ -22,7 +22,7 @@ export default function AudioSource({
     value: NotifyFormErrorStates[keyof NotifyFormErrorStates]
   ) => void;
 }) {
-  const [audioSource, setAudioSource] = React.useState<keyof typeof AUDIO_SOURCES>('None');
+  const [audioSource, setAudioSource] = React.useState<keyof typeof AUDIO_SOURCES>('TTS');
   const [ttsText, setTtsText] = React.useState<string>();
   const { data: generalSettings, isLoading } = useSWR<GeneralSettings>('/api/config?type=config');
 
@@ -93,7 +93,7 @@ export default function AudioSource({
         options={AUDIO_SOURCES}
         onChange={handleAudioSourceChange}
         value={audioSource}
-        tooltip="The source of the audio to play for the notification. Can be a URL to an audio file, text to speak, or 'None' for silence."
+        tooltip="The source of the audio to play for the notification. Can be a URL to an audio file or text to speak."
       />
       {audioSource == AUDIO_SOURCES.URL && (
         <Stack spacing={2} direction="row" sx={{ mb: 1, mt: 1 }} alignItems="center">
@@ -129,7 +129,7 @@ export default function AudioSource({
           <HelpTooltip tooltip="Text to speak on the client. Uses your configured TTS URL from Configuration General Settings." />
         </Stack>
       )}
-      {audioSource != AUDIO_SOURCES.None && !notifyFormErrorStates.audio_url.Error && (
+      {!notifyFormErrorStates.audio_url.Error && (
         <>
           <InputLabel>Volume</InputLabel>
           <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">

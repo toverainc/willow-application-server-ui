@@ -23,9 +23,8 @@ export class NotifyFormErrorStates {
 }
 
 export const AUDIO_SOURCES = {
-  None: 'None',
-  URL: 'URL',
   TTS: 'TTS',
+  URL: 'URL',
 };
 
 export class CurlRequest {
