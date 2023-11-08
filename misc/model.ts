@@ -41,12 +41,14 @@ export const COMMAND_ENDPOINT = {
   'Home Assistant': 'Home Assistant',
   openHAB: 'openHAB',
   REST: 'REST',
+  MQTT: 'MQTT',
 };
 export const NTP_CONFIG = {
   Host: 'Specify an NTP server host',
   DHCP: 'Use DHCP provided NTP Server',
 };
 export const REST_AUTH_TYPES = ['None', 'Basic', 'Header'];
+export const MQTT_AUTH_TYPES = ['none', 'userpw'];
 
 export const AUDIO_CODECS = { PCM: 'PCM', 'AMR-WB': 'AMR-WB' };
 export const VAD_MODES = [1, 2, 3, 4];
@@ -61,10 +63,10 @@ export interface AdvancedSettings {
   audio_codec: keyof typeof AUDIO_CODECS;
   vad_mode: number; //Voice Activity Detection Mode
   wake_mode: string; //aka WAKE_MODES
-  mic_gain: number;
-  record_buffer: number;
-  stream_timeout: number;
-  vad_timeout: number;
+  mic_gain: number | undefined;
+  record_buffer: number | undefined;
+  stream_timeout: number | undefined;
+  vad_timeout: number | undefined;
 }
 
 export interface GeneralSettings {
@@ -81,13 +83,20 @@ export interface GeneralSettings {
   openhab_url: string;
   openhab_token: string;
   rest_url: string;
-  rest_auth_type: string; //aka REST_AUTH_TYPE
+  rest_auth_type: keyof typeof REST_AUTH_TYPES;
   rest_auth_user: string;
   rest_auth_pass: string;
   rest_auth_header: string;
-  speaker_volume: number;
-  lcd_brightness: number;
-  display_timeout: number;
+  mqtt_auth_type: keyof typeof MQTT_AUTH_TYPES;
+  mqtt_host: string;
+  mqtt_password: string;
+  mqtt_port: number;
+  mqtt_tls: boolean;
+  mqtt_topic: string;
+  mqtt_username: string;
+  speaker_volume: number | undefined;
+  lcd_brightness: number | undefined;
+  display_timeout: number | undefined;
   wake_confirmation: boolean; //Enables/Disables Wake Confirmation Chime
   timezone: string;
   timezone_name: string;
@@ -102,4 +111,20 @@ export interface NvsSettings {
 
 export interface TZDictionary {
   [index: string]: string;
+}
+
+// Model to track Form Error States
+export interface FormErrorState {
+  Error: boolean;
+  HelperText: string;
+}
+export interface FormErrorStates {
+  WisUrlError: FormErrorState;
+  WisTtsUrlError: FormErrorState;
+  HassHostError: FormErrorState;
+  HassPortError: FormErrorState;
+  OpenhabUrlError: FormErrorState;
+  RestUrlError: FormErrorState;
+  MqttHostError: FormErrorState;
+  MqttPortError: FormErrorState;
 }

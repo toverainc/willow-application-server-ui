@@ -1,19 +1,17 @@
 import '@fontsource/raleway';
-import type { AppProps } from 'next/app';
-import { SWRConfig } from 'swr';
-import Head from 'next/head';
 import CssBaseline from '@mui/material/CssBaseline';
-import React, { useContext, useState } from 'react';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import type { AppProps } from 'next/app';
+import Head from 'next/head';
+import React, { useContext } from 'react';
 import { ToastContainer } from 'react-toastify';
-import { ThemeProvider } from '@mui/material/styles';
-import { createTheme } from '@mui/material/styles';
+import useSWR, { SWRConfig } from 'swr';
 import { fetcher } from '../misc/fetchers';
-import useSWR from 'swr';
-import { GeneralSettings, NvsSettings } from '../misc/model';
+import { FormErrorStates, GeneralSettings, NvsSettings } from '../misc/model';
 
 import 'react-toastify/dist/ReactToastify.css';
-import '../styles/globals.css';
 import LoadingSpinner from '../components/LoadingSpinner';
+import '../styles/globals.css';
 
 export const theme = createTheme({
   palette: {
@@ -43,10 +41,27 @@ export const theme = createTheme({
   },
 });
 
-export const OnboardingContext = React.createContext({
+export interface OnboardingState {
+  isNvsComplete: boolean;
+  isGeneralConfigComplete: boolean;
+  isOnboardingComplete: boolean;
+}
+
+export const OnboardingContext = React.createContext<OnboardingState>({
   isNvsComplete: false,
   isGeneralConfigComplete: false,
   isOnboardingComplete: false,
+});
+
+export const FormErrorContext = React.createContext<FormErrorStates>({
+  WisUrlError: { Error: false, HelperText: '' },
+  WisTtsUrlError: { Error: false, HelperText: '' },
+  HassHostError: { Error: false, HelperText: '' },
+  HassPortError: { Error: false, HelperText: '' },
+  OpenhabUrlError: { Error: false, HelperText: '' },
+  RestUrlError: { Error: false, HelperText: '' },
+  MqttHostError: { Error: false, HelperText: '' },
+  MqttPortError: { Error: false, HelperText: '' },
 });
 
 export class HttpError extends Error {
@@ -73,6 +88,8 @@ export default function App({ Component, pageProps }: AppProps) {
   onboardingContext.isNvsComplete = nvsData ? Object.keys(nvsData).length > 0 : false;
   onboardingContext.isOnboardingComplete =
     onboardingContext.isGeneralConfigComplete && onboardingContext.isNvsComplete;
+
+  const formErrorContext = useContext(FormErrorContext);
 
   //XXX: write a real fetcher
   return nvsIsLoading || configIsLoading ? (
@@ -103,7 +120,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <CssBaseline />
         <SWRConfig value={{ fetcher }}>
           <OnboardingContext.Provider value={onboardingContext}>
-            <Component {...pageProps} />
+            <FormErrorContext.Provider value={formErrorContext}>
+              <Component {...pageProps} />
+            </FormErrorContext.Provider>
           </OnboardingContext.Provider>
         </SWRConfig>
       </ThemeProvider>
