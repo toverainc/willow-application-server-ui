@@ -5,7 +5,6 @@ export interface NotifyData {
   audio_url?: string;
   backlight: boolean;
   backlight_max: boolean;
-  id?: number;
   repeat: number | undefined;
   strobe_period_ms?: number;
   text?: string;
@@ -76,7 +75,6 @@ class NotifyDataTemplate {
   audio_url?: string;
   backlight: string = '{{backlight}}';
   backlight_max: string = '{{backlightMax}}';
-  id?: string;
   repeat: string = '{{repeat}}';
   strobe_period_ms?: string;
   text?: string;
@@ -85,9 +83,6 @@ class NotifyDataTemplate {
   constructor(notifyData: NotifyData) {
     if (notifyData.audio_url) {
       this.audio_url = '{{audioUrl}}';
-    }
-    if (notifyData.id) {
-      this.id = '{{id}}';
     }
     if (notifyData.strobe_period_ms) {
       this.strobe_period_ms = '{{strobePeriodMs}}';
@@ -106,7 +101,6 @@ export class HaNotifyDataTemplate {
   audioUrl?: string;
   backlight: boolean;
   backlightMax: boolean;
-  id?: number;
   repeat: number;
   strobePeriodMs?: number;
   text?: string;
@@ -117,7 +111,6 @@ export class HaNotifyDataTemplate {
     this.audioUrl = notifyCommand.data.audio_url;
     this.backlight = notifyCommand.data.backlight;
     this.backlightMax = notifyCommand.data.backlight_max;
-    this.id = notifyCommand.data.id;
     this.repeat = notifyCommand.data.repeat ?? 1;
     this.strobePeriodMs = notifyCommand.data.strobe_period_ms;
     this.text = notifyCommand.data.text;

@@ -25,10 +25,11 @@ import LeftMenu from '../../components/LeftMenu';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { post } from '../../misc/fetchers';
 import { HelpTooltip, parseIntOrUndef, setFieldStateHelperImpl } from '../../misc/helperfunctions';
-import { Client } from '../../misc/model';
+import { Client, GeneralSettings } from '../../misc/model';
 
 const NotifyApp: NextPage = () => {
-  const { data: clients, isLoading } = useSWR<Client[]>('/api/client');
+  const { data: clients } = useSWR<Client[]>('/api/client');
+  const { data: generalSettings } = useSWR<GeneralSettings>('/api/config?type=config');
   const [selectedClient, setSelectedClient] = React.useState<Client | undefined>();
   const [displayText, setDisplayText] = React.useState(false);
 
@@ -36,8 +37,7 @@ const NotifyApp: NextPage = () => {
     backlight: true,
     backlight_max: true,
     repeat: 1,
-    volume: 50,
-    //id: new Date().getTime() + 1000,
+    volume: generalSettings?.speaker_volume,
   });
   function setNotifyDataHelper<KeyType extends keyof NotifyData>(
     key: KeyType,
@@ -70,9 +70,6 @@ const NotifyApp: NextPage = () => {
       if (selectedClient != undefined) {
         notifyCommand.hostname = selectedClient.hostname;
       }
-      /* if (dayjs(notifyData.id) < dayjs()) {
-        setNotifyDataHelper('id', new Date().getTime() + 1000);
-      } */
       notifyCommand.data = notifyData;
       await post('/api/client?action=notify', notifyCommand);
       toast.success(
@@ -112,9 +109,16 @@ const NotifyApp: NextPage = () => {
     setNotifyCommandHelper('hostname', selectedClient?.hostname);
   }, [notifyData, selectedClient]);
 
+  // Ensure General Settings defaults get applied to notifyData
+  React.useEffect(() => {
+    if (generalSettings) {
+      setNotifyDataHelper('volume', generalSettings.speaker_volume);
+    }
+  }, [generalSettings]);
+
   return (
     <LeftMenu>
-      {isLoading ? (
+      {!clients || !generalSettings ? (
         <LoadingSpinner />
       ) : (
         <form name="general-settings-form" onSubmit={handleSubmit}>
@@ -159,6 +163,7 @@ const NotifyApp: NextPage = () => {
             <AudioSource
               notifyData={notifyData}
               setNotifyDataHelper={setNotifyDataHelper}
+              generalSettings={generalSettings}
               notifyFormErrorStates={notifyFormErrorStates}
               setNotifyFormErrorStateHelper={setNotifyFormErrorStateHelper}
             />

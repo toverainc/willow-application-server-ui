@@ -2,20 +2,20 @@ import { VolumeDown, VolumeUp } from '@mui/icons-material';
 import { Input, InputLabel, SelectChangeEvent, Slider, Stack, TextField } from '@mui/material';
 import React from 'react';
 import { EnumSelectHelper, HelpTooltip } from '../../../misc/helperfunctions';
-import { AUDIO_SOURCES, NotifyData, NotifyFormErrorStates } from '../models';
-import { ValidateUrl } from '../../../misc/validations';
-import useSWR from 'swr';
 import { GeneralSettings } from '../../../misc/model';
-import LoadingSpinner from '../../../components/LoadingSpinner';
+import { ValidateUrl } from '../../../misc/validations';
+import { AUDIO_SOURCES, NotifyData, NotifyFormErrorStates } from '../models';
 
 export default function AudioSource({
   notifyData,
   setNotifyDataHelper,
+  generalSettings,
   notifyFormErrorStates,
   setNotifyFormErrorStateHelper,
 }: {
   notifyData: NotifyData;
   setNotifyDataHelper: (key: keyof NotifyData, value: NotifyData[keyof NotifyData]) => void;
+  generalSettings: GeneralSettings;
   notifyFormErrorStates: NotifyFormErrorStates;
   setNotifyFormErrorStateHelper: (
     key: keyof NotifyFormErrorStates,
@@ -24,7 +24,6 @@ export default function AudioSource({
 }) {
   const [audioSource, setAudioSource] = React.useState<keyof typeof AUDIO_SOURCES>('TTS');
   const [ttsText, setTtsText] = React.useState<string>();
-  const { data: generalSettings, isLoading } = useSWR<GeneralSettings>('/api/config?type=config');
 
   // Handlers for fields with validation
   function handleAudioUrlChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -84,9 +83,7 @@ export default function AudioSource({
     }
   }, [generalSettings]);
 
-  return isLoading ? (
-    <LoadingSpinner />
-  ) : (
+  return (
     <>
       <EnumSelectHelper
         label="Audio Source"
