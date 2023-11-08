@@ -118,7 +118,7 @@ const NotifyApp: NextPage = () => {
 
   return (
     <LeftMenu>
-      {!clients || !generalSettings ? (
+      {!(clients && generalSettings) ? (
         <LoadingSpinner />
       ) : (
         <form name="general-settings-form" onSubmit={handleSubmit}>
