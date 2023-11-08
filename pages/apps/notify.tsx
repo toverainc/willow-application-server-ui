@@ -159,7 +159,6 @@ const NotifyApp: NextPage = () => {
               </Select>
               <HelpTooltip tooltip="The client to send the notification. 'All Clients' sends the notification to all connected clients." />
             </FormControl>
-            {/*<DateTimeSelector notifyData={notifyData} setNotifyDataHelper={setNotifyDataHelper} /> */}
             <AudioSource
               notifyData={notifyData}
               setNotifyDataHelper={setNotifyDataHelper}
