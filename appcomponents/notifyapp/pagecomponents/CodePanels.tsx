@@ -7,6 +7,7 @@ import { HaNotifyDataTemplate, NotifyCommand, RestfulCommand } from '../models';
 import fetchToCurl from 'fetch-to-curl';
 import { BASE_URL } from '../../../misc/fetchers';
 import Link from 'next/link';
+import { FormatUnderlined } from '@mui/icons-material';
 
 interface TabPanelProps {
   children?: React.ReactNode;

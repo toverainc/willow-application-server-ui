@@ -23,7 +23,7 @@ export default function AudioSource({
   ) => void;
 }) {
   const [audioSource, setAudioSource] = React.useState<keyof typeof AUDIO_SOURCES>('TTS');
-  const [ttsText, setTtsText] = React.useState<string>();
+  const [ttsText, setTtsText] = React.useState<string>('');
 
   // Handlers for fields with validation
   function handleAudioUrlChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -66,13 +66,22 @@ export default function AudioSource({
   function handleAudioTtsUrlChange(
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) {
-    setTtsText(event.target.value);
-    setNotifyDataHelper('audio_url', `${generalSettings?.wis_tts_url}?text=${event.target.value}`);
+    if (event.target.value && !(event.target.value.trim() == '')) {
+      console.log(event.target.value.trim());
+      setTtsText(event.target.value);
+      setNotifyDataHelper(
+        'audio_url',
+        `${generalSettings?.wis_tts_url}?text=${event.target.value.trim()}`
+      );
+    } else {
+      setTtsText('');
+      setNotifyDataHelper('audio_url', undefined);
+    }
   }
 
   function handleAudioSourceChange(event: SelectChangeEvent<string>) {
     setAudioSource(event.target.value as keyof typeof AUDIO_SOURCES);
-    setTtsText(undefined);
+    setTtsText('');
     setNotifyDataHelper('audio_url', undefined);
     setNotifyFormErrorStateHelper('audio_url', { Error: false, HelperText: '' });
   }

@@ -25,7 +25,7 @@ import LeftMenu from '../../components/LeftMenu';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { post } from '../../misc/fetchers';
 import { HelpTooltip, parseIntOrUndef, setFieldStateHelperImpl } from '../../misc/helperfunctions';
-import { Client, GeneralSettings } from '../../misc/model';
+import { Client, FormErrorState, GeneralSettings } from '../../misc/model';
 
 const NotifyApp: NextPage = () => {
   const { data: clients } = useSWR<Client[]>('/api/client');
@@ -66,6 +66,10 @@ const NotifyApp: NextPage = () => {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (Object.values(notifyFormErrorStates).some((entry) => entry.Error == true)) {
+      toast.error(`Please correct form errors before submitting.`);
+      return;
+    }
     try {
       if (selectedClient != undefined) {
         notifyCommand.hostname = selectedClient.hostname;
@@ -258,7 +262,9 @@ const NotifyApp: NextPage = () => {
               </Button>
               <HelpTooltip tooltip="Send your notification to client(s)!"></HelpTooltip>
             </Stack>
-            <CodePanels notifyCommand={notifyCommand} />
+            {notifyCommand.data.audio_url && !notifyFormErrorStates.audio_url.Error && (
+              <CodePanels notifyCommand={notifyCommand} />
+            )}
           </div>
         </form>
       )}
