@@ -119,7 +119,8 @@ export default function ClientCard({
             src={'static/' + client.platform + '.png'}
             width={50}
             height={50}
-            alt={client.platform}></Image>
+            alt={client.platform}
+            loading="eager"></Image>
         }
         action={<ClientMenu client={client}></ClientMenu>}
         title={client.label || client.hostname}
