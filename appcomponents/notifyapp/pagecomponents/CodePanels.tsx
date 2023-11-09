@@ -99,24 +99,13 @@ export default function CodePanels({ notifyCommand }: { notifyCommand: NotifyCom
         <CopyBlock {...curlCopyBlockProps} />
       </CustomTabPanel>
       <CustomTabPanel value={selectedTab} index={1}>
-        <h3>
-          Place the yaml below into your configuration.yaml in Home Assistant, then restart Home
-          Assistant for the changes to take effect.
-        </h3>
+        {`Place the YAML shown below in your Home Assistant configuration.yaml and then restart Home
+          Assistant for the change to take effect.`}
         <CopyBlock {...haRestfulCommandCopyBlockProps} />
-        <h3>
-          Call your new 'willow_notify' service in Home Assistant with the data below (refer to{' '}
-          <Link
-            href={
-              'https://www.home-assistant.io/integrations/rest_command/#how-to-test-your-new-rest-command'
-            }
-            target="_blank">
-            How to test your new REST command
-          </Link>{' '}
-          for more information). This service can be called in scripts and automations within Home
-          Assistant!
-        </h3>
+        {`To test your new notification in the Home Assistant Web UI select 'Developer tools' from the menu on the left side.
+          Click the 'Services' tab and search for your willow_notify RESTful command. Select 'YAML mode' and paste this in the data field:`}
         <CopyBlock {...haRestfulCommandPayloadCopyBlockProps} />
+        {`Click 'Call Service' and watch your Willow device(s) come to life!`}
       </CustomTabPanel>
     </Box>
   );
