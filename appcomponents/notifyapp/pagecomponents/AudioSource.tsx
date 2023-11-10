@@ -67,7 +67,6 @@ export default function AudioSource({
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) {
     if (event.target.value && !(event.target.value.trim() == '')) {
-      console.log(event.target.value.trim());
       setTtsText(event.target.value);
       setNotifyDataHelper(
         'audio_url',

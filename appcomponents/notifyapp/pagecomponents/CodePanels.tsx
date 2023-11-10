@@ -1,13 +1,11 @@
 import { Box, InputLabel, Tab, Tabs, Typography } from '@mui/material';
+import fetchToCurl from 'fetch-to-curl';
 import React from 'react';
 import { CopyBlock, nord } from 'react-code-blocks';
 import { useMediaQuery } from 'react-responsive';
 import YAML from 'yaml';
-import { HaNotifyDataTemplate, NotifyCommand, RestfulCommand } from '../models';
-import fetchToCurl from 'fetch-to-curl';
 import { BASE_URL } from '../../../misc/fetchers';
-import Link from 'next/link';
-import { FormatUnderlined } from '@mui/icons-material';
+import { HaNotifyDataTemplate, NotifyCommand, RestfulCommand } from '../models';
 
 interface TabPanelProps {
   children?: React.ReactNode;
