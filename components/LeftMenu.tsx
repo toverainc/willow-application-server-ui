@@ -22,6 +22,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import { useMediaQuery } from 'react-responsive';
 import { OnboardingContext } from '../pages/_app';
+import AppsIcon from '@mui/icons-material/Apps';
 
 const drawerWidth = 240;
 
@@ -178,6 +179,9 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
             <DeviceHubIcon></DeviceHubIcon>
           </MenuItem>
       */}
+          <MenuItem text="Applications" page="/apps" display={onboardingState.isOnboardingComplete}>
+            <AppsIcon></AppsIcon>
+          </MenuItem>
           <MenuItem
             text="Asset Management"
             page="/assetmanagement"
