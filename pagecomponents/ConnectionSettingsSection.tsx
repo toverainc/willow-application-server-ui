@@ -5,7 +5,7 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import useSWR, { mutate } from 'swr';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { post } from '../misc/fetchers';
+import { WAS_URL, post } from '../misc/fetchers';
 import { setFieldStateHelperImpl } from '../misc/helperfunctions';
 import { NvsSettings } from '../misc/model';
 import { ValidateWasUrl, ValidateWifiPsk, ValidateWifiSSID } from '../misc/validations';
@@ -136,7 +136,7 @@ export default function ConnectionSettingsSection() {
     <form onSubmit={handleSubmit}>
       <TextField
         name="url"
-        value={fieldState.WAS.URL}
+        value={fieldState.WAS?.URL ?? WAS_URL}
         onChange={handleWasUrlChange}
         error={wasUrlError}
         helperText={wasUrlHelperText}
@@ -149,7 +149,7 @@ export default function ConnectionSettingsSection() {
       />
       <TextField
         name="ssid"
-        value={fieldState.WIFI.SSID}
+        value={fieldState.WIFI?.SSID}
         onChange={handleWifiSsidChange}
         error={wifiSSIDError}
         helperText={wifiSSIDHelperText}
@@ -162,7 +162,7 @@ export default function ConnectionSettingsSection() {
       />
       <TextField
         name="psk"
-        value={fieldState.WIFI.PSK}
+        value={fieldState.WIFI?.PSK}
         onChange={handleWifiPassChange}
         error={wifiPassError}
         helperText={wifiPassHelperText}
