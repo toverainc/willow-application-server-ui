@@ -68,10 +68,9 @@ export default function AudioSource({
   ) {
     if (event.target.value && !(event.target.value.trim() == '')) {
       setTtsText(event.target.value);
-      setNotifyDataHelper(
-        'audio_url',
-        `${generalSettings?.wis_tts_url}?text=${event.target.value.trim()}`
-      );
+      const url = new URL(generalSettings?.wis_tts_url);
+      url.searchParams.append('text', event.target.value.trim());
+      setNotifyDataHelper('audio_url', url.toString());
     } else {
       setTtsText('');
       setNotifyDataHelper('audio_url', undefined);
