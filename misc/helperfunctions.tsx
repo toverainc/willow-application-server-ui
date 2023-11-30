@@ -109,6 +109,12 @@ export async function handleSubmit(
       generalSettingsForm.command_endpoint == 'Home Assistant'
         ? !!generalSettingsForm.hass_tls
         : undefined,
+    mqtt_port:
+      generalSettingsForm.command_endpoint == 'MQTT'
+        ? parseIntOrUndef(generalSettingsForm.mqtt_port)
+        : undefined,
+    mqtt_tls:
+      generalSettingsForm.command_endpoint == 'MQTT' ? !!generalSettingsForm.mqtt_tls : undefined,
     speaker_volume: parseIntOrUndef(generalSettingsForm.speaker_volume),
     lcd_brightness: parseIntOrUndef(generalSettingsForm.lcd_brightness),
     display_timeout: parseIntOrUndef(generalSettingsForm.display_timeout),
