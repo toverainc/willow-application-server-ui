@@ -127,7 +127,7 @@ const NotifyApp: NextPage = () => {
       ) : (
         <form name="general-settings-form" onSubmit={handleSubmit}>
           <div style={{ maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
-            <h2 style={{ textAlign: 'center' }}>Notify</h2>
+            <h2 style={{ textAlign: 'center' }}>Notify (EXPERIMENTAL)</h2>
             <h4 style={{ textAlign: 'center' }}>
               {`Send notifications with Willow!
                 Notifications can be used for alarms, timers, calendar reminders, and more.
