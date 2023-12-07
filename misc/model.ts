@@ -128,3 +128,18 @@ export interface FormErrorStates {
   MqttHostError: FormErrorState;
   MqttPortError: FormErrorState;
 }
+
+export interface OnboardingState {
+  isNvsComplete: boolean;
+  isGeneralConfigComplete: boolean;
+  isOnboardingComplete: boolean;
+}
+
+export interface SettingsState {
+  nvsSettings: NvsSettings | undefined;
+  generalSettings: GeneralSettings | undefined;
+  defaultGeneralSettings: GeneralSettings | undefined;
+  advancedSettings: AdvancedSettings | undefined;
+  defaultAdvancedSettings: AdvancedSettings | undefined;
+  tzDictionary: TZDictionary | undefined;
+}

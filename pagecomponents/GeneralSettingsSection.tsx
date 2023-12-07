@@ -15,8 +15,6 @@ import Slider from '@mui/material/Slider';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import * as React from 'react';
-import useSWR from 'swr';
-import LoadingSpinner from '../components/LoadingSpinner';
 import {
   EnumSelectHelper,
   HelpTooltip,
@@ -39,17 +37,17 @@ import MQTTCommandEndpoint from './MQTTCommandEndpoint';
 import OpenHabCommandEndpoint from './OpenHabCommandEndpoint';
 import RestCommandEndpoint from './RestCommandEndpoint';
 
-export default function GeneralSettingsSection() {
+export default function GeneralSettingsSection({
+  generalSettings,
+  defaultGeneralSettings,
+  tzDictionary,
+}: {
+  generalSettings: GeneralSettings;
+  defaultGeneralSettings: GeneralSettings;
+  tzDictionary: TZDictionary;
+}) {
   const onboardingState = React.useContext(OnboardingContext);
   const formErrorContext = React.useContext(FormErrorContext);
-  const [loading, setLoading] = React.useState(true);
-
-  const { data: generalSettings, error: generalSettingsError } =
-    useSWR<GeneralSettings>('/api/config?type=config');
-  const { data: defaultGeneralSettings, error: defaultGeneralSettingsError } =
-    useSWR<GeneralSettings>('/api/config?type=config&default=true');
-  const { data: tzDictionary, error: tzDictionaryError } =
-    useSWR<TZDictionary>('/api/config?type=tz');
 
   const [changesMade, setChangesMade] = React.useState(false);
 
@@ -154,7 +152,6 @@ export default function GeneralSettingsSection() {
   React.useEffect(() => {
     if (generalSettings && defaultGeneralSettings && tzDictionary) {
       setFieldState(Object.assign({}, defaultGeneralSettings, generalSettings));
-      setLoading(false);
     }
   }, [generalSettings, defaultGeneralSettings, tzDictionary]);
 
@@ -215,9 +212,7 @@ export default function GeneralSettingsSection() {
     setChangesMade(true);
   };
 
-  return loading || !(generalSettings && defaultGeneralSettings && tzDictionary) ? (
-    <LoadingSpinner />
-  ) : (
+  return (
     <form
       name="general-settings-form"
       onSubmit={(event) =>

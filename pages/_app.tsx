@@ -7,7 +7,15 @@ import React, { useContext } from 'react';
 import { ToastContainer } from 'react-toastify';
 import useSWR, { SWRConfig } from 'swr';
 import { fetcher } from '../misc/fetchers';
-import { FormErrorStates, GeneralSettings, NvsSettings } from '../misc/model';
+import {
+  AdvancedSettings,
+  FormErrorStates,
+  GeneralSettings,
+  NvsSettings,
+  OnboardingState,
+  SettingsState,
+  TZDictionary,
+} from '../misc/model';
 
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -41,16 +49,19 @@ export const theme = createTheme({
   },
 });
 
-export interface OnboardingState {
-  isNvsComplete: boolean;
-  isGeneralConfigComplete: boolean;
-  isOnboardingComplete: boolean;
-}
-
 export const OnboardingContext = React.createContext<OnboardingState>({
   isNvsComplete: false,
   isGeneralConfigComplete: false,
   isOnboardingComplete: false,
+});
+
+export const SettingsContext = React.createContext<SettingsState>({
+  nvsSettings: undefined,
+  generalSettings: undefined,
+  defaultGeneralSettings: undefined,
+  advancedSettings: undefined,
+  defaultAdvancedSettings: undefined,
+  tzDictionary: undefined,
 });
 
 export const FormErrorContext = React.createContext<FormErrorStates>({
@@ -76,23 +87,48 @@ export default function App({ Component, pageProps }: AppProps) {
     '/api/config?type=nvs',
     fetcher
   );
-  const { data: configData, isLoading: configIsLoading } = useSWR<GeneralSettings>(
+  const { data: generalSettings, isLoading: generalSettingsIsLoading } = useSWR<GeneralSettings>(
     '/api/config?type=config',
+    fetcher
+  );
+  const { data: defaultGeneralSettings, isLoading: defaultGeneralSettingsIsLoading } =
+    useSWR<GeneralSettings>('/api/config?type=config&default=true', fetcher);
+  const { data: advancedSettings, isLoading: advancedSettingsIsLoading } = useSWR<AdvancedSettings>(
+    '/api/config?type=config',
+    fetcher
+  );
+  const { data: defaultAdvancedSettings, isLoading: defaultAdvancedSettingsIsLoading } =
+    useSWR<AdvancedSettings>('/api/config?type=config&default=true', fetcher);
+  const { data: tzDictionary, isLoading: tzDictionaryIsLoading } = useSWR<TZDictionary>(
+    '/api/config?type=tz',
     fetcher
   );
 
   const onboardingContext = useContext(OnboardingContext);
-  onboardingContext.isGeneralConfigComplete = configData
-    ? Object.keys(configData).length > 0
+  onboardingContext.isGeneralConfigComplete = generalSettings
+    ? Object.keys(generalSettings).length > 0
     : false;
   onboardingContext.isNvsComplete = nvsData ? Object.keys(nvsData).length > 0 : false;
   onboardingContext.isOnboardingComplete =
     onboardingContext.isGeneralConfigComplete && onboardingContext.isNvsComplete;
 
+  const settingsContext = useContext(SettingsContext);
+  settingsContext.nvsSettings = nvsData;
+  settingsContext.generalSettings = generalSettings;
+  settingsContext.defaultGeneralSettings = defaultGeneralSettings;
+  settingsContext.advancedSettings = advancedSettings;
+  settingsContext.defaultAdvancedSettings = defaultAdvancedSettings;
+  settingsContext.tzDictionary = tzDictionary;
+
   const formErrorContext = useContext(FormErrorContext);
 
   //XXX: write a real fetcher
-  return nvsIsLoading || configIsLoading ? (
+  return nvsIsLoading ||
+    generalSettingsIsLoading ||
+    defaultGeneralSettingsIsLoading ||
+    advancedSettingsIsLoading ||
+    defaultAdvancedSettingsIsLoading ||
+    tzDictionaryIsLoading ? (
     <LoadingSpinner />
   ) : (
     <>
@@ -119,11 +155,13 @@ export default function App({ Component, pageProps }: AppProps) {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <SWRConfig value={{ fetcher }}>
-          <OnboardingContext.Provider value={onboardingContext}>
-            <FormErrorContext.Provider value={formErrorContext}>
-              <Component {...pageProps} />
-            </FormErrorContext.Provider>
-          </OnboardingContext.Provider>
+          <SettingsContext.Provider value={settingsContext}>
+            <OnboardingContext.Provider value={onboardingContext}>
+              <FormErrorContext.Provider value={formErrorContext}>
+                <Component {...pageProps} />
+              </FormErrorContext.Provider>
+            </OnboardingContext.Provider>
+          </SettingsContext.Provider>
         </SWRConfig>
       </ThemeProvider>
     </>

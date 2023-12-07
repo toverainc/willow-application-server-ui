@@ -6,19 +6,32 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 import type { NextPage } from 'next';
 import * as React from 'react';
-import useSWR from 'swr';
+import { toast } from 'react-toastify';
 import InformationCard from '../components/InformationCard';
 import LeftMenu from '../components/LeftMenu';
-import LoadingSpinner from '../components/LoadingSpinner';
 import WebFlashCard from '../components/WebFlashCard';
-import { AdvancedSettings, FormErrorState, GeneralSettings, NvsSettings } from '../misc/model';
+import { AdvancedSettings, GeneralSettings, NvsSettings, TZDictionary } from '../misc/model';
 import AdvancedSettingsSection from '../pagecomponents/AdvancedSettingsSection';
 import ConnectionSettingsSection from '../pagecomponents/ConnectionSettingsSection';
 import GeneralSettingsSection from '../pagecomponents/GeneralSettingsSection';
-import { FormErrorContext, OnboardingContext } from './_app';
-import { toast } from 'react-toastify';
+import { FormErrorContext, OnboardingContext, SettingsContext } from './_app';
+import LoadingSpinner from '../components/LoadingSpinner';
 
-function SettingsAccordions() {
+function SettingsAccordions({
+  generalSettings,
+  defaultGeneralSettings,
+  advancedSettings,
+  defaultAdvancedSettings,
+  nvsSettings,
+  tzDictionary,
+}: {
+  generalSettings: GeneralSettings;
+  defaultGeneralSettings: GeneralSettings;
+  advancedSettings: AdvancedSettings;
+  defaultAdvancedSettings: AdvancedSettings;
+  nvsSettings: NvsSettings;
+  tzDictionary: TZDictionary;
+}) {
   const formErrorContext = React.useContext(FormErrorContext);
   const onboardingState = React.useContext(OnboardingContext);
   const initialAccordion = onboardingState.isNvsComplete ? 'General' : 'Connectivity';
@@ -53,7 +66,7 @@ function SettingsAccordions() {
           <Typography sx={{ color: 'text.secondary' }}>Connectivity</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <ConnectionSettingsSection></ConnectionSettingsSection>
+          <ConnectionSettingsSection nvsSettings={nvsSettings}></ConnectionSettingsSection>
         </AccordionDetails>
       </Accordion>
       <Accordion
@@ -72,7 +85,10 @@ function SettingsAccordions() {
           <Typography sx={{ color: 'text.secondary' }}>Willow</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <GeneralSettingsSection></GeneralSettingsSection>
+          <GeneralSettingsSection
+            generalSettings={generalSettings}
+            defaultGeneralSettings={defaultGeneralSettings}
+            tzDictionary={tzDictionary}></GeneralSettingsSection>
         </AccordionDetails>
       </Accordion>
       <Accordion
@@ -90,7 +106,10 @@ function SettingsAccordions() {
           <Typography sx={{ color: 'text.secondary' }}>Willow (Advanced)</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <AdvancedSettingsSection></AdvancedSettingsSection>
+          <AdvancedSettingsSection
+            advancedSettings={advancedSettings}
+            defaultAdvancedSettings={defaultAdvancedSettings}
+            tzDictionary={tzDictionary}></AdvancedSettingsSection>
         </AccordionDetails>
       </Accordion>
     </div>
@@ -128,18 +147,24 @@ function GetInformationCard(showPrereleases: boolean) {
 }
 
 const Config: NextPage = () => {
-  const { data: nvsData, isLoading: nvsIsLoading } = useSWR<NvsSettings>('/api/config?type=nvs');
-  const { data: configData, isLoading: configIsLoading } =
-    useSWR<GeneralSettings>('/api/config?type=config');
-  const { data: advancedConfigData, isLoading: advancedConfigIsLoading } =
-    useSWR<AdvancedSettings>('/api/config?type=config');
-
-  return nvsIsLoading || configIsLoading || advancedConfigIsLoading ? (
+  const settingsContext = React.useContext(SettingsContext);
+  return !settingsContext.generalSettings ||
+    !settingsContext.defaultGeneralSettings ||
+    !settingsContext.advancedSettings ||
+    !settingsContext.defaultAdvancedSettings ||
+    !settingsContext.nvsSettings ||
+    !settingsContext.tzDictionary ? (
     <LoadingSpinner />
   ) : (
     <LeftMenu>
-      {GetInformationCard(advancedConfigData?.show_prereleases ?? false)}
-      <SettingsAccordions></SettingsAccordions>
+      {GetInformationCard(settingsContext.advancedSettings?.show_prereleases ?? false)}
+      <SettingsAccordions
+        generalSettings={settingsContext.generalSettings}
+        defaultGeneralSettings={settingsContext.defaultGeneralSettings}
+        advancedSettings={settingsContext.advancedSettings}
+        defaultAdvancedSettings={settingsContext.defaultAdvancedSettings}
+        nvsSettings={settingsContext.nvsSettings}
+        tzDictionary={settingsContext.tzDictionary}></SettingsAccordions>
     </LeftMenu>
   );
 };

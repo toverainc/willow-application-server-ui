@@ -7,8 +7,6 @@ import InputLabel from '@mui/material/InputLabel';
 import Slider from '@mui/material/Slider';
 import Stack from '@mui/material/Stack';
 import * as React from 'react';
-import useSWR from 'swr';
-import LoadingSpinner from '../components/LoadingSpinner';
 import {
   EnumSelectHelper,
   HelpTooltip,
@@ -19,15 +17,16 @@ import {
 import { AUDIO_CODECS, AdvancedSettings, TZDictionary, VAD_MODES, WAKE_MODES } from '../misc/model';
 import { FormErrorContext } from '../pages/_app';
 
-export default function AdvancedSettingsSection() {
+export default function AdvancedSettingsSection({
+  advancedSettings,
+  defaultAdvancedSettings,
+  tzDictionary,
+}: {
+  advancedSettings: AdvancedSettings;
+  defaultAdvancedSettings: AdvancedSettings;
+  tzDictionary: TZDictionary;
+}) {
   const formErrorContext = React.useContext(FormErrorContext);
-  const [loading, setLoading] = React.useState(true);
-  const { data: advancedSettings, error: advancedSettingsError } =
-    useSWR<AdvancedSettings>('/api/config?type=config');
-  const { data: defaultAdvancedSettings, error: defaultAdvancedSettingsError } =
-    useSWR<AdvancedSettings>('/api/config?type=config&default=true');
-  const { data: tzDictionary, error: tzDictionaryError } =
-    useSWR<TZDictionary>('/api/config?type=tz');
 
   const [changesMade, setChangesMade] = React.useState(false);
 
@@ -162,7 +161,6 @@ export default function AdvancedSettingsSection() {
   React.useEffect(() => {
     if (advancedSettings && defaultAdvancedSettings) {
       setFieldState(Object.assign({}, defaultAdvancedSettings, advancedSettings));
-      setLoading(false);
     }
   }, [advancedSettings, defaultAdvancedSettings]);
 
@@ -178,9 +176,7 @@ export default function AdvancedSettingsSection() {
     setChangesMade(false);
   };
 
-  return loading || !(advancedSettings && defaultAdvancedSettings && tzDictionary) ? (
-    <LoadingSpinner />
-  ) : (
+  return (
     <form
       name="advanced-settings-form"
       onSubmit={(event) => handleSubmit(event, tzDictionary, formErrorContext, false)}>
