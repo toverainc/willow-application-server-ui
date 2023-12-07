@@ -13,7 +13,6 @@ import {
   GeneralSettings,
   NvsSettings,
   OnboardingState,
-  SettingsState,
   TZDictionary,
 } from '../misc/model';
 
@@ -55,15 +54,6 @@ export const OnboardingContext = React.createContext<OnboardingState>({
   isOnboardingComplete: false,
 });
 
-export const SettingsContext = React.createContext<SettingsState>({
-  nvsSettings: undefined,
-  generalSettings: undefined,
-  defaultGeneralSettings: undefined,
-  advancedSettings: undefined,
-  defaultAdvancedSettings: undefined,
-  tzDictionary: undefined,
-});
-
 export const FormErrorContext = React.createContext<FormErrorStates>({
   WisUrlError: { Error: false, HelperText: '' },
   WisTtsUrlError: { Error: false, HelperText: '' },
@@ -83,26 +73,18 @@ export class HttpError extends Error {
 }
 
 export default function App({ Component, pageProps }: AppProps) {
-  const { data: nvsData, isLoading: nvsIsLoading } = useSWR<NvsSettings>(
-    '/api/config?type=nvs',
+  const { data: nvsData } = useSWR<NvsSettings>('/api/config?type=nvs', fetcher);
+  const { data: generalSettings } = useSWR<GeneralSettings>('/api/config?type=config', fetcher);
+  const { data: advancedSettings } = useSWR<AdvancedSettings>('/api/config?type=config', fetcher);
+  const { data: defaultGeneralSettings } = useSWR<GeneralSettings>(
+    '/api/config?type=config&default=true',
     fetcher
   );
-  const { data: generalSettings, isLoading: generalSettingsIsLoading } = useSWR<GeneralSettings>(
-    '/api/config?type=config',
+  const { data: defaultAdvancedSettings } = useSWR<AdvancedSettings>(
+    '/api/config?type=config&default=true',
     fetcher
   );
-  const { data: defaultGeneralSettings, isLoading: defaultGeneralSettingsIsLoading } =
-    useSWR<GeneralSettings>('/api/config?type=config&default=true', fetcher);
-  const { data: advancedSettings, isLoading: advancedSettingsIsLoading } = useSWR<AdvancedSettings>(
-    '/api/config?type=config',
-    fetcher
-  );
-  const { data: defaultAdvancedSettings, isLoading: defaultAdvancedSettingsIsLoading } =
-    useSWR<AdvancedSettings>('/api/config?type=config&default=true', fetcher);
-  const { data: tzDictionary, isLoading: tzDictionaryIsLoading } = useSWR<TZDictionary>(
-    '/api/config?type=tz',
-    fetcher
-  );
+  const { data: tzDictionary } = useSWR<TZDictionary>('/api/config?type=tz', fetcher);
 
   const onboardingContext = useContext(OnboardingContext);
   onboardingContext.isGeneralConfigComplete = generalSettings
@@ -116,23 +98,14 @@ export default function App({ Component, pageProps }: AppProps) {
   onboardingContext.isOnboardingComplete =
     onboardingContext.isGeneralConfigComplete && onboardingContext.isNvsComplete;
 
-  const settingsContext = useContext(SettingsContext);
-  settingsContext.nvsSettings = nvsData;
-  settingsContext.generalSettings = generalSettings;
-  settingsContext.defaultGeneralSettings = defaultGeneralSettings;
-  settingsContext.advancedSettings = advancedSettings;
-  settingsContext.defaultAdvancedSettings = defaultAdvancedSettings;
-  settingsContext.tzDictionary = tzDictionary;
-
   const formErrorContext = useContext(FormErrorContext);
 
-  //XXX: write a real fetcher
-  return nvsIsLoading ||
-    generalSettingsIsLoading ||
-    defaultGeneralSettingsIsLoading ||
-    advancedSettingsIsLoading ||
-    defaultAdvancedSettingsIsLoading ||
-    tzDictionaryIsLoading ? (
+  return !nvsData ||
+    !generalSettings ||
+    !defaultGeneralSettings ||
+    !advancedSettings ||
+    !defaultAdvancedSettings ||
+    !tzDictionary ? (
     <LoadingSpinner />
   ) : (
     <>
@@ -143,6 +116,15 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta httpEquiv="x-ua-compatible" content="ie=edge" />
         <link rel="shortcut icon" href="/admin/static/favicon.svg" />
+        <link rel="preload" href="/api/config?type=nvs" as="fetch" crossOrigin="anonymous" />
+        <link rel="preload" href="/api/config?type=config" as="fetch" crossOrigin="anonymous" />
+        <link
+          rel="preload"
+          href="/api/config?type=config&default=true"
+          as="fetch"
+          crossOrigin="anonymous"
+        />
+        <link rel="preload" href="/api/config?type=tz" as="fetch" crossOrigin="anonymous" />
       </Head>
       <ToastContainer
         position="top-right"
@@ -159,13 +141,11 @@ export default function App({ Component, pageProps }: AppProps) {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <SWRConfig value={{ fetcher }}>
-          <SettingsContext.Provider value={settingsContext}>
-            <OnboardingContext.Provider value={onboardingContext}>
-              <FormErrorContext.Provider value={formErrorContext}>
-                <Component {...pageProps} />
-              </FormErrorContext.Provider>
-            </OnboardingContext.Provider>
-          </SettingsContext.Provider>
+          <OnboardingContext.Provider value={onboardingContext}>
+            <FormErrorContext.Provider value={formErrorContext}>
+              <Component {...pageProps} />
+            </FormErrorContext.Provider>
+          </OnboardingContext.Provider>
         </SWRConfig>
       </ThemeProvider>
     </>

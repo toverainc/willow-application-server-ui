@@ -134,12 +134,3 @@ export interface OnboardingState {
   isGeneralConfigComplete: boolean;
   isOnboardingComplete: boolean;
 }
-
-export interface SettingsState {
-  nvsSettings: NvsSettings | undefined;
-  generalSettings: GeneralSettings | undefined;
-  defaultGeneralSettings: GeneralSettings | undefined;
-  advancedSettings: AdvancedSettings | undefined;
-  defaultAdvancedSettings: AdvancedSettings | undefined;
-  tzDictionary: TZDictionary | undefined;
-}

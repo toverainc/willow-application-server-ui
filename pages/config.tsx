@@ -7,15 +7,16 @@ import Typography from '@mui/material/Typography';
 import type { NextPage } from 'next';
 import * as React from 'react';
 import { toast } from 'react-toastify';
+import useSWR from 'swr';
 import InformationCard from '../components/InformationCard';
 import LeftMenu from '../components/LeftMenu';
+import LoadingSpinner from '../components/LoadingSpinner';
 import WebFlashCard from '../components/WebFlashCard';
 import { AdvancedSettings, GeneralSettings, NvsSettings, TZDictionary } from '../misc/model';
 import AdvancedSettingsSection from '../pagecomponents/AdvancedSettingsSection';
 import ConnectionSettingsSection from '../pagecomponents/ConnectionSettingsSection';
 import GeneralSettingsSection from '../pagecomponents/GeneralSettingsSection';
-import { FormErrorContext, OnboardingContext, SettingsContext } from './_app';
-import LoadingSpinner from '../components/LoadingSpinner';
+import { FormErrorContext, OnboardingContext } from './_app';
 
 function SettingsAccordions({
   generalSettings,
@@ -147,24 +148,34 @@ function GetInformationCard(showPrereleases: boolean) {
 }
 
 const Config: NextPage = () => {
-  const settingsContext = React.useContext(SettingsContext);
-  return !settingsContext.generalSettings ||
-    !settingsContext.defaultGeneralSettings ||
-    !settingsContext.advancedSettings ||
-    !settingsContext.defaultAdvancedSettings ||
-    !settingsContext.nvsSettings ||
-    !settingsContext.tzDictionary ? (
+  const { data: nvsSettings } = useSWR<NvsSettings>('/api/config?type=nvs');
+  const { data: generalSettings } = useSWR<GeneralSettings>('/api/config?type=config');
+  const { data: advancedSettings } = useSWR<AdvancedSettings>('/api/config?type=config');
+  const { data: defaultGeneralSettings } = useSWR<GeneralSettings>(
+    '/api/config?type=config&default=true'
+  );
+  const { data: defaultAdvancedSettings } = useSWR<AdvancedSettings>(
+    '/api/config?type=config&default=true'
+  );
+  const { data: tzDictionary } = useSWR<TZDictionary>('/api/config?type=tz');
+
+  return !generalSettings ||
+    !defaultGeneralSettings ||
+    !advancedSettings ||
+    !defaultAdvancedSettings ||
+    !nvsSettings ||
+    !tzDictionary ? (
     <LoadingSpinner />
   ) : (
     <LeftMenu>
-      {GetInformationCard(settingsContext.advancedSettings?.show_prereleases ?? false)}
+      {GetInformationCard(advancedSettings?.show_prereleases ?? false)}
       <SettingsAccordions
-        generalSettings={settingsContext.generalSettings}
-        defaultGeneralSettings={settingsContext.defaultGeneralSettings}
-        advancedSettings={settingsContext.advancedSettings}
-        defaultAdvancedSettings={settingsContext.defaultAdvancedSettings}
-        nvsSettings={settingsContext.nvsSettings}
-        tzDictionary={settingsContext.tzDictionary}></SettingsAccordions>
+        generalSettings={generalSettings}
+        defaultGeneralSettings={defaultGeneralSettings}
+        advancedSettings={advancedSettings}
+        defaultAdvancedSettings={defaultAdvancedSettings}
+        nvsSettings={nvsSettings}
+        tzDictionary={tzDictionary}></SettingsAccordions>
     </LeftMenu>
   );
 };
