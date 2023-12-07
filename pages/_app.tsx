@@ -109,7 +109,9 @@ export default function App({ Component, pageProps }: AppProps) {
     ? Object.keys(generalSettings).length > 0
     : false;
   onboardingContext.isNvsComplete = nvsData
-    ? Object.entries(nvsData).every((entry) => entry.values.length > 0)
+    ? nvsData.WAS?.URL?.length > 0 &&
+      nvsData.WIFI?.PSK?.length > 0 &&
+      nvsData.WIFI?.SSID?.length > 0
     : false;
   onboardingContext.isOnboardingComplete =
     onboardingContext.isGeneralConfigComplete && onboardingContext.isNvsComplete;
