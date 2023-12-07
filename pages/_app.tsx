@@ -108,7 +108,9 @@ export default function App({ Component, pageProps }: AppProps) {
   onboardingContext.isGeneralConfigComplete = generalSettings
     ? Object.keys(generalSettings).length > 0
     : false;
-  onboardingContext.isNvsComplete = nvsData ? Object.keys(nvsData).length > 0 : false;
+  onboardingContext.isNvsComplete = nvsData
+    ? Object.entries(nvsData).every((entry) => entry.values.length > 0)
+    : false;
   onboardingContext.isOnboardingComplete =
     onboardingContext.isGeneralConfigComplete && onboardingContext.isNvsComplete;
 
