@@ -1,4 +1,4 @@
-import '@fontsource/raleway';
+import { Raleway } from '@next/font/google';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import type { AppProps } from 'next/app';
@@ -20,6 +20,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/globals.css';
 
+export const raleway = Raleway({ subsets: ['latin'], display: 'swap' });
+
 export const theme = createTheme({
   palette: {
     primary: {
@@ -30,7 +32,7 @@ export const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Raleway"',
+    fontFamily: raleway.style.fontFamily,
   },
   components: {
     MuiButton: {
@@ -134,7 +136,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <SWRConfig value={{ fetcher }}>
           <OnboardingContext.Provider value={onboardingContext}>
             <FormErrorContext.Provider value={formErrorContext}>
-              <Component {...pageProps} />
+              <div className={raleway.className}>
+                <Component {...pageProps} />
+              </div>
             </FormErrorContext.Provider>
           </OnboardingContext.Provider>
         </SWRConfig>
