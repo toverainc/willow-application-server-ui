@@ -120,7 +120,7 @@ export default function ClientCard({
             width={50}
             height={50}
             alt={client.platform}
-            loading="eager"></Image>
+            priority></Image>
         }
         action={<ClientMenu client={client}></ClientMenu>}
         title={client.label || client.hostname}
