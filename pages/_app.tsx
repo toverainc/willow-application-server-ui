@@ -116,15 +116,6 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta httpEquiv="x-ua-compatible" content="ie=edge" />
         <link rel="shortcut icon" href="/admin/static/favicon.svg" />
-        <link rel="preload" href="/api/config?type=nvs" as="fetch" crossOrigin="anonymous" />
-        <link rel="preload" href="/api/config?type=config" as="fetch" crossOrigin="anonymous" />
-        <link
-          rel="preload"
-          href="/api/config?type=config&default=true"
-          as="fetch"
-          crossOrigin="anonymous"
-        />
-        <link rel="preload" href="/api/config?type=tz" as="fetch" crossOrigin="anonymous" />
       </Head>
       <ToastContainer
         position="top-right"
