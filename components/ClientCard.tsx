@@ -110,9 +110,16 @@ export default function ClientCard({
   latestReleaseName: string | undefined;
 }) {
   const [openOtaDialog, setOpenOtaDialog] = React.useState<boolean>(false);
+  const [imageLoading, setImageLoading] = React.useState(true);
 
   return (
-    <Card sx={{ maxWidth: 500, minHeight: 230, boxShadow: 4 }}>
+    <Card
+      sx={{
+        maxWidth: 500,
+        minHeight: 230,
+        boxShadow: 4,
+        display: imageLoading ? 'none' : undefined,
+      }}>
       <CardHeader
         avatar={
           <Image
@@ -120,7 +127,8 @@ export default function ClientCard({
             width={50}
             height={50}
             alt={client.platform}
-            priority></Image>
+            onLoad={() => setImageLoading(false)}
+            priority={true}></Image>
         }
         action={<ClientMenu client={client}></ClientMenu>}
         title={client.label || client.hostname}
