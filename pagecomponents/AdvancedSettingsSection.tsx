@@ -70,6 +70,10 @@ export default function AdvancedSettingsSection({
     setChangesMade(true);
   };
 
+  const micGainValueFormat = (value: number) => {
+    return `${value}db`;
+  };
+
   // Handlers for Record Buffer Slider and Input
   const handleRecordBufferInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFieldStateHelper(
@@ -128,6 +132,10 @@ export default function AdvancedSettingsSection({
     setChangesMade(true);
   };
 
+  const timeoutValueFormat = (value: number) => {
+    return `${value}s`;
+  };
+
   // Handlers for VAD Timeout Slider and Input
   const handleVADTimeoueInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFieldStateHelper(
@@ -155,6 +163,10 @@ export default function AdvancedSettingsSection({
       );
     }
     setChangesMade(true);
+  };
+
+  const vadTimeoutValueFormat = (value: number) => {
+    return `${value}ms`;
   };
 
   // Set initial states or refresh states on config changes
@@ -321,6 +333,8 @@ export default function AdvancedSettingsSection({
           max={14}
           size="small"
           onChange={handleMicGainSliderChange}
+          getAriaValueText={micGainValueFormat}
+          valueLabelFormat={micGainValueFormat}
           valueLabelDisplay="auto"
         />
         <Input
@@ -336,6 +350,7 @@ export default function AdvancedSettingsSection({
             'aria-labelledby': 'input-slider',
           }}
         />
+        db
         <HelpTooltip
           tooltip="General audio capture volume level.
           Has wide ranging effects from wake sensitivity to speech recognition accuracy."
@@ -378,6 +393,8 @@ export default function AdvancedSettingsSection({
           min={1}
           max={30}
           size="small"
+          getAriaValueText={timeoutValueFormat}
+          valueLabelFormat={timeoutValueFormat}
           valueLabelDisplay="auto"
         />
         <Input
@@ -393,6 +410,7 @@ export default function AdvancedSettingsSection({
             'aria-labelledby': 'input-slider',
           }}
         />
+        s
         <HelpTooltip tooltip="How long to wait after wake starts to force the end of recognition."></HelpTooltip>
       </Stack>
       <InputLabel>VAD Timeout</InputLabel>
@@ -404,6 +422,8 @@ export default function AdvancedSettingsSection({
           min={0}
           max={1000}
           size="small"
+          getAriaValueText={vadTimeoutValueFormat}
+          valueLabelFormat={vadTimeoutValueFormat}
           valueLabelDisplay="auto"
         />
         <Input
@@ -419,6 +439,7 @@ export default function AdvancedSettingsSection({
             'aria-labelledby': 'input-slider',
           }}
         />
+        ms
         <HelpTooltip
           tooltip="How long to wait after end of speech to end audio capture.
           Improves response times but can also clip speech if you do not talk fast enough.

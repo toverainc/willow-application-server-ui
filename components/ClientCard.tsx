@@ -113,7 +113,7 @@ export default function ClientCard({
   const [imageLoading, setImageLoading] = React.useState(true);
 
   return (
-    <Fade in={!imageLoading} timeout={{ appear: 1000, enter: 1000, exit: 1000 }}>
+    <Fade in={!imageLoading} timeout={1000}>
       <Card
         sx={{
           maxWidth: 500,

@@ -91,17 +91,21 @@ export default function GeneralSettingsSection({
     setChangesMade(true);
   };
 
+  const speakerValueFormat = (value: number) => {
+    return `${value}%`;
+  };
+
   // Handlers for LCD Brightness Slider and Input
   const handleLcdBrightnessInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFieldStateHelper(
       'lcd_brightness',
-      event.target.value === '' ? undefined : Number(event.target.value)
+      event.target.value === '' ? undefined : Number(event.target.value) * 10
     );
     setChangesMade(true);
   };
 
   const handleLcdBrightnessSliderChange = (event: Event, newValue: number | number[]) => {
-    setFieldStateHelper('lcd_brightness', newValue as number);
+    setFieldStateHelper('lcd_brightness', (newValue as number) * 10);
     setChangesMade(true);
   };
 
@@ -109,8 +113,8 @@ export default function GeneralSettingsSection({
     const lcdBrightnessValue = fieldState.lcd_brightness;
     if (lcdBrightnessValue && lcdBrightnessValue < 0) {
       setFieldStateHelper('lcd_brightness', 0);
-    } else if (lcdBrightnessValue && lcdBrightnessValue > 1023) {
-      setFieldStateHelper('lcd_brightness', 1023);
+    } else if (lcdBrightnessValue && lcdBrightnessValue > 1000) {
+      setFieldStateHelper('lcd_brightness', 1000);
     } else if (!lcdBrightnessValue) {
       setFieldStateHelper(
         'lcd_brightness',
@@ -118,6 +122,10 @@ export default function GeneralSettingsSection({
       );
     }
     setChangesMade(true);
+  };
+
+  const brightnessValueFormat = (value: number) => {
+    return `${value}%`;
   };
 
   // Handlers for Display Timeout Slider and Input
@@ -147,6 +155,10 @@ export default function GeneralSettingsSection({
       );
     }
     setChangesMade(true);
+  };
+
+  const timeoutValueFormat = (value: number) => {
+    return `${value}s`;
   };
 
   React.useEffect(() => {
@@ -371,6 +383,8 @@ export default function GeneralSettingsSection({
           min={0}
           max={100}
           size="small"
+          getAriaValueText={speakerValueFormat}
+          valueLabelFormat={speakerValueFormat}
           valueLabelDisplay="auto"
         />
         <VolumeUp />
@@ -387,34 +401,38 @@ export default function GeneralSettingsSection({
             'aria-labelledby': 'input-slider',
           }}
         />
+        %
       </Stack>
       <InputLabel>LCD Brightness</InputLabel>
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
         <Brightness4Icon />
         <Slider
           name="lcd_brightness"
-          value={fieldState.lcd_brightness}
+          value={(fieldState.lcd_brightness ?? 0) / 10}
           onChange={handleLcdBrightnessSliderChange}
           min={0}
-          max={1000}
+          max={100}
           size="small"
-          step={100}
+          step={10}
+          getAriaValueText={brightnessValueFormat}
+          valueLabelFormat={brightnessValueFormat}
           valueLabelDisplay="auto"
         />
         <Brightness5Icon />
         <Input
-          value={fieldState.lcd_brightness}
+          value={(fieldState.lcd_brightness ?? 0) / 10}
           size="small"
           onChange={handleLcdBrightnessInputChange}
           onBlur={handleLcdBrightnessBlur}
           inputProps={{
             step: 1,
             min: 0,
-            max: 1023,
+            max: 100,
             type: 'number',
             'aria-labelledby': 'input-slider',
           }}
         />
+        %
       </Stack>
       <InputLabel>Display Timeout</InputLabel>
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
@@ -426,6 +444,8 @@ export default function GeneralSettingsSection({
           min={1}
           max={60}
           size="small"
+          getAriaValueText={timeoutValueFormat}
+          valueLabelFormat={timeoutValueFormat}
           valueLabelDisplay="auto"
         />
         <HourglassFull />
@@ -442,6 +462,7 @@ export default function GeneralSettingsSection({
             'aria-labelledby': 'input-slider',
           }}
         />
+        s
       </Stack>
       <FormControl
         fullWidth
