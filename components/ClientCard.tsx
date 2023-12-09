@@ -21,6 +21,7 @@ import {
 } from './ConfirmDialog';
 import NameClientDialog from './NameClientDialog';
 import OtaDialog from './OtaDialog';
+import LoadingSpinner from './LoadingSpinner';
 
 function ClientMenu({ client }: { client: Client }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -113,7 +114,7 @@ export default function ClientCard({
   const [imageLoading, setImageLoading] = React.useState(true);
 
   return (
-    <Fade in={!imageLoading} timeout={1000}>
+    <Fade in={true} timeout={1000}>
       <Card
         sx={{
           maxWidth: 500,
@@ -122,13 +123,19 @@ export default function ClientCard({
         }}>
         <CardHeader
           avatar={
-            <Image
-              src={'static/' + client.platform + '.png'}
-              width={50}
-              height={50}
-              alt={client.platform}
-              onLoad={() => setImageLoading(false)}
-              priority={true}></Image>
+            <>
+              <div style={{ display: imageLoading ? undefined : 'none' }}>
+                <LoadingSpinner />
+              </div>
+              <Image
+                src={'static/' + client.platform + '.png'}
+                width={50}
+                height={50}
+                alt={client.platform}
+                onLoad={() => setImageLoading(false)}
+                priority={true}
+                style={{ display: imageLoading ? 'none' : undefined }}></Image>
+            </>
           }
           action={<ClientMenu client={client}></ClientMenu>}
           title={client.label || client.hostname}
