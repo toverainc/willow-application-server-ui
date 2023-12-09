@@ -400,6 +400,7 @@ export default function GeneralSettingsSection({
             type: 'number',
             'aria-labelledby': 'input-slider',
           }}
+          sx={{ width: 55 }}
         />
         %
       </Stack>
@@ -431,6 +432,7 @@ export default function GeneralSettingsSection({
             type: 'number',
             'aria-labelledby': 'input-slider',
           }}
+          sx={{ width: 55 }}
         />
         %
       </Stack>

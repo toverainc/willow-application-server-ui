@@ -445,6 +445,7 @@ export default function AdvancedSettingsSection({
             type: 'number',
             'aria-labelledby': 'input-slider',
           }}
+          sx={{ width: 65 }}
         />
         ms
         <HelpTooltip

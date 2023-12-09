@@ -166,6 +166,7 @@ export default function AudioSource({
                 type: 'number',
                 'aria-labelledby': 'input-slider',
               }}
+              sx={{ width: 60 }}
             />
             %
             <HelpTooltip tooltip="If an audio source is defined this sets the volume level for the speaker on the client. Defaults to your configured speaker volume from Configuration General Settings." />
