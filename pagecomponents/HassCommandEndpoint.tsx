@@ -114,6 +114,7 @@ export default function HassCommandEndpoint({
           margin="dense"
           variant="outlined"
           type={showHaToken ? 'text' : 'password'}
+          autoComplete="off"
           size="small"
           fullWidth
           InputProps={{

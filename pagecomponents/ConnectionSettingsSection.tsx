@@ -165,6 +165,7 @@ export default function ConnectionSettingsSection({ nvsSettings }: { nvsSettings
         margin="dense"
         variant="outlined"
         type={showPsk ? 'text' : 'password'}
+        autoComplete="off"
         size="small"
         fullWidth
         InputProps={{
