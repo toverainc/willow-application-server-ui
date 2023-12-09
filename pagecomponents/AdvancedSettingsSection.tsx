@@ -103,6 +103,10 @@ export default function AdvancedSettingsSection({
     setChangesMade(true);
   };
 
+  const recordBufferValueFormat = (value: number) => {
+    return `${value}kb`;
+  };
+
   // Handlers for Stream Timeout Slider and Input
   const handleStreamTimeoutInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFieldStateHelper(
@@ -365,6 +369,8 @@ export default function AdvancedSettingsSection({
           min={0}
           max={16}
           size="small"
+          getAriaValueText={recordBufferValueFormat}
+          valueLabelFormat={recordBufferValueFormat}
           valueLabelDisplay="auto"
         />
         <Input
@@ -380,6 +386,7 @@ export default function AdvancedSettingsSection({
             'aria-labelledby': 'input-slider',
           }}
         />
+        kb
         <HelpTooltip
           tooltip="Record buffer configures the timing between when the client wakes and when it starts capturing commands.
           Users with a local WIS instance may want to try setting lower (10 or so)."></HelpTooltip>
