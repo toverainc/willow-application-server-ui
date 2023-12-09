@@ -62,6 +62,10 @@ export default function AudioSource({
     }
   };
 
+  const speakerVolumeValueFormat = (value: number) => {
+    return `${value}%`;
+  };
+
   // TTS URL Generation
   function handleAudioTtsUrlChange(
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -145,6 +149,8 @@ export default function AudioSource({
               min={0}
               max={100}
               size="small"
+              getAriaValueText={speakerVolumeValueFormat}
+              valueLabelFormat={speakerVolumeValueFormat}
               valueLabelDisplay="auto"
             />
             <VolumeUp />
@@ -161,6 +167,7 @@ export default function AudioSource({
                 'aria-labelledby': 'input-slider',
               }}
             />
+            %
             <HelpTooltip tooltip="If an audio source is defined this sets the volume level for the speaker on the client. Defaults to your configured speaker volume from Configuration General Settings." />
           </Stack>
         </>
