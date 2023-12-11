@@ -12,6 +12,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Image from 'next/image';
 import * as React from 'react';
+import { ClientImages } from '../misc/clientimages';
 import { Client, ReleaseAsset } from '../misc/model';
 import {
   ApplyConfigDialog,
@@ -21,7 +22,6 @@ import {
 } from './ConfirmDialog';
 import NameClientDialog from './NameClientDialog';
 import OtaDialog from './OtaDialog';
-import LoadingSpinner from './LoadingSpinner';
 
 function ClientMenu({ client }: { client: Client }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -111,7 +111,6 @@ export default function ClientCard({
   latestReleaseName: string | undefined;
 }) {
   const [openOtaDialog, setOpenOtaDialog] = React.useState<boolean>(false);
-  const [imageLoading, setImageLoading] = React.useState(true);
 
   return (
     <Fade in={true} timeout={1000}>
@@ -123,19 +122,13 @@ export default function ClientCard({
         }}>
         <CardHeader
           avatar={
-            <>
-              <div style={{ display: imageLoading ? undefined : 'none' }}>
-                <LoadingSpinner />
-              </div>
-              <Image
-                src={'static/' + client.platform + '.png'}
-                width={50}
-                height={50}
-                alt={client.platform}
-                onLoad={() => setImageLoading(false)}
-                priority={true}
-                style={{ display: imageLoading ? 'none' : undefined }}></Image>
-            </>
+            <Image
+              src={ClientImages[client.platform]}
+              width={50}
+              height={50}
+              alt={client.platform}
+              priority={true}
+              placeholder="blur"></Image>
           }
           action={<ClientMenu client={client}></ClientMenu>}
           title={client.label || client.hostname}
