@@ -116,7 +116,7 @@ export async function handleSubmit(
     mqtt_tls:
       generalSettingsForm.command_endpoint == 'MQTT' ? !!generalSettingsForm.mqtt_tls : undefined,
     speaker_volume: parseIntOrUndef(generalSettingsForm.speaker_volume),
-    lcd_brightness: (parseIntOrUndef(generalSettingsForm.lcd_brightness) ?? 0) * 10,
+    lcd_brightness: parseIntOrUndef(generalSettingsForm.lcd_brightness),
     display_timeout: parseIntOrUndef(generalSettingsForm.display_timeout),
     wake_confirmation: !!generalSettingsForm.wake_confirmation,
     timezone: tzDictionary[generalSettingsForm.timezone],

@@ -99,13 +99,13 @@ export default function GeneralSettingsSection({
   const handleLcdBrightnessInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFieldStateHelper(
       'lcd_brightness',
-      event.target.value === '' ? undefined : Number(event.target.value) * 10
+      event.target.value === '' ? undefined : Number(event.target.value)
     );
     setChangesMade(true);
   };
 
   const handleLcdBrightnessSliderChange = (event: Event, newValue: number | number[]) => {
-    setFieldStateHelper('lcd_brightness', (newValue as number) * 10);
+    setFieldStateHelper('lcd_brightness', newValue as number);
     setChangesMade(true);
   };
 
@@ -113,8 +113,8 @@ export default function GeneralSettingsSection({
     const lcdBrightnessValue = fieldState.lcd_brightness;
     if (lcdBrightnessValue && lcdBrightnessValue < 0) {
       setFieldStateHelper('lcd_brightness', 0);
-    } else if (lcdBrightnessValue && lcdBrightnessValue > 1000) {
-      setFieldStateHelper('lcd_brightness', 1000);
+    } else if (lcdBrightnessValue && lcdBrightnessValue > 1023) {
+      setFieldStateHelper('lcd_brightness', 1023);
     } else if (!lcdBrightnessValue) {
       setFieldStateHelper(
         'lcd_brightness',
@@ -122,10 +122,6 @@ export default function GeneralSettingsSection({
       );
     }
     setChangesMade(true);
-  };
-
-  const brightnessValueFormat = (value: number) => {
-    return `${value}%`;
   };
 
   // Handlers for Display Timeout Slider and Input
@@ -409,32 +405,29 @@ export default function GeneralSettingsSection({
         <Brightness4Icon />
         <Slider
           name="lcd_brightness"
-          value={(fieldState.lcd_brightness ?? 0) / 10}
+          value={fieldState.lcd_brightness}
           onChange={handleLcdBrightnessSliderChange}
           min={0}
-          max={100}
+          max={1023}
           size="small"
           step={10}
-          getAriaValueText={brightnessValueFormat}
-          valueLabelFormat={brightnessValueFormat}
           valueLabelDisplay="auto"
         />
         <Brightness5Icon />
         <Input
-          value={(fieldState.lcd_brightness ?? 0) / 10}
+          value={fieldState.lcd_brightness}
           size="small"
           onChange={handleLcdBrightnessInputChange}
           onBlur={handleLcdBrightnessBlur}
           inputProps={{
             step: 1,
             min: 0,
-            max: 100,
+            max: 1023,
             type: 'number',
             'aria-labelledby': 'input-slider',
           }}
           sx={{ width: 55 }}
         />
-        %
       </Stack>
       <InputLabel>Display Timeout</InputLabel>
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
