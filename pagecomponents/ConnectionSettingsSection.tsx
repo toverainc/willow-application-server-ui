@@ -3,20 +3,17 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Button, IconButton, InputAdornment, Stack, TextField } from '@mui/material';
 import React from 'react';
 import { toast } from 'react-toastify';
-import useSWR, { mutate } from 'swr';
-import LoadingSpinner from '../components/LoadingSpinner';
+import { mutate } from 'swr';
 import { WAS_URL, post } from '../misc/fetchers';
 import { setFieldStateHelperImpl } from '../misc/helperfunctions';
 import { NvsSettings } from '../misc/model';
 import { ValidateWasUrl, ValidateWifiPsk, ValidateWifiSSID } from '../misc/validations';
 import { OnboardingContext } from '../pages/_app';
 
-export default function ConnectionSettingsSection() {
-  const [loading, setLoading] = React.useState(true);
+export default function ConnectionSettingsSection({ nvsSettings }: { nvsSettings: NvsSettings }) {
   const [showPsk, setShowPsk] = React.useState(false);
   const handleClickShowPsk = () => setShowPsk(!showPsk);
   const handleMouseDownPsk = () => setShowPsk(!showPsk);
-  const { data: nvsSettings, error } = useSWR<NvsSettings>('/api/config?type=nvs');
 
   // field values
   const [fieldState, setFieldState] = React.useState(Object.assign({}, nvsSettings));
@@ -91,7 +88,6 @@ export default function ConnectionSettingsSection() {
     if (nvsSettings) {
       setFieldStateHelper('WIFI', nvsSettings.WIFI);
       setFieldStateHelper('WAS', nvsSettings.WAS);
-      setLoading(false);
     }
   }, [nvsSettings]);
 
@@ -130,9 +126,7 @@ export default function ConnectionSettingsSection() {
     }
   }
 
-  return loading || !nvsSettings ? (
-    <LoadingSpinner />
-  ) : (
+  return (
     <form onSubmit={handleSubmit}>
       <TextField
         name="url"
@@ -171,6 +165,7 @@ export default function ConnectionSettingsSection() {
         margin="dense"
         variant="outlined"
         type={showPsk ? 'text' : 'password'}
+        autoComplete="off"
         size="small"
         fullWidth
         InputProps={{

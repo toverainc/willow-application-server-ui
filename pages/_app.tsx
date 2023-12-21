@@ -1,4 +1,4 @@
-import '@fontsource/raleway';
+import { Raleway } from '@next/font/google';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import type { AppProps } from 'next/app';
@@ -7,11 +7,20 @@ import React, { useContext } from 'react';
 import { ToastContainer } from 'react-toastify';
 import useSWR, { SWRConfig } from 'swr';
 import { fetcher } from '../misc/fetchers';
-import { FormErrorStates, GeneralSettings, NvsSettings } from '../misc/model';
+import {
+  AdvancedSettings,
+  FormErrorStates,
+  GeneralSettings,
+  NvsSettings,
+  OnboardingState,
+  TZDictionary,
+} from '../misc/model';
 
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/globals.css';
+
+export const raleway = Raleway({ subsets: ['latin'], display: 'swap' });
 
 export const theme = createTheme({
   palette: {
@@ -23,7 +32,7 @@ export const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Raleway"',
+    fontFamily: raleway.style.fontFamily,
   },
   components: {
     MuiButton: {
@@ -40,12 +49,6 @@ export const theme = createTheme({
     },
   },
 });
-
-export interface OnboardingState {
-  isNvsComplete: boolean;
-  isGeneralConfigComplete: boolean;
-  isOnboardingComplete: boolean;
-}
 
 export const OnboardingContext = React.createContext<OnboardingState>({
   isNvsComplete: false,
@@ -72,27 +75,39 @@ export class HttpError extends Error {
 }
 
 export default function App({ Component, pageProps }: AppProps) {
-  const { data: nvsData, isLoading: nvsIsLoading } = useSWR<NvsSettings>(
-    '/api/config?type=nvs',
+  const { data: nvsData } = useSWR<NvsSettings>('/api/config?type=nvs', fetcher);
+  const { data: generalSettings } = useSWR<GeneralSettings>('/api/config?type=config', fetcher);
+  const { data: advancedSettings } = useSWR<AdvancedSettings>('/api/config?type=config', fetcher);
+  const { data: defaultGeneralSettings } = useSWR<GeneralSettings>(
+    '/api/config?type=config&default=true',
     fetcher
   );
-  const { data: configData, isLoading: configIsLoading } = useSWR<GeneralSettings>(
-    '/api/config?type=config',
+  const { data: defaultAdvancedSettings } = useSWR<AdvancedSettings>(
+    '/api/config?type=config&default=true',
     fetcher
   );
+  const { data: tzDictionary } = useSWR<TZDictionary>('/api/config?type=tz', fetcher);
 
   const onboardingContext = useContext(OnboardingContext);
-  onboardingContext.isGeneralConfigComplete = configData
-    ? Object.keys(configData).length > 0
+  onboardingContext.isGeneralConfigComplete = generalSettings
+    ? Object.keys(generalSettings).length > 0
     : false;
-  onboardingContext.isNvsComplete = nvsData ? Object.keys(nvsData).length > 0 : false;
+  onboardingContext.isNvsComplete = nvsData
+    ? nvsData.WAS?.URL?.length > 0 &&
+      nvsData.WIFI?.PSK?.length > 0 &&
+      nvsData.WIFI?.SSID?.length > 0
+    : false;
   onboardingContext.isOnboardingComplete =
     onboardingContext.isGeneralConfigComplete && onboardingContext.isNvsComplete;
 
   const formErrorContext = useContext(FormErrorContext);
 
-  //XXX: write a real fetcher
-  return nvsIsLoading || configIsLoading ? (
+  return !nvsData ||
+    !generalSettings ||
+    !defaultGeneralSettings ||
+    !advancedSettings ||
+    !defaultAdvancedSettings ||
+    !tzDictionary ? (
     <LoadingSpinner />
   ) : (
     <>
@@ -121,7 +136,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <SWRConfig value={{ fetcher }}>
           <OnboardingContext.Provider value={onboardingContext}>
             <FormErrorContext.Provider value={formErrorContext}>
-              <Component {...pageProps} />
+              <div className={raleway.className}>
+                <Component {...pageProps} />
+              </div>
             </FormErrorContext.Provider>
           </OnboardingContext.Provider>
         </SWRConfig>

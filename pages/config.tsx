@@ -6,19 +6,33 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 import type { NextPage } from 'next';
 import * as React from 'react';
+import { toast } from 'react-toastify';
 import useSWR from 'swr';
 import InformationCard from '../components/InformationCard';
 import LeftMenu from '../components/LeftMenu';
 import LoadingSpinner from '../components/LoadingSpinner';
 import WebFlashCard from '../components/WebFlashCard';
-import { AdvancedSettings, FormErrorState, GeneralSettings, NvsSettings } from '../misc/model';
+import { AdvancedSettings, GeneralSettings, NvsSettings, TZDictionary } from '../misc/model';
 import AdvancedSettingsSection from '../pagecomponents/AdvancedSettingsSection';
 import ConnectionSettingsSection from '../pagecomponents/ConnectionSettingsSection';
 import GeneralSettingsSection from '../pagecomponents/GeneralSettingsSection';
 import { FormErrorContext, OnboardingContext } from './_app';
-import { toast } from 'react-toastify';
 
-function SettingsAccordions() {
+function SettingsAccordions({
+  generalSettings,
+  defaultGeneralSettings,
+  advancedSettings,
+  defaultAdvancedSettings,
+  nvsSettings,
+  tzDictionary,
+}: {
+  generalSettings: GeneralSettings;
+  defaultGeneralSettings: GeneralSettings;
+  advancedSettings: AdvancedSettings;
+  defaultAdvancedSettings: AdvancedSettings;
+  nvsSettings: NvsSettings;
+  tzDictionary: TZDictionary;
+}) {
   const formErrorContext = React.useContext(FormErrorContext);
   const onboardingState = React.useContext(OnboardingContext);
   const initialAccordion = onboardingState.isNvsComplete ? 'General' : 'Connectivity';
@@ -53,7 +67,7 @@ function SettingsAccordions() {
           <Typography sx={{ color: 'text.secondary' }}>Connectivity</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <ConnectionSettingsSection></ConnectionSettingsSection>
+          <ConnectionSettingsSection nvsSettings={nvsSettings}></ConnectionSettingsSection>
         </AccordionDetails>
       </Accordion>
       <Accordion
@@ -72,7 +86,10 @@ function SettingsAccordions() {
           <Typography sx={{ color: 'text.secondary' }}>Willow</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <GeneralSettingsSection></GeneralSettingsSection>
+          <GeneralSettingsSection
+            generalSettings={generalSettings}
+            defaultGeneralSettings={defaultGeneralSettings}
+            tzDictionary={tzDictionary}></GeneralSettingsSection>
         </AccordionDetails>
       </Accordion>
       <Accordion
@@ -90,7 +107,10 @@ function SettingsAccordions() {
           <Typography sx={{ color: 'text.secondary' }}>Willow (Advanced)</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <AdvancedSettingsSection></AdvancedSettingsSection>
+          <AdvancedSettingsSection
+            advancedSettings={advancedSettings}
+            defaultAdvancedSettings={defaultAdvancedSettings}
+            tzDictionary={tzDictionary}></AdvancedSettingsSection>
         </AccordionDetails>
       </Accordion>
     </div>
@@ -128,18 +148,34 @@ function GetInformationCard(showPrereleases: boolean) {
 }
 
 const Config: NextPage = () => {
-  const { data: nvsData, isLoading: nvsIsLoading } = useSWR<NvsSettings>('/api/config?type=nvs');
-  const { data: configData, isLoading: configIsLoading } =
-    useSWR<GeneralSettings>('/api/config?type=config');
-  const { data: advancedConfigData, isLoading: advancedConfigIsLoading } =
-    useSWR<AdvancedSettings>('/api/config?type=config');
+  const { data: nvsSettings } = useSWR<NvsSettings>('/api/config?type=nvs');
+  const { data: generalSettings } = useSWR<GeneralSettings>('/api/config?type=config');
+  const { data: advancedSettings } = useSWR<AdvancedSettings>('/api/config?type=config');
+  const { data: defaultGeneralSettings } = useSWR<GeneralSettings>(
+    '/api/config?type=config&default=true'
+  );
+  const { data: defaultAdvancedSettings } = useSWR<AdvancedSettings>(
+    '/api/config?type=config&default=true'
+  );
+  const { data: tzDictionary } = useSWR<TZDictionary>('/api/config?type=tz');
 
-  return nvsIsLoading || configIsLoading || advancedConfigIsLoading ? (
+  return !generalSettings ||
+    !defaultGeneralSettings ||
+    !advancedSettings ||
+    !defaultAdvancedSettings ||
+    !nvsSettings ||
+    !tzDictionary ? (
     <LoadingSpinner />
   ) : (
     <LeftMenu>
-      {GetInformationCard(advancedConfigData?.show_prereleases ?? false)}
-      <SettingsAccordions></SettingsAccordions>
+      {GetInformationCard(advancedSettings?.show_prereleases ?? false)}
+      <SettingsAccordions
+        generalSettings={generalSettings}
+        defaultGeneralSettings={defaultGeneralSettings}
+        advancedSettings={advancedSettings}
+        defaultAdvancedSettings={defaultAdvancedSettings}
+        nvsSettings={nvsSettings}
+        tzDictionary={tzDictionary}></SettingsAccordions>
     </LeftMenu>
   );
 };

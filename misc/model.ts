@@ -128,3 +128,9 @@ export interface FormErrorStates {
   MqttHostError: FormErrorState;
   MqttPortError: FormErrorState;
 }
+
+export interface OnboardingState {
+  isNvsComplete: boolean;
+  isGeneralConfigComplete: boolean;
+  isOnboardingComplete: boolean;
+}

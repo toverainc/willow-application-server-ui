@@ -95,6 +95,7 @@ export default function RestCommandEndpoint({
             margin="dense"
             variant="outlined"
             type={showRestPassword ? 'text' : 'password'}
+            autoComplete="off"
             size="small"
             fullWidth
             InputProps={{

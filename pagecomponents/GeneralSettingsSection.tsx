@@ -15,8 +15,6 @@ import Slider from '@mui/material/Slider';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import * as React from 'react';
-import useSWR from 'swr';
-import LoadingSpinner from '../components/LoadingSpinner';
 import {
   EnumSelectHelper,
   HelpTooltip,
@@ -39,17 +37,17 @@ import MQTTCommandEndpoint from './MQTTCommandEndpoint';
 import OpenHabCommandEndpoint from './OpenHabCommandEndpoint';
 import RestCommandEndpoint from './RestCommandEndpoint';
 
-export default function GeneralSettingsSection() {
+export default function GeneralSettingsSection({
+  generalSettings,
+  defaultGeneralSettings,
+  tzDictionary,
+}: {
+  generalSettings: GeneralSettings;
+  defaultGeneralSettings: GeneralSettings;
+  tzDictionary: TZDictionary;
+}) {
   const onboardingState = React.useContext(OnboardingContext);
   const formErrorContext = React.useContext(FormErrorContext);
-  const [loading, setLoading] = React.useState(true);
-
-  const { data: generalSettings, error: generalSettingsError } =
-    useSWR<GeneralSettings>('/api/config?type=config');
-  const { data: defaultGeneralSettings, error: defaultGeneralSettingsError } =
-    useSWR<GeneralSettings>('/api/config?type=config&default=true');
-  const { data: tzDictionary, error: tzDictionaryError } =
-    useSWR<TZDictionary>('/api/config?type=tz');
 
   const [changesMade, setChangesMade] = React.useState(false);
 
@@ -91,6 +89,10 @@ export default function GeneralSettingsSection() {
       );
     }
     setChangesMade(true);
+  };
+
+  const speakerValueFormat = (value: number) => {
+    return `${value}%`;
   };
 
   // Handlers for LCD Brightness Slider and Input
@@ -151,10 +153,13 @@ export default function GeneralSettingsSection() {
     setChangesMade(true);
   };
 
+  const timeoutValueFormat = (value: number) => {
+    return `${value}s`;
+  };
+
   React.useEffect(() => {
     if (generalSettings && defaultGeneralSettings && tzDictionary) {
       setFieldState(Object.assign({}, defaultGeneralSettings, generalSettings));
-      setLoading(false);
     }
   }, [generalSettings, defaultGeneralSettings, tzDictionary]);
 
@@ -215,9 +220,7 @@ export default function GeneralSettingsSection() {
     setChangesMade(true);
   };
 
-  return loading || !(generalSettings && defaultGeneralSettings && tzDictionary) ? (
-    <LoadingSpinner />
-  ) : (
+  return (
     <form
       name="general-settings-form"
       onSubmit={(event) =>
@@ -376,6 +379,8 @@ export default function GeneralSettingsSection() {
           min={0}
           max={100}
           size="small"
+          getAriaValueText={speakerValueFormat}
+          valueLabelFormat={speakerValueFormat}
           valueLabelDisplay="auto"
         />
         <VolumeUp />
@@ -391,7 +396,9 @@ export default function GeneralSettingsSection() {
             type: 'number',
             'aria-labelledby': 'input-slider',
           }}
+          sx={{ width: 55 }}
         />
+        %
       </Stack>
       <InputLabel>LCD Brightness</InputLabel>
       <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
@@ -401,9 +408,9 @@ export default function GeneralSettingsSection() {
           value={fieldState.lcd_brightness}
           onChange={handleLcdBrightnessSliderChange}
           min={0}
-          max={1000}
+          max={1023}
           size="small"
-          step={100}
+          step={10}
           valueLabelDisplay="auto"
         />
         <Brightness5Icon />
@@ -419,6 +426,7 @@ export default function GeneralSettingsSection() {
             type: 'number',
             'aria-labelledby': 'input-slider',
           }}
+          sx={{ width: 55 }}
         />
       </Stack>
       <InputLabel>Display Timeout</InputLabel>
@@ -431,6 +439,8 @@ export default function GeneralSettingsSection() {
           min={1}
           max={60}
           size="small"
+          getAriaValueText={timeoutValueFormat}
+          valueLabelFormat={timeoutValueFormat}
           valueLabelDisplay="auto"
         />
         <HourglassFull />
@@ -447,6 +457,7 @@ export default function GeneralSettingsSection() {
             'aria-labelledby': 'input-slider',
           }}
         />
+        s
       </Stack>
       <FormControl
         fullWidth

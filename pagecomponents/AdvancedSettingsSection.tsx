@@ -7,8 +7,6 @@ import InputLabel from '@mui/material/InputLabel';
 import Slider from '@mui/material/Slider';
 import Stack from '@mui/material/Stack';
 import * as React from 'react';
-import useSWR from 'swr';
-import LoadingSpinner from '../components/LoadingSpinner';
 import {
   EnumSelectHelper,
   HelpTooltip,
@@ -19,15 +17,16 @@ import {
 import { AUDIO_CODECS, AdvancedSettings, TZDictionary, VAD_MODES, WAKE_MODES } from '../misc/model';
 import { FormErrorContext } from '../pages/_app';
 
-export default function AdvancedSettingsSection() {
+export default function AdvancedSettingsSection({
+  advancedSettings,
+  defaultAdvancedSettings,
+  tzDictionary,
+}: {
+  advancedSettings: AdvancedSettings;
+  defaultAdvancedSettings: AdvancedSettings;
+  tzDictionary: TZDictionary;
+}) {
   const formErrorContext = React.useContext(FormErrorContext);
-  const [loading, setLoading] = React.useState(true);
-  const { data: advancedSettings, error: advancedSettingsError } =
-    useSWR<AdvancedSettings>('/api/config?type=config');
-  const { data: defaultAdvancedSettings, error: defaultAdvancedSettingsError } =
-    useSWR<AdvancedSettings>('/api/config?type=config&default=true');
-  const { data: tzDictionary, error: tzDictionaryError } =
-    useSWR<TZDictionary>('/api/config?type=tz');
 
   const [changesMade, setChangesMade] = React.useState(false);
 
@@ -71,6 +70,10 @@ export default function AdvancedSettingsSection() {
     setChangesMade(true);
   };
 
+  const micGainValueFormat = (value: number) => {
+    return `${value}db`;
+  };
+
   // Handlers for Record Buffer Slider and Input
   const handleRecordBufferInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFieldStateHelper(
@@ -98,6 +101,10 @@ export default function AdvancedSettingsSection() {
       );
     }
     setChangesMade(true);
+  };
+
+  const recordBufferValueFormat = (value: number) => {
+    return `${value}kb`;
   };
 
   // Handlers for Stream Timeout Slider and Input
@@ -129,6 +136,10 @@ export default function AdvancedSettingsSection() {
     setChangesMade(true);
   };
 
+  const timeoutValueFormat = (value: number) => {
+    return `${value}s`;
+  };
+
   // Handlers for VAD Timeout Slider and Input
   const handleVADTimeoueInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFieldStateHelper(
@@ -158,11 +169,14 @@ export default function AdvancedSettingsSection() {
     setChangesMade(true);
   };
 
+  const vadTimeoutValueFormat = (value: number) => {
+    return `${value}ms`;
+  };
+
   // Set initial states or refresh states on config changes
   React.useEffect(() => {
     if (advancedSettings && defaultAdvancedSettings) {
       setFieldState(Object.assign({}, defaultAdvancedSettings, advancedSettings));
-      setLoading(false);
     }
   }, [advancedSettings, defaultAdvancedSettings]);
 
@@ -178,9 +192,7 @@ export default function AdvancedSettingsSection() {
     setChangesMade(false);
   };
 
-  return loading || !(advancedSettings && defaultAdvancedSettings && tzDictionary) ? (
-    <LoadingSpinner />
-  ) : (
+  return (
     <form
       name="advanced-settings-form"
       onSubmit={(event) => handleSubmit(event, tzDictionary, formErrorContext, false)}>
@@ -325,6 +337,8 @@ export default function AdvancedSettingsSection() {
           max={14}
           size="small"
           onChange={handleMicGainSliderChange}
+          getAriaValueText={micGainValueFormat}
+          valueLabelFormat={micGainValueFormat}
           valueLabelDisplay="auto"
         />
         <Input
@@ -340,6 +354,7 @@ export default function AdvancedSettingsSection() {
             'aria-labelledby': 'input-slider',
           }}
         />
+        db
         <HelpTooltip
           tooltip="General audio capture volume level.
           Has wide ranging effects from wake sensitivity to speech recognition accuracy."
@@ -354,6 +369,8 @@ export default function AdvancedSettingsSection() {
           min={0}
           max={16}
           size="small"
+          getAriaValueText={recordBufferValueFormat}
+          valueLabelFormat={recordBufferValueFormat}
           valueLabelDisplay="auto"
         />
         <Input
@@ -369,6 +386,7 @@ export default function AdvancedSettingsSection() {
             'aria-labelledby': 'input-slider',
           }}
         />
+        kb
         <HelpTooltip
           tooltip="Record buffer configures the timing between when the client wakes and when it starts capturing commands.
           Users with a local WIS instance may want to try setting lower (10 or so)."></HelpTooltip>
@@ -382,6 +400,8 @@ export default function AdvancedSettingsSection() {
           min={1}
           max={30}
           size="small"
+          getAriaValueText={timeoutValueFormat}
+          valueLabelFormat={timeoutValueFormat}
           valueLabelDisplay="auto"
         />
         <Input
@@ -397,6 +417,7 @@ export default function AdvancedSettingsSection() {
             'aria-labelledby': 'input-slider',
           }}
         />
+        s
         <HelpTooltip tooltip="How long to wait after wake starts to force the end of recognition."></HelpTooltip>
       </Stack>
       <InputLabel>VAD Timeout</InputLabel>
@@ -408,6 +429,8 @@ export default function AdvancedSettingsSection() {
           min={0}
           max={1000}
           size="small"
+          getAriaValueText={vadTimeoutValueFormat}
+          valueLabelFormat={vadTimeoutValueFormat}
           valueLabelDisplay="auto"
         />
         <Input
@@ -422,7 +445,9 @@ export default function AdvancedSettingsSection() {
             type: 'number',
             'aria-labelledby': 'input-slider',
           }}
+          sx={{ width: 65 }}
         />
+        ms
         <HelpTooltip
           tooltip="How long to wait after end of speech to end audio capture.
           Improves response times but can also clip speech if you do not talk fast enough.

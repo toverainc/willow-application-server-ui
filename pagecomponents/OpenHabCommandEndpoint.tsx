@@ -68,6 +68,7 @@ export default function OpenHabCommandEndpoint({
         margin="dense"
         variant="outlined"
         type={showOhToken ? 'text' : 'password'}
+        autoComplete="off"
         size="small"
         fullWidth
         InputProps={{

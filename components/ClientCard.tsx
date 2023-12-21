@@ -1,6 +1,6 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { CardActions, Stack, Tooltip } from '@mui/material';
+import { CardActions, Fade, Stack, Tooltip } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
@@ -12,6 +12,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Image from 'next/image';
 import * as React from 'react';
+import { ClientImages } from '../misc/clientimages';
 import { Client, ReleaseAsset } from '../misc/model';
 import {
   ApplyConfigDialog,
@@ -112,63 +113,71 @@ export default function ClientCard({
   const [openOtaDialog, setOpenOtaDialog] = React.useState<boolean>(false);
 
   return (
-    <Card sx={{ maxWidth: 500, minHeight: 230, boxShadow: 4 }}>
-      <CardHeader
-        avatar={
-          <Image
-            src={'static/' + client.platform + '.png'}
-            width={50}
-            height={50}
-            alt={client.platform}
-            loading="eager"></Image>
-        }
-        action={<ClientMenu client={client}></ClientMenu>}
-        title={client.label || client.hostname}
-        subheader={client.mac_addr}
-        sx={{ paddingBottom: 0 }}
-      />
-      <CardContent sx={{ paddingLeft: 1, paddingBottom: 0, minWidth: 'max-content' }}>
-        <List dense={true}>
-          <ListItem sx={{ paddingTop: 0, paddingBottom: 0, maxWidth: 300 }}>
-            <ListItemText sx={{ margin: 0 }} primary={'Hostname: ' + client.hostname} />
-          </ListItem>
-          <ListItem sx={{ paddingTop: 0, paddingBottom: 0, maxWidth: 300 }}>
-            <ListItemText sx={{ margin: 0 }} primary={'IP Address: ' + client.ip} />
-          </ListItem>
-          <ListItem sx={{ paddingTop: 0, paddingBottom: 0, maxWidth: 300 }}>
-            <ListItemText sx={{ margin: 0 }} primary={'Platform: ' + client.platform} />
-          </ListItem>
-          <ListItem sx={{ paddingTop: 0, paddingBottom: 0, maxWidth: 300 }}>
-            <ListItemText sx={{ margin: 0 }} primary={'Version: ' + client.version} />
-          </ListItem>
-        </List>
-      </CardContent>
-      <CardActions sx={{ paddingLeft: 1, paddingTop: 0 }}>
-        {latestReleaseAsset !== undefined &&
-          latestReleaseName !== undefined &&
-          latestReleaseName !== client.version && (
-            <Stack spacing={2} sx={{ padding: 0 }}>
-              <Tooltip
-                style={{ boxShadow: 'none' }}
-                title={'Upgrade to ' + latestReleaseName}
-                enterTouchDelay={0}>
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  onClick={() => {
-                    setOpenOtaDialog(true);
-                  }}>
-                  <DownloadIcon />
-                </IconButton>
-              </Tooltip>
-              <OtaDialog
-                client={client}
-                open={openOtaDialog}
-                selectedRelease={latestReleaseAsset}
-                onClose={() => setOpenOtaDialog(false)}></OtaDialog>
-            </Stack>
-          )}
-      </CardActions>
-    </Card>
+    <Fade in={true} timeout={1000}>
+      <Card
+        sx={{
+          maxWidth: 500,
+          minHeight: 230,
+          boxShadow: 4,
+        }}>
+        <CardHeader
+          avatar={
+            <Image
+              src={ClientImages[client.platform]}
+              width={50}
+              height={50}
+              alt={client.platform}
+              priority={true}
+              placeholder="blur"></Image>
+          }
+          action={<ClientMenu client={client}></ClientMenu>}
+          title={client.label || client.hostname}
+          subheader={client.mac_addr}
+          sx={{ paddingBottom: 0 }}
+        />
+        <CardContent sx={{ paddingLeft: 1, paddingBottom: 0, minWidth: 'max-content' }}>
+          <List dense={true}>
+            <ListItem sx={{ paddingTop: 0, paddingBottom: 0, maxWidth: 300 }}>
+              <ListItemText sx={{ margin: 0 }} primary={'Hostname: ' + client.hostname} />
+            </ListItem>
+            <ListItem sx={{ paddingTop: 0, paddingBottom: 0, maxWidth: 300 }}>
+              <ListItemText sx={{ margin: 0 }} primary={'IP Address: ' + client.ip} />
+            </ListItem>
+            <ListItem sx={{ paddingTop: 0, paddingBottom: 0, maxWidth: 300 }}>
+              <ListItemText sx={{ margin: 0 }} primary={'Platform: ' + client.platform} />
+            </ListItem>
+            <ListItem sx={{ paddingTop: 0, paddingBottom: 0, maxWidth: 300 }}>
+              <ListItemText sx={{ margin: 0 }} primary={'Version: ' + client.version} />
+            </ListItem>
+          </List>
+        </CardContent>
+        <CardActions sx={{ paddingLeft: 1, paddingTop: 0 }}>
+          {latestReleaseAsset !== undefined &&
+            latestReleaseName !== undefined &&
+            latestReleaseName !== client.version && (
+              <Stack spacing={2} sx={{ padding: 0 }}>
+                <Tooltip
+                  style={{ boxShadow: 'none' }}
+                  title={'Upgrade to ' + latestReleaseName}
+                  enterTouchDelay={0}>
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={() => {
+                      setOpenOtaDialog(true);
+                    }}>
+                    <DownloadIcon />
+                  </IconButton>
+                </Tooltip>
+                <OtaDialog
+                  client={client}
+                  open={openOtaDialog}
+                  selectedRelease={latestReleaseAsset}
+                  onClose={() => setOpenOtaDialog(false)}></OtaDialog>
+              </Stack>
+            )}
+        </CardActions>
+      </Card>
+    </Fade>
   );
 }
