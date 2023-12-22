@@ -1,6 +1,8 @@
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import { WAS_FLASH_URL } from '../misc/fetchers';
+import { CardContent } from '@mui/material';
+import Link from 'next/link';
 
 export default function WebFlashCard({ showPreReleases }: { showPreReleases: boolean }) {
   return (
@@ -23,11 +25,14 @@ export default function WebFlashCard({ showPreReleases }: { showPreReleases: boo
               href={`${WAS_FLASH_URL}&showPreReleases=${showPreReleases}`}>
               Willow Web Flasher
             </a>{' '}
-            to flash your devices.
+            to flash your new devices.
           </>
         }
         sx={{ textAlign: 'center' }}
       />
+      <CardContent sx={{ textAlign: 'center' }}>
+        Devices already running Willow can be updated in the <Link href={'/'}>Clients</Link> tab.
+      </CardContent>
     </Card>
   );
 }
