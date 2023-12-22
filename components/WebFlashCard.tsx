@@ -30,7 +30,7 @@ export default function WebFlashCard({ showPreReleases }: { showPreReleases: boo
         }
         sx={{ textAlign: 'center', paddingBottom: 1 }}
       />
-      <CardContent sx={{ textAlign: 'center', padding: 0 }}>
+      <CardContent sx={{ textAlign: 'center', paddingTop: 0 }}>
         Devices already running Willow can be updated in the <Link href={'/'}>Clients</Link> tab.
       </CardContent>
     </Card>
