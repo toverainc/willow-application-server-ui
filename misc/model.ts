@@ -30,8 +30,11 @@ export interface ReleaseAsset {
 
 export const WAKE_WORDS = {
   alexa: 'Alexa',
+  computer: 'Computer',
+  heywillow: 'Hey Willow',
   hiesp: 'Hi E.S.P.',
   hilexin: 'Hi Lexin (Chinese pronunciation)',
+  jarvis: 'Jarvis',
 };
 export const SPEECH_REC_MODE = {
   WIS: 'Willow Inference Server',
