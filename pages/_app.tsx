@@ -112,7 +112,9 @@ export default function App({ Component, pageProps }: AppProps) {
     !defaultAdvancedSettings ||
     !tzDictionary ||
     !releaseData ? (
-    <LoadingSpinner />
+    <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+      <LoadingSpinner />
+    </div>
   ) : (
     <>
       <Head>
