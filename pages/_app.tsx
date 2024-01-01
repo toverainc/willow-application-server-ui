@@ -13,6 +13,7 @@ import {
   GeneralSettings,
   NvsSettings,
   OnboardingState,
+  Release,
   TZDictionary,
 } from '../misc/model';
 
@@ -75,6 +76,7 @@ export class HttpError extends Error {
 }
 
 export default function App({ Component, pageProps }: AppProps) {
+  // preload data
   const { data: nvsData } = useSWR<NvsSettings>('/api/config?type=nvs', fetcher);
   const { data: generalSettings } = useSWR<GeneralSettings>('/api/config?type=config', fetcher);
   const { data: advancedSettings } = useSWR<AdvancedSettings>('/api/config?type=config', fetcher);
@@ -87,6 +89,7 @@ export default function App({ Component, pageProps }: AppProps) {
     fetcher
   );
   const { data: tzDictionary } = useSWR<TZDictionary>('/api/config?type=tz', fetcher);
+  const { data: releaseData } = useSWR<Release[]>('/api/release?type=was', fetcher);
 
   const onboardingContext = useContext(OnboardingContext);
   onboardingContext.isGeneralConfigComplete = generalSettings
@@ -107,7 +110,8 @@ export default function App({ Component, pageProps }: AppProps) {
     !defaultGeneralSettings ||
     !advancedSettings ||
     !defaultAdvancedSettings ||
-    !tzDictionary ? (
+    !tzDictionary ||
+    !releaseData ? (
     <LoadingSpinner />
   ) : (
     <>
