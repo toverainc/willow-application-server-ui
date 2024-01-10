@@ -34,7 +34,9 @@ function ReleaseCard({ release }: { release: Release }) {
             <Typography fontSize={10}>
               {(
                 release.assets
-                  .filter((asset) => asset.cached)
+                  .filter((asset) => {
+                    return asset.cached && asset.build_type == 'ota';
+                  })
                   .reduce((totalSize, asset) => totalSize + asset.size, 0) /
                 (1024 * 1024)
               ).toFixed(2)}
