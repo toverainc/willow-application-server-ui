@@ -27,7 +27,7 @@ const About: NextPage = () => {
               height={500}
               width={isDesktopOrLaptop ? '775px' : '345px'}
               allowTransparency={true}
-              frameBorder={0}
+              style={{ border: 0 }}
               sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
           </CardContent>
         </InformationCard>
