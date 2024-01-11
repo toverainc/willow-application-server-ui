@@ -23,6 +23,10 @@ import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import { useMediaQuery } from 'react-responsive';
 import { OnboardingContext } from '../pages/_app';
 import AppsIcon from '@mui/icons-material/Apps';
+import InfoIcon from '@mui/icons-material/Info';
+import useSWR from 'swr';
+import { VersionInfo } from '../misc/model';
+import { Stack } from '@mui/material';
 
 const drawerWidth = 240;
 
@@ -116,6 +120,7 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
   const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1224px)' });
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' });
   const isRetina = useMediaQuery({ query: '(min-resolution: 2dppx)' });
+  const { data: versionData } = useSWR<VersionInfo>('/api/info');
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -187,6 +192,9 @@ export default function LeftMenu({ children }: { children: React.ReactNode }) {
             page="/assetmanagement"
             display={onboardingState.isOnboardingComplete}>
             <SystemUpdateAltIcon></SystemUpdateAltIcon>
+          </MenuItem>
+          <MenuItem text="About" page="/about" display={true}>
+            <InfoIcon></InfoIcon>
           </MenuItem>
         </List>
       </Drawer>
