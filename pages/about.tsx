@@ -15,9 +15,9 @@ const About: NextPage = () => {
     <LeftMenu>
       <h2 style={{ textAlign: 'center' }}>About</h2>
       <Box sx={{ maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
-        <InformationCard title="Version">
+        <InformationCard title="Versions">
           <CardContent sx={{ textAlign: 'center', padding: 0 }}>
-            {versionData?.was.version}
+            <b>WAS:</b> {versionData?.was.version}
           </CardContent>
         </InformationCard>
         <InformationCard title="Community Discord">
