@@ -32,22 +32,6 @@ const About: NextPage = () => {
           </CardContent>
         </InformationCard>
       </Box>
-      {false && (
-        <Grid container spacing={2}>
-          <Grid item md={4} sm={6} xs={12} lg={3}>
-            <Card sx={{ maxWidth: 500, minWidth: 'max-content', boxShadow: 4 }}>
-              <CardHeader
-                title={
-                  <>
-                    <b>Version:</b> {versionData?.was.version}
-                  </>
-                }
-                sx={{ textAlign: 'left', paddingBottom: 1 }}
-              />
-            </Card>
-          </Grid>
-        </Grid>
-      )}
     </LeftMenu>
   );
 };
