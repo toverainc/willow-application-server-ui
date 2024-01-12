@@ -14,6 +14,7 @@ import {
   NvsSettings,
   OnboardingState,
   TZDictionary,
+  VersionInfo,
 } from '../misc/model';
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -87,6 +88,7 @@ export default function App({ Component, pageProps }: AppProps) {
     fetcher
   );
   const { data: tzDictionary } = useSWR<TZDictionary>('/api/config?type=tz', fetcher);
+  const { data: versionData } = useSWR<VersionInfo>('/api/info', fetcher);
 
   const onboardingContext = useContext(OnboardingContext);
   onboardingContext.isGeneralConfigComplete = generalSettings
@@ -107,8 +109,11 @@ export default function App({ Component, pageProps }: AppProps) {
     !defaultGeneralSettings ||
     !advancedSettings ||
     !defaultAdvancedSettings ||
-    !tzDictionary ? (
-    <LoadingSpinner />
+    !tzDictionary ||
+    !versionData ? (
+    <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+      <LoadingSpinner />
+    </div>
   ) : (
     <>
       <Head>

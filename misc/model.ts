@@ -134,3 +134,7 @@ export interface OnboardingState {
   isGeneralConfigComplete: boolean;
   isOnboardingComplete: boolean;
 }
+
+export interface VersionInfo {
+  was: { version: string };
+}
