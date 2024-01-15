@@ -93,6 +93,7 @@ export async function handleSubmit(
     bss: !!advancedSettingsForm.bss,
     was_mode: !!advancedSettingsForm.was_mode,
     multiwake: !!advancedSettingsForm.multiwake,
+    wac_enabled: !!advancedSettingsForm.wac_enabled,
     show_prereleases: !!advancedSettingsForm.show_prereleases,
     vad_mode: parseIntOrUndef(advancedSettingsForm.vad_mode),
     mic_gain: parseIntOrUndef(advancedSettingsForm.mic_gain),

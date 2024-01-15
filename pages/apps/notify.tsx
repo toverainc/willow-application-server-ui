@@ -1,12 +1,12 @@
 import {
   Button,
-  Checkbox,
   FormControl,
   FormControlLabel,
   InputLabel,
   MenuItem,
   Select,
   Stack,
+  Switch,
   TextField,
 } from '@mui/material';
 import { NextPage } from 'next';
@@ -25,7 +25,7 @@ import LeftMenu from '../../components/LeftMenu';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { post } from '../../misc/fetchers';
 import { HelpTooltip, parseIntOrUndef, setFieldStateHelperImpl } from '../../misc/helperfunctions';
-import { Client, FormErrorState, GeneralSettings } from '../../misc/model';
+import { Client, GeneralSettings } from '../../misc/model';
 
 const NotifyApp: NextPage = () => {
   const { data: clients } = useSWR<Client[]>('/api/client');
@@ -174,7 +174,7 @@ const NotifyApp: NextPage = () => {
               <Stack spacing={2} direction="row" sx={{ mb: 1 }} justifyContent="space-between">
                 <FormControlLabel
                   control={
-                    <Checkbox
+                    <Switch
                       name="display_text"
                       checked={displayText}
                       onChange={handleDisplayTextChange}
@@ -205,7 +205,7 @@ const NotifyApp: NextPage = () => {
               <Stack spacing={2} direction="row" sx={{ mb: 1 }} justifyContent="space-between">
                 <FormControlLabel
                   control={
-                    <Checkbox
+                    <Switch
                       name="backlight"
                       checked={notifyData.backlight}
                       onChange={(event) => {
@@ -222,7 +222,7 @@ const NotifyApp: NextPage = () => {
               <Stack spacing={2} direction="row" sx={{ mb: 1 }} justifyContent="space-between">
                 <FormControlLabel
                   control={
-                    <Checkbox
+                    <Switch
                       name="max_backlight"
                       checked={notifyData.backlight_max}
                       onChange={(event) => {

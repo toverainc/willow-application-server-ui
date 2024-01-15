@@ -1,15 +1,15 @@
-import React from 'react';
-import { NotifyData, NotifyFormErrorStates } from '../models';
 import {
   FormControl,
-  Stack,
   FormControlLabel,
-  Checkbox,
   Input,
   InputLabel,
   Slider,
+  Stack,
+  Switch,
 } from '@mui/material';
+import React from 'react';
 import { HelpTooltip } from '../../../misc/helperfunctions';
+import { NotifyData } from '../models';
 
 export default function StrobeEffect({
   notifyData,
@@ -60,7 +60,7 @@ export default function StrobeEffect({
         <Stack spacing={2} direction="row" sx={{ mb: 1 }} justifyContent="space-between">
           <FormControlLabel
             control={
-              <Checkbox name="use_strobe" checked={useStrobe} onChange={handleUseStrobeChange} />
+              <Switch name="use_strobe" checked={useStrobe} onChange={handleUseStrobeChange} />
             }
             label="Flash Display"
           />

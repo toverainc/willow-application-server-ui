@@ -181,7 +181,6 @@ export default function ConnectionSettingsSection({ nvsSettings }: { nvsSettings
           ),
         }}
       />
-      {/*XXX: this does not seem to work in current UI? <FormControlLabel control={<Checkbox />} label="Skip connectivity checks" />*/}
       <Stack direction="row" spacing={2} sx={{ mb: 1, mt: 1 }} justifyContent="flex-end">
         <Button id="save" type="submit" variant="outlined">
           Save Connection Settings

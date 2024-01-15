@@ -3,8 +3,8 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness5Icon from '@mui/icons-material/Brightness5';
 import VolumeDown from '@mui/icons-material/VolumeDown';
 import VolumeUp from '@mui/icons-material/VolumeUp';
+import { Switch } from '@mui/material';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Input from '@mui/material/Input';
@@ -355,7 +355,7 @@ export default function GeneralSettingsSection({
         <Stack spacing={2} direction="row" sx={{ mb: 1 }} justifyContent="space-between">
           <FormControlLabel
             control={
-              <Checkbox
+              <Switch
                 name="wake_confirmation"
                 checked={fieldState.wake_confirmation}
                 onChange={(event) => {

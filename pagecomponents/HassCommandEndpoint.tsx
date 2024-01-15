@@ -1,11 +1,11 @@
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {
-  Checkbox,
   FormControlLabel,
   IconButton,
   InputAdornment,
   Stack,
+  Switch,
   TextField,
 } from '@mui/material';
 import React, { useContext } from 'react';
@@ -135,7 +135,7 @@ export default function HassCommandEndpoint({
       <Stack spacing={2} direction="row" sx={{ mt: 1 }} justifyContent="space-between">
         <FormControlLabel
           control={
-            <Checkbox
+            <Switch
               name="hass_tls"
               checked={fieldState.hass_tls}
               onChange={(event) => {

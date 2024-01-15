@@ -1,5 +1,5 @@
+import { Switch } from '@mui/material';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Input from '@mui/material/Input';
@@ -200,7 +200,7 @@ export default function AdvancedSettingsSection({
         <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
           <FormControlLabel
             control={
-              <Checkbox
+              <Switch
                 name="aec"
                 checked={fieldState.aec}
                 onChange={(event) => {
@@ -220,7 +220,7 @@ export default function AdvancedSettingsSection({
         <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
           <FormControlLabel
             control={
-              <Checkbox
+              <Switch
                 name="bss"
                 checked={fieldState.bss}
                 onChange={(event) => {
@@ -240,7 +240,7 @@ export default function AdvancedSettingsSection({
         <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
           <FormControlLabel
             control={
-              <Checkbox
+              <Switch
                 name="was_mode"
                 checked={fieldState.was_mode}
                 onChange={(event) => {
@@ -258,7 +258,7 @@ export default function AdvancedSettingsSection({
         <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
           <FormControlLabel
             control={
-              <Checkbox
+              <Switch
                 name="multiwake"
                 checked={fieldState.multiwake}
                 onChange={(event) => {
@@ -278,7 +278,25 @@ export default function AdvancedSettingsSection({
         <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
           <FormControlLabel
             control={
-              <Checkbox
+              <Switch
+                name="wac_enabled"
+                checked={fieldState.wac_enabled}
+                onChange={(event) => {
+                  setFieldStateHelper('wac_enabled', event.target.checked);
+                  setChangesMade(true);
+                }}
+              />
+            }
+            label="Willow Auto Correct (EXPERIMENTAL)"
+          />
+          <HelpTooltip tooltip="Willow Auto Correct (WAC) Uses AI to learn your commands for more reliable and flexible command recognition."></HelpTooltip>
+        </Stack>
+      </FormControl>
+      <FormControl fullWidth>
+        <Stack spacing={0} direction="row" sx={{ mb: 0 }} justifyContent="space-between">
+          <FormControlLabel
+            control={
+              <Switch
                 name="show_prereleases"
                 checked={fieldState.show_prereleases}
                 onChange={(event) => {

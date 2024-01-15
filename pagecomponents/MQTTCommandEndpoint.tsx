@@ -1,11 +1,11 @@
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {
-  Checkbox,
   FormControlLabel,
   IconButton,
   InputAdornment,
   Stack,
+  Switch,
   TextField,
 } from '@mui/material';
 import React, { useContext } from 'react';
@@ -168,7 +168,7 @@ export default function MQTTCommandEndpoint({
       <Stack spacing={2} direction="row" justifyContent="space-between">
         <FormControlLabel
           control={
-            <Checkbox
+            <Switch
               name="mqtt_tls"
               checked={fieldState.mqtt_tls}
               onChange={(event) => {
