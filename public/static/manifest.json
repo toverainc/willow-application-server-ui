@@ -1,0 +1,17 @@
+{
+  "name": "Willow Application Server",
+  "short_name": "Willow Application Server",
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/admin",
+  "description": "Willow Application Server installable app",
+  "icons": [
+    {
+      "src": "/admin/static/favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg"
+    }
+  ]
+}

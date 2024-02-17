@@ -1,9 +1,9 @@
-import { Raleway } from '@next/font/google';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { Raleway } from '@next/font/google';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 import useSWR, { SWRConfig } from 'swr';
 import { fetcher } from '../misc/fetchers';
@@ -16,9 +16,17 @@ import {
   TZDictionary,
 } from '../misc/model';
 
+import { Metadata } from 'next';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/globals.css';
+
+export const metadata: Metadata = {
+  title: 'Willow Application Server',
+  description: 'Willow Aplication Server',
+  manifest: '/manifest.json',
+  themeColor: '#000000',
+};
 
 export const raleway = Raleway({ subsets: ['latin'], display: 'swap' });
 
@@ -102,6 +110,22 @@ export default function App({ Component, pageProps }: AppProps) {
 
   const formErrorContext = useContext(FormErrorContext);
 
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      // declaring scope manually
+      navigator.serviceWorker.register('/admin/static/sw.js', { scope: './' }).then(
+        (registration) => {
+          console.log('Service worker registration succeeded:', registration);
+        },
+        (error) => {
+          console.error(`Service worker registration failed: ${error}`);
+        }
+      );
+    } else {
+      console.error('Service workers are not supported.');
+    }
+  });
+
   return !nvsData ||
     !generalSettings ||
     !defaultGeneralSettings ||
@@ -118,6 +142,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta httpEquiv="x-ua-compatible" content="ie=edge" />
         <link rel="shortcut icon" href="/admin/static/favicon.svg" />
+        <link rel="manifest" href="/admin/static/manifest.json" />
       </Head>
       <ToastContainer
         position="top-right"
