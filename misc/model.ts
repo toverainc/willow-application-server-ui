@@ -52,7 +52,7 @@ export const MQTT_AUTH_TYPES = ['none', 'userpw'];
 
 export const AUDIO_CODECS = { PCM: 'PCM', 'AMR-WB': 'AMR-WB' };
 export const VAD_MODES = [1, 2, 3, 4];
-export const WAKE_MODES = ['1CH_90', '1CH_95', '2CH_90', '2CH_95', '3CH_90', '3CH_95'];
+export const WAKE_MODES = ['2CH_90', '2CH_95', '3CH_90', '3CH_95'];
 
 export interface AdvancedSettings {
   aec: boolean; //Acoustic Echo Cancellation
