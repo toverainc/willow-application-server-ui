@@ -26,8 +26,8 @@ export function ValidateWifiPsk(psk: string) {
 }
 
 export function ValidateWifiSSID(ssid: string) {
-  if (ssid.length < 2 || ssid.length > 32) {
-    return 'WiFi SSID must be between 2 and 32 ASCII characters';
+  if (ssid.length < 1 || ssid.length > 32) {
+    return 'WiFi SSID must be between 1 and 32 ASCII characters';
   }
   if (!ssid.match(PATTERN_VALID_WIFI_SSID)) {
     return 'WiFi SSID contains invalid characters';
