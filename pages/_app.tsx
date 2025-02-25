@@ -1,4 +1,4 @@
-import { Raleway } from '@next/font/google';
+import { Raleway } from 'next/font/google';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import type { AppProps } from 'next/app';
