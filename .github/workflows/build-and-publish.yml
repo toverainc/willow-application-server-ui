@@ -4,7 +4,7 @@ name: build-and-publish
 on:
   pull_request:
   push:
-    branch:
+    branches:
       - 'main'
       - 'release/**'
     tags:
