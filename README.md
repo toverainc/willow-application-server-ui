@@ -10,7 +10,6 @@ To test changes in realtime we can use utils.sh to build a docker container and 
 
 ```bash
 ./utils.sh build-docker
-./utils.sh install
 ./utils.sh run
 ```
 
