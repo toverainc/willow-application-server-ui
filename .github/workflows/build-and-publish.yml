@@ -2,6 +2,7 @@
 name: build-and-publish
 
 on:
+  pull_request:
   push:
     tags:
       - '*'
@@ -22,6 +23,7 @@ jobs:
         run: tar cfz willow-application-server-ui.tar.gz out/
       - name: publish
         uses: ncipollo/release-action@v1
+        if: ${{ github.ref_type == 'tag' }}
         with:
           allowUpdates: false
           artifacts: willow-application-server-ui.tar.gz
