@@ -11,7 +11,7 @@ jobs:
   build-and-publish:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           # fetch full history to be able to gather changed files in all new commits
           fetch-depth: 0
