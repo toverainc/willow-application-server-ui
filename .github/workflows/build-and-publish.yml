@@ -4,27 +4,44 @@ name: build-and-publish
 on:
   pull_request:
   push:
+    branch:
+      - 'main'
+      - 'release/**'
     tags:
       - '*'
 
 jobs:
-  build-and-publish:
+  build-container:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
         with:
           # fetch full history to be able to gather changed files in all new commits
           fetch-depth: 0
-      - name: npm install
-        run: npm install
-      - name: build
-        run: npm run build
-      - name: create tarball
-        run: tar cfz willow-application-server-ui.tar.gz out/
-      - name: publish
-        uses: ncipollo/release-action@v1
-        if: ${{ github.ref_type == 'tag' }}
+
+
+      - name: extract metadata
+        id: metadata
+        uses: docker/metadata-action@v5
         with:
-          allowUpdates: false
-          artifacts: willow-application-server-ui.tar.gz
-          prerelease: ${{ contains(github.ref, 'delete') || contains(github.ref, 'pre') || contains(github.ref, 'rc') }}
+          images: "ghcr.io/${{ github.repository }}"
+          tags: |
+            type=ref,event=tag
+            type=ref,event=branch
+
+      - name: login to ghcr.io
+        uses: docker/login-action@v3
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: build Willow Application Server UI in Docker
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          # can't push from PR from forks - but disable now for testing
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.metadata.outputs.tags }}
