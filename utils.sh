@@ -49,7 +49,7 @@ build)
 ;;
 
 build-docker|docker-build)
-    docker build -t "$TAG" -f Dockerfile.dev .
+    docker build -t "$TAG" -f Dockerfile .
 ;;
 
 install)
@@ -58,7 +58,7 @@ install)
 
 run)
     echo "Use HTTP port $NEXT_DEV_PORT to access development server"
-    docker run --rm -it -v "$PWD":/was-ui --name "$NAME" -p "$NEXT_DEV_PORT":3000 "$TAG"
+    docker run --rm -it -v "$PWD":/was-ui --name "$NAME" -p "$NEXT_DEV_PORT":3000 "$TAG" npm run dev
 ;;
 
 *)
