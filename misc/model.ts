@@ -51,7 +51,7 @@ export const REST_AUTH_TYPES = ['None', 'Basic', 'Header'];
 export const MQTT_AUTH_TYPES = ['none', 'userpw'];
 
 export const AUDIO_CODECS = { PCM: 'PCM', 'AMR-WB': 'AMR-WB' };
-export const VAD_MODES = [1, 2, 3, 4];
+export const VAD_MODES = [0, 1, 2, 3, 4];
 export const WAKE_MODES = ['2CH_90', '2CH_95', '3CH_90', '3CH_95'];
 
 export interface AdvancedSettings {
