@@ -1,6 +1,6 @@
 # Willow Application Server Web UI
 
-This repo contains the source code for the web user interface of the [Willow Application Server](https://github.com/toverainc/willow-application-server) (WAS). It is intended for developers who want to customize or contribute to the WAS web user interface.
+This repo contains the source code for the web user interface of the [Willow Application Server](https://github.com/HeyWillow/willow-application-server) (WAS). It is intended for developers who want to customize or contribute to the WAS web user interface.
 
 If you're looking to get started with Willow, WAS, WIS, etc please visit our [Quick Start Guide](https://heywillow.io/quick-start-guide/).
 
