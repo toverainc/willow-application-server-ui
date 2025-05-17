@@ -12,7 +12,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Image from 'next/image';
 import * as React from 'react';
-import { ClientImages } from '../misc/clientimages';
+import { ClientImages, UnknownImage } from '../misc/clientimages';
 import { Client, ReleaseAsset } from '../misc/model';
 import {
   ApplyConfigDialog,
@@ -123,10 +123,10 @@ export default function ClientCard({
         <CardHeader
           avatar={
             <Image
-              src={ClientImages[client.platform]}
+              src={ClientImages[client.platform] ?? UnknownImage}
               width={50}
               height={50}
-              alt={client.platform}
+              alt={client.platform || "Unknown device"}
               priority={true}
               placeholder="blur"></Image>
           }
